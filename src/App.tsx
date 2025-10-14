@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Check, X, Users, Save } from 'lucide-react';
+import { Calendar, Check, ChevronLeft, Save, Users, X } from "lucide-react";
+import type { TouchEventHandler } from "react";
+import { useState } from "react";
 
 const AttendanceApp = () => {
-  const [currentScreen, setCurrentScreen] = useState('date-selection');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [currentScreen, setCurrentScreen] = useState("date-selection");
+  const [selectedDate, setSelectedDate] = useState("");
   const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
   const [attendance, setAttendance] = useState({});
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const [swipeDirection, setSwipeDirection] = useState(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(
+    null
+  );
 
   // Lista de pessoas baseada na sua planilha
   const people = [
@@ -56,23 +59,23 @@ const AttendanceApp = () => {
     { name: "Sarah Fidalgo", status: "F" },
     { name: "Theo Valente Sampaio", status: "F" },
     { name: "Victor Toledo Cassiano", status: "F" },
-    { name: "Yasmin Luana Nery Lobo", status: "P" }
+    { name: "Yasmin Luana Nery Lobo", status: "P" },
   ];
 
   const minSwipeDistance = 50;
 
-  const onTouchStart = (e) => {
+  const onTouchStart: TouchEventHandler = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
     setSwipeDirection(null);
   };
 
-  const onTouchMove = (e) => {
+  const onTouchMove: TouchEventHandler = (e) => {
     setTouchEnd(e.targetTouches[0].clientX);
     if (touchStart && e.targetTouches[0].clientX) {
       const distance = touchStart - e.targetTouches[0].clientX;
       if (Math.abs(distance) > 20) {
-        setSwipeDirection(distance > 0 ? 'left' : 'right');
+        setSwipeDirection(distance > 0 ? "left" : "right");
       }
     }
   };
@@ -88,14 +91,14 @@ const AttendanceApp = () => {
     } else if (isLeftSwipe) {
       markAbsent();
     }
-    
+
     setTimeout(() => setSwipeDirection(null), 300);
   };
 
   const markPresent = () => {
     setAttendance({
       ...attendance,
-      [people[currentPersonIndex].name]: 'P'
+      [people[currentPersonIndex].name]: "P",
     });
     if (currentPersonIndex < people.length - 1) {
       setCurrentPersonIndex(currentPersonIndex + 1);
@@ -105,7 +108,7 @@ const AttendanceApp = () => {
   const markAbsent = () => {
     setAttendance({
       ...attendance,
-      [people[currentPersonIndex].name]: 'F'
+      [people[currentPersonIndex].name]: "F",
     });
     if (currentPersonIndex < people.length - 1) {
       setCurrentPersonIndex(currentPersonIndex + 1);
@@ -119,50 +122,55 @@ const AttendanceApp = () => {
   };
 
   const saveToSheets = () => {
-    alert('Para integrar com Google Sheets:\n\n1. Use a API do Google Sheets\n2. Configure OAuth 2.0\n3. Use o método spreadsheets.values.update\n\nDados prontos para exportar:\n' + JSON.stringify({ date: selectedDate, attendance }, null, 2));
+    alert(
+      "Para integrar com Google Sheets:\n\n1. Use a API do Google Sheets\n2. Configure OAuth 2.0\n3. Use o método spreadsheets.values.update\n\nDados prontos para exportar:\n" +
+        JSON.stringify({ date: selectedDate, attendance }, null, 2)
+    );
   };
 
   const getSundayDates = () => {
     const dates = [];
     const today = new Date();
-    
+
     for (let i = -4; i <= 8; i++) {
       const date = new Date(today);
-      date.setDate(today.getDate() + (i * 7));
+      date.setDate(today.getDate() + i * 7);
       const dayOfWeek = date.getDay();
       const diff = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
       const sunday = new Date(date);
       sunday.setDate(date.getDate() + diff);
-      
-      const day = String(sunday.getDate()).padStart(2, '0');
-      const month = String(sunday.getMonth() + 1).padStart(2, '0');
+
+      const day = String(sunday.getDate()).padStart(2, "0");
+      const month = String(sunday.getMonth() + 1).padStart(2, "0");
       dates.push(`${day}/${month}`);
     }
-    
-    return [...new Set(dates)].sort((a, b) => {
-      const [dayA, monthA] = a.split('/').map(Number);
-      const [dayB, monthB] = b.split('/').map(Number);
+
+    return [...dates].sort((a, b) => {
+      const [dayA, monthA] = a.split("/").map(Number);
+      const [dayB, monthB] = b.split("/").map(Number);
       return monthA === monthB ? dayA - dayB : monthA - monthB;
     });
   };
 
-  if (currentScreen === 'date-selection') {
+  if (currentScreen === "date-selection") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
           <div className="text-center mb-8">
             <Calendar className="w-16 h-16 mx-auto text-indigo-600 mb-4" />
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Registro de Presença</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Registro de Presença
+            </h1>
             <p className="text-gray-600">Selecione o domingo</p>
           </div>
-          
+
           <div className="space-y-3">
             {getSundayDates().map((date) => (
               <button
                 key={date}
                 onClick={() => {
                   setSelectedDate(date);
-                  setCurrentScreen('attendance');
+                  setCurrentScreen("attendance");
                 }}
                 className="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg"
               >
@@ -175,11 +183,15 @@ const AttendanceApp = () => {
     );
   }
 
-  if (currentScreen === 'attendance') {
+  if (currentScreen === "attendance") {
     const currentPerson = people[currentPersonIndex];
     const progress = ((currentPersonIndex + 1) / people.length) * 100;
-    const presentCount = Object.values(attendance).filter(v => v === 'P').length;
-    const absentCount = Object.values(attendance).filter(v => v === 'F').length;
+    const presentCount = Object.values(attendance).filter(
+      (v) => v === "P"
+    ).length;
+    const absentCount = Object.values(attendance).filter(
+      (v) => v === "F"
+    ).length;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex flex-col">
@@ -188,14 +200,16 @@ const AttendanceApp = () => {
           <div className="max-w-md mx-auto">
             <div className="flex items-center justify-between mb-2">
               <button
-                onClick={() => setCurrentScreen('date-selection')}
+                onClick={() => setCurrentScreen("date-selection")}
                 className="text-gray-600 hover:text-gray-800"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <div className="text-center">
                 <div className="text-sm text-gray-600">Domingo</div>
-                <div className="text-lg font-bold text-indigo-600">{selectedDate}</div>
+                <div className="text-lg font-bold text-indigo-600">
+                  {selectedDate}
+                </div>
               </div>
               <button
                 onClick={saveToSheets}
@@ -204,17 +218,19 @@ const AttendanceApp = () => {
                 <Save className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* Progress bar */}
             <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div 
+              <div
                 className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            
+
             <div className="flex justify-between mt-2 text-sm">
-              <span className="text-gray-600">{currentPersonIndex + 1} de {people.length}</span>
+              <span className="text-gray-600">
+                {currentPersonIndex + 1} de {people.length}
+              </span>
               <div className="flex gap-4">
                 <span className="text-green-600 flex items-center gap-1">
                   <Check className="w-4 h-4" /> {presentCount}
@@ -230,26 +246,31 @@ const AttendanceApp = () => {
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center p-4">
           {currentPersonIndex < people.length ? (
-            <div 
+            <div
               className={`max-w-md w-full transition-transform duration-300 ${
-                swipeDirection === 'right' ? 'translate-x-12 rotate-6' :
-                swipeDirection === 'left' ? '-translate-x-12 -rotate-6' : ''
+                swipeDirection === "right"
+                  ? "translate-x-12 rotate-6"
+                  : swipeDirection === "left"
+                  ? "-translate-x-12 -rotate-6"
+                  : ""
               }`}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
             >
               <div className="bg-white rounded-3xl shadow-2xl p-8 text-center relative overflow-hidden">
-                {swipeDirection === 'right' && (
+                {swipeDirection === "right" && (
                   <div className="absolute inset-0 bg-green-500 opacity-20 pointer-events-none" />
                 )}
-                {swipeDirection === 'left' && (
+                {swipeDirection === "left" && (
                   <div className="absolute inset-0 bg-red-500 opacity-20 pointer-events-none" />
                 )}
-                
+
                 <Users className="w-20 h-20 mx-auto text-indigo-600 mb-6" />
-                <h2 className="text-3xl font-bold text-gray-800 mb-8">{currentPerson.name}</h2>
-                
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">
+                  {currentPerson.name}
+                </h2>
+
                 <div className="flex gap-4 mb-6">
                   <button
                     onClick={markAbsent}
@@ -266,7 +287,7 @@ const AttendanceApp = () => {
                     Presente
                   </button>
                 </div>
-                
+
                 {currentPersonIndex > 0 && (
                   <button
                     onClick={goBack}
@@ -276,7 +297,7 @@ const AttendanceApp = () => {
                     Voltar
                   </button>
                 )}
-                
+
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <p className="text-gray-500 text-sm">
                     Deslize → para presente ou ← para ausente
@@ -289,32 +310,40 @@ const AttendanceApp = () => {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Check className="w-12 h-12 text-green-600" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Concluído!</h2>
-              <p className="text-gray-600 mb-8">Todas as presenças foram registradas</p>
-              
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                Concluído!
+              </h2>
+              <p className="text-gray-600 mb-8">
+                Todas as presenças foram registradas
+              </p>
+
               <div className="bg-gray-50 rounded-2xl p-6 mb-6">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-3xl font-bold text-green-600">{presentCount}</div>
+                    <div className="text-3xl font-bold text-green-600">
+                      {presentCount}
+                    </div>
                     <div className="text-sm text-gray-600">Presentes</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-red-600">{absentCount}</div>
+                    <div className="text-3xl font-bold text-red-600">
+                      {absentCount}
+                    </div>
                     <div className="text-sm text-gray-600">Ausentes</div>
                   </div>
                 </div>
               </div>
-              
+
               <button
                 onClick={saveToSheets}
                 className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg mb-3"
               >
                 Salvar no Google Sheets
               </button>
-              
+
               <button
                 onClick={() => {
-                  setCurrentScreen('date-selection');
+                  setCurrentScreen("date-selection");
                   setCurrentPersonIndex(0);
                   setAttendance({});
                 }}
@@ -328,6 +357,8 @@ const AttendanceApp = () => {
       </div>
     );
   }
+
+  return null;
 };
 
 export default AttendanceApp;
