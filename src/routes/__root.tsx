@@ -1,5 +1,4 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 
 export interface RouterContext {
   allSundays: Date[]
@@ -10,10 +9,5 @@ export interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => (
-    <>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
+  component: () => <Outlet />,
 })
