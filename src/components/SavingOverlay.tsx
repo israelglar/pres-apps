@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 interface SavingOverlayProps {
   error: string | null;

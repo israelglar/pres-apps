@@ -7,17 +7,36 @@ import {
 } from "../utils/helperFunctions";
 import { selectionTap, successVibration } from "../utils/haptics";
 
+// Type definitions
+interface Student {
+  id: string;
+  name: string;
+}
+
+interface AttendanceRecord {
+  studentId: string;
+  studentName: string;
+  status: "P" | "F";
+  timestamp: Date;
+}
+
+interface AttendanceMarkingPageProps {
+  students: Student[];
+  selectedDate: Date;
+  onComplete: (records: AttendanceRecord[]) => void;
+}
+
 export const AttendanceMarkingPage = ({
   students,
   selectedDate,
   onComplete,
-}) => {
+}: AttendanceMarkingPageProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [attendanceRecords, setAttendanceRecords] = useState<
-    Record<string, any>
+    Record<string, AttendanceRecord>
   >({});
   const [isComplete, setIsComplete] = useState(false);
-  const studentRefs = useRef({});
+  const studentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -42,7 +61,7 @@ export const AttendanceMarkingPage = ({
     }
   }, [currentIndex, currentStudent.id]);
 
-  const handleMark = (status) => {
+  const handleMark = (status: "P" | "F") => {
     // Haptic feedback for marking
     selectionTap();
 
@@ -72,7 +91,7 @@ export const AttendanceMarkingPage = ({
     }
   };
 
-  const findNextUnmarked = (records) => {
+  const findNextUnmarked = (records: Record<string, AttendanceRecord>) => {
     for (let i = currentIndex + 1; i < students.length; i++) {
       if (!records[students[i].id]) {
         setCurrentIndex(i);
@@ -87,7 +106,7 @@ export const AttendanceMarkingPage = ({
     }
   };
 
-  const handleClickHistory = (studentId) => {
+  const handleClickHistory = (studentId: string) => {
     const index = students.findIndex((s) => s.id === studentId);
     if (index !== -1) {
       setCurrentIndex(index);
@@ -213,7 +232,7 @@ export const AttendanceMarkingPage = ({
             return (
               <button
                 key={student.id}
-                ref={(el) => (studentRefs.current[student.id] = el)}
+                ref={(el) => { studentRefs.current[student.id] = el; }}
                 onClick={() => isMarked && handleClickHistory(student.id)}
                 disabled={!isMarked}
                 className={`w-full text-left p-3 md:p-3 rounded-lg mb-2 md:mb-2 transition-all min-h-[52px] ${
