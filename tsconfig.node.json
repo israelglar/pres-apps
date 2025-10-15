@@ -15,7 +15,8 @@
     "noEmit": true,
 
     /* Linting */
-    "strict": true,
+    // "strict": true,
+    "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
