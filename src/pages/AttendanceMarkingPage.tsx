@@ -2,7 +2,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   formatDate,
-  formatDateLong,
+  getLessonName,
   getShortName,
 } from "../utils/helperFunctions";
 import { selectionTap, successVibration } from "../utils/haptics";
@@ -23,12 +23,14 @@ interface AttendanceRecord {
 interface AttendanceMarkingPageProps {
   students: Student[];
   selectedDate: Date;
+  lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
 }
 
 export const AttendanceMarkingPage = ({
   students,
   selectedDate,
+  lessonNames,
   onComplete,
 }: AttendanceMarkingPageProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -174,7 +176,7 @@ export const AttendanceMarkingPage = ({
               Presenças Registadas!
             </h2>
             <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">
-              {formatDateLong(selectedDate)}
+              {getLessonName(selectedDate, lessonNames)}
             </p>
             <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
               <div className="text-center">
@@ -299,6 +301,9 @@ export const AttendanceMarkingPage = ({
           <div className="text-center">
             <p className="text-white/90 text-base md:text-lg font-medium">
               {formatDate(selectedDate)}
+            </p>
+            <p className="text-white/70 text-sm md:text-base mt-1">
+              {getLessonName(selectedDate, lessonNames)}
             </p>
           </div>
         </div>

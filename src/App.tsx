@@ -10,6 +10,7 @@ import { router } from "./router";
 interface AttendanceData {
   success: boolean;
   dates: string[];
+  lessonNames: Record<string, string>;
   students: Array<{ name: string }>;
 }
 
@@ -71,6 +72,10 @@ export default function App() {
     return data ? data.dates.map((d) => new Date(d)) : [];
   }, [data]);
 
+  const lessonNames = useMemo(() => {
+    return data ? data.lessonNames : {};
+  }, [data]);
+
   const students = useMemo(() => {
     return data
       ? data.students
@@ -128,6 +133,7 @@ export default function App() {
         router={router}
         context={{
           allSundays,
+          lessonNames,
           students,
           handleComplete,
           handleRefresh,

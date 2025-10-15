@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbx1V4ta8rA1wbcNIfD-jer-FeSKRe3w5twFFLkuS964dPJ38TL5gjV_1-SWrDksFAv6mg/exec";
+  "https://script.google.com/macros/s/AKfycbyBokQ6x8RyiH5kuDpNcbjmBEqhCVmOUMpdu8LzT9fKIDofyIa49FlgZZ960kPfqW0qNQ/exec";
 
 const TIMEOUT_MS = 10000; // 10 second timeout
 
@@ -22,7 +22,12 @@ async function fetchWithTimeout(url: string, options?: RequestInit) {
 }
 
 // Get all attendance data
-export async function getAttendance() {
+export async function getAttendance(): Promise<{
+  success: boolean;
+  dates: string[];
+  lessonNames: Record<string, string>;
+  students: Array<{ name: string; id: number }>;
+}> {
   try {
     const response = await fetchWithTimeout(API_URL);
 
@@ -34,6 +39,7 @@ export async function getAttendance() {
 
     if (data.success) {
       return data;
+      console.log(data);
     } else {
       throw new Error(data.message || "Failed to fetch attendance data");
     }

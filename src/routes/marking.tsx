@@ -24,7 +24,7 @@ export const Route = createFileRoute('/marking')({
 function MarkingRoute() {
   const navigate = useNavigate()
   const { date } = Route.useSearch()
-  const { students, handleComplete } = Route.useRouteContext()
+  const { students, lessonNames, handleComplete } = Route.useRouteContext()
 
   const onComplete = async (records: AttendanceRecord[]) => {
     await handleComplete(records, date)
@@ -39,6 +39,7 @@ function MarkingRoute() {
     <AttendanceMarkingPage
       students={studentsWithStringIds}
       selectedDate={selectedDate}
+      lessonNames={lessonNames}
       onComplete={onComplete}
     />
   )

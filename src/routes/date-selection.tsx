@@ -7,7 +7,7 @@ export const Route = createFileRoute('/date-selection')({
 
 function DateSelectionRoute() {
   const navigate = useNavigate()
-  const { allSundays } = Route.useRouteContext()
+  const { allSundays, lessonNames } = Route.useRouteContext()
 
   const handleDateSelected = (date: Date) => {
     navigate({ to: '/marking', search: { date: date.toISOString() } })
@@ -22,6 +22,7 @@ function DateSelectionRoute() {
       onDateSelected={handleDateSelected}
       onBack={handleBack}
       allSundays={allSundays}
+      lessonNames={lessonNames}
     />
   )
 }

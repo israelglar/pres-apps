@@ -1,12 +1,23 @@
-import { ArrowLeft, ArrowRight, Calendar, ChevronDown, Check } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  Check,
+  ChevronDown,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   formatDate,
-  formatDateLong,
   getClosestSunday,
+  getLessonName,
 } from "../utils/helperFunctions";
 
-export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
+export const DateSelectionPage = ({
+  onDateSelected,
+  onBack,
+  allSundays,
+  lessonNames,
+}) => {
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -19,17 +30,20 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -63,19 +77,17 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
                   <span className="font-semibold text-gray-800">
                     {formatDate(selectedDate)}
                   </span>
-                  <span className="text-gray-600">
-                    - {formatDateLong(selectedDate)}
-                  </span>
                 </div>
                 <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  className={`w-6 h-6 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
               {isOpen && (
                 <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-300 rounded-xl shadow-2xl max-h-96 overflow-y-auto">
                   {allSundays.map((sunday) => {
-                    const isSelected = sunday.toDateString() === selectedDate.toDateString();
+                    const isSelected =
+                      sunday.toDateString() === selectedDate.toDateString();
                     const isCurrent = isToday(sunday);
 
                     return (
@@ -87,11 +99,13 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
                           setIsOpen(false);
                         }}
                         className={`w-full px-6 py-4 text-left hover:bg-emerald-50 transition-colors flex items-center justify-between border-b border-gray-100 last:border-b-0 ${
-                          isSelected ? 'bg-emerald-100' : ''
+                          isSelected ? "bg-emerald-100" : ""
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-emerald-600' : 'bg-transparent'}`} />
+                          <div
+                            className={`w-2 h-2 rounded-full ${isSelected ? "bg-emerald-600" : "bg-transparent"}`}
+                          />
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-lg text-gray-800">
@@ -104,7 +118,7 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
                               )}
                             </div>
                             <span className="text-sm text-gray-600">
-                              {formatDateLong(sunday)}
+                              {getLessonName(sunday, lessonNames)}
                             </span>
                           </div>
                         </div>
@@ -130,7 +144,7 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
                   {formatDate(selectedDate)}
                 </p>
                 <p className="text-emerald-600 font-medium">
-                  {formatDateLong(selectedDate)}
+                  {getLessonName(selectedDate, lessonNames)}
                 </p>
               </div>
             </div>

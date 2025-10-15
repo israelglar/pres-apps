@@ -36,3 +36,30 @@ export const getShortName = (fullName: string) => {
   if (parts.length <= 2) return fullName;
   return `${parts[0]} ${parts[parts.length - 1]}`;
 };
+
+export const getLessonName = (
+  date: Date,
+  lessonNames: Record<string, string>
+) => {
+  // Try exact match first
+  const exactKey = date.toISOString();
+  if (lessonNames[exactKey]) {
+    return lessonNames[exactKey];
+  }
+
+  // If no exact match, try matching by calendar date (ignoring time)
+  const targetDate = new Date(date);
+  targetDate.setHours(0, 0, 0, 0);
+
+  for (const [key, value] of Object.entries(lessonNames)) {
+    const lessonDate = new Date(key);
+    lessonDate.setHours(0, 0, 0, 0);
+
+    if (lessonDate.getTime() === targetDate.getTime()) {
+      return value;
+    }
+  }
+
+  // Fallback to long date format if no match found
+  return formatDateLong(date);
+};
