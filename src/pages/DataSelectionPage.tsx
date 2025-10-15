@@ -1,5 +1,5 @@
-import { ArrowLeft, ArrowRight, Calendar } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ArrowRight, Calendar, ChevronDown, Check } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import {
   formatDate,
   formatDateLong,
@@ -8,6 +8,30 @@ import {
 
 export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const closestSunday = getClosestSunday();
+
+  const isToday = (date: Date) => {
+    return date.toDateString() === closestSunday.toDateString();
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center p-4">
@@ -26,23 +50,73 @@ export const DateSelectionPage = ({ onDateSelected, onBack, allSundays }) => {
             <label className="block text-gray-700 font-semibold mb-3 text-lg">
               Data da Lição
             </label>
-            <select
-              value={selectedDate.toISOString()}
-              onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              className="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer"
-            >
-              {allSundays.map((sunday) => (
-                <option
-                  key={sunday.toISOString()}
-                  value={sunday.toISOString()}
-                  selected={
-                    sunday.toDateString() === getClosestSunday().toDateString()
-                  }
-                >
-                  {formatDateLong(sunday)}
-                </option>
-              ))}
-            </select>
+
+            {/* Custom Select Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-6 h-6 text-emerald-600" />
+                  <span className="font-semibold text-gray-800">
+                    {formatDate(selectedDate)}
+                  </span>
+                  <span className="text-gray-600">
+                    - {formatDateLong(selectedDate)}
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-300 rounded-xl shadow-2xl max-h-96 overflow-y-auto">
+                  {allSundays.map((sunday) => {
+                    const isSelected = sunday.toDateString() === selectedDate.toDateString();
+                    const isCurrent = isToday(sunday);
+
+                    return (
+                      <button
+                        key={sunday.toISOString()}
+                        type="button"
+                        onClick={() => {
+                          setSelectedDate(sunday);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full px-6 py-4 text-left hover:bg-emerald-50 transition-colors flex items-center justify-between border-b border-gray-100 last:border-b-0 ${
+                          isSelected ? 'bg-emerald-100' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-emerald-600' : 'bg-transparent'}`} />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-lg text-gray-800">
+                                {formatDate(sunday)}
+                              </span>
+                              {isCurrent && (
+                                <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-500 text-white rounded-full">
+                                  Atual
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-sm text-gray-600">
+                              {formatDateLong(sunday)}
+                            </span>
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <Check className="w-6 h-6 text-emerald-600" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 mb-6">
