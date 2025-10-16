@@ -1,5 +1,6 @@
 import { CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useBlocker } from "@tanstack/react-router";
 import {
   formatDate,
   getLessonName,
@@ -47,9 +48,12 @@ export const AttendanceMarkingPage = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
 
-  // Confirmation dialog state
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const confirmingLeaveRef = useRef(false);
+  // Use TanStack Router's navigation blocker with custom UI
+  const hasUnsavedData = Object.keys(attendanceRecords).length > 0 && !isComplete;
+  const { proceed, reset, status } = useBlocker({
+    shouldBlockFn: () => hasUnsavedData,
+    withResolver: true,
+  });
 
   // Minimum swipe distance (in px) to trigger action
   const minSwipeDistance = 50;
@@ -74,52 +78,32 @@ export const AttendanceMarkingPage = ({
     }
   }, [currentIndex, currentStudent.id]);
 
-  // Prevent accidental navigation away from the page if there are unsaved attendance records
+  // Handle browser refresh/close tab warning
   useEffect(() => {
-    const hasUnsavedData = Object.keys(attendanceRecords).length > 0 && !isComplete;
-
-    // Handle browser refresh, close tab
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedData) {
         e.preventDefault();
-        // Modern browsers require returnValue to be set
         e.returnValue = '';
-      }
-    };
-
-    // Handle browser back button
-    const handlePopState = () => {
-      if (hasUnsavedData && !confirmingLeaveRef.current) {
-        // Show custom confirmation dialog
-        setShowConfirmDialog(true);
-        // Push the current state back to prevent navigation until user confirms
-        window.history.pushState(null, '', window.location.href);
       }
     };
 
     if (hasUnsavedData) {
       window.addEventListener('beforeunload', handleBeforeUnload);
-      window.addEventListener('popstate', handlePopState);
-      // Push a dummy state to catch the back button
-      window.history.pushState(null, '', window.location.href);
     }
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('popstate', handlePopState);
     };
-  }, [attendanceRecords, isComplete]);
+  }, [hasUnsavedData]);
 
   const handleConfirmLeave = () => {
-    setShowConfirmDialog(false);
-    // Set flag to allow navigation without showing dialog again
-    confirmingLeaveRef.current = true;
-    // Navigate to date selection page
-    onCancel();
+    // Allow navigation to proceed
+    proceed?.();
   };
 
   const handleCancelLeave = () => {
-    setShowConfirmDialog(false);
+    // Cancel navigation and stay on page
+    reset?.();
   };
 
   const handleMark = (status: "P" | "F") => {
@@ -530,7 +514,7 @@ export const AttendanceMarkingPage = ({
       </div>
 
       {/* Custom Confirmation Dialog */}
-      {showConfirmDialog && (
+      {status === 'blocked' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
             <div className="text-center mb-6">
