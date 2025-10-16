@@ -130,6 +130,19 @@ export const AttendanceMarkingPage = ({
       const offset = currentTouch - touchStart;
       // Limit the offset for visual feedback
       setSwipeOffset(Math.max(-150, Math.min(150, offset)));
+
+      // Reset button backgrounds when swiping starts
+      if (Math.abs(offset) > 10) {
+        const buttons = document.querySelectorAll('.click-area-button');
+        buttons.forEach((btn) => {
+          if (btn instanceof HTMLElement) {
+            const isLeft = btn.classList.contains('left-button');
+            btn.style.background = isLeft
+              ? "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)"
+              : "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+          }
+        });
+      }
     }
   };
 
@@ -305,82 +318,127 @@ export const AttendanceMarkingPage = ({
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="bg-white/10 backdrop-blur-sm border-b border-white/30 px-4 md:px-6 py-3 md:py-4">
+      <div className="flex-1 flex flex-col p-4 md:p-6">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-5 mb-4">
           <div className="text-center">
-            <p className="text-white/90 text-base md:text-lg font-medium">
+            <p className="text-gray-800 text-base font-bold">
               {formatDate(selectedDate)}
             </p>
-            <p className="text-white/70 text-sm md:text-base mt-1">
+            <p className="text-gray-600 text-sm mt-0.5">
               {getLessonName(selectedDate, lessonNames)}
             </p>
           </div>
         </div>
 
-        <div className="flex-1 flex">
-          <button
-            onClick={() => handleMark("F")}
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 active:scale-98 transition-all group"
-          >
-            <div className="text-center">
-              <XCircle className="w-20 h-20 md:w-32 md:h-32 text-white/80 mx-auto mb-2 md:mb-4 group-hover:scale-110 transition-transform" />
-              <p className="text-white text-xl md:text-3xl font-bold">Falta</p>
-            </div>
-          </button>
-
+        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
           <div
-            className="w-64 md:w-96 flex items-center justify-center bg-white/10 backdrop-blur-sm border-x-2 md:border-x-4 border-white/30 relative overflow-hidden"
+            className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
+            {/* Always visible gradient backgrounds */}
+            <div className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-l-3xl z-0" style={{
+              background: "linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent)"
+            }} />
+            <div className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-r-3xl z-0" style={{
+              background: "linear-gradient(to left, rgba(16, 185, 129, 0.1), transparent)"
+            }} />
+
             {/* Swipe feedback indicators */}
             {swipeOffset !== 0 && (
-              <>
-                <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-150"
-                  style={{
-                    background:
-                      swipeOffset > 0
-                        ? "linear-gradient(to right, rgba(16, 185, 129, 0.3), transparent)"
-                        : "linear-gradient(to left, rgba(239, 68, 68, 0.3), transparent)",
-                    opacity: Math.abs(swipeOffset) / 150,
-                  }}
-                />
-              </>
+              <div
+                className="absolute inset-0 pointer-events-none transition-opacity duration-150 rounded-3xl z-0"
+                style={{
+                  background:
+                    swipeOffset > 0
+                      ? "linear-gradient(to right, transparent, rgba(16, 185, 129, 0.2))"
+                      : "linear-gradient(to left, transparent, rgba(239, 68, 68, 0.2))",
+                  opacity: Math.abs(swipeOffset) / 150,
+                }}
+              />
             )}
 
+            {/* Center - Student info */}
             <div
-              className="text-center px-4 md:px-8 transition-transform duration-150"
+              className="text-center transition-transform duration-150 relative z-10 pointer-events-none"
               style={{
                 transform: `translateX(${swipeOffset}px)`,
               }}
             >
-              <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-2xl">
-                <span className="text-4xl md:text-6xl font-bold text-emerald-600">
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span className="text-4xl font-bold text-white">
                   {currentStudent.name.charAt(0)}
                 </span>
               </div>
-              <h2 className="text-white text-xl md:text-3xl font-bold mb-1 md:mb-2 leading-tight px-2">
+              <h2 className="text-gray-800 text-2xl font-bold mb-2 leading-tight">
                 {getShortName(currentStudent.name)}
               </h2>
-              <p className="text-white/80 text-sm md:text-lg">
+              <p className="text-gray-500 text-sm">
                 Toque ou deslize
               </p>
             </div>
+
+            {/* Clickable areas overlaid */}
+            <button
+              onClick={() => handleMark("F")}
+              className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/60 transition-colors rounded-l-3xl z-20 touch-none"
+              style={{
+                background: "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)"
+              }}
+              onPointerDown={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent)";
+              }}
+              onPointerUp={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+              }}
+              onPointerLeave={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+              }}
+            />
+            <button
+              onClick={() => handleMark("P")}
+              className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-emerald-200/60 transition-colors rounded-r-3xl z-20 touch-none"
+              style={{
+                background: "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)"
+              }}
+              onPointerDown={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0.3), transparent)";
+              }}
+              onPointerUp={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+              }}
+              onPointerLeave={(e) => {
+                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+              }}
+            />
           </div>
 
-          <button
-            onClick={() => handleMark("P")}
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 active:scale-98 transition-all group"
-          >
-            <div className="text-center">
-              <CheckCircle className="w-20 h-20 md:w-32 md:h-32 text-white/80 mx-auto mb-2 md:mb-4 group-hover:scale-110 transition-transform" />
-              <p className="text-white text-xl md:text-3xl font-bold">
-                Presente
-              </p>
-            </div>
-          </button>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => handleMark("F")}
+              className="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group"
+            >
+              <div className="text-center">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
+                  <XCircle className="w-12 h-12 text-white" />
+                </div>
+                <p className="text-white text-lg font-bold">Falta</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleMark("P")}
+              className="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group"
+            >
+              <div className="text-center">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
+                  <CheckCircle className="w-12 h-12 text-white" />
+                </div>
+                <p className="text-white text-lg font-bold">Presente</p>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
