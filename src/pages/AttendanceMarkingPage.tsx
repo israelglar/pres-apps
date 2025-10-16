@@ -77,24 +77,6 @@ export const AttendanceMarkingPage = ({
     }
   }, [currentIndex, currentStudent.id]);
 
-  // Handle browser refresh/close tab warning
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedData) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-
-    if (hasUnsavedData) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [hasUnsavedData]);
-
   const handleConfirmLeave = () => {
     // Allow navigation to proceed
     proceed?.();
