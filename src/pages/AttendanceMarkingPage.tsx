@@ -5,7 +5,7 @@ import {
   getLessonName,
   getShortName,
 } from "../utils/helperFunctions";
-import { selectionTap, successVibration } from "../utils/haptics";
+import { initHaptics, selectionTap, successVibration } from "../utils/haptics";
 
 // Type definitions
 interface Student {
@@ -51,6 +51,11 @@ export const AttendanceMarkingPage = ({
   const currentStudent = students[currentIndex];
   const completedCount = Object.keys(attendanceRecords).length;
   const progress = (completedCount / students.length) * 100;
+
+  // Initialize haptics on component mount (requires user interaction context)
+  useEffect(() => {
+    initHaptics();
+  }, []);
 
   useEffect(() => {
     const currentRef = studentRefs.current[currentStudent.id];
