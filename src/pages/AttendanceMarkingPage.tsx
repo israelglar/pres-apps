@@ -207,19 +207,24 @@ export const AttendanceMarkingPage = ({
 
   return (
     <div className="h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col md:flex-row overflow-hidden">
-      <div className="w-full md:w-80 bg-white/95 backdrop-blur-sm shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen">
-        <div className="sticky top-0 bg-white border-b-2 border-gray-200 p-3 md:p-4 z-10 flex-shrink-0">
-          <div className="flex items-center justify-between mb-2 md:mb-3">
-            <h3 className="font-bold text-gray-800 text-base md:text-lg">
+      <div className="w-full md:w-80 bg-gradient-to-b from-white to-gray-50 shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen">
+        <div className="sticky top-0 bg-gradient-to-br from-emerald-50 to-teal-50 border-b-2 border-emerald-200 p-3 z-10 flex-shrink-0">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-gray-800 text-base">
               Histórico
             </h3>
-            <div className="text-xs md:text-sm font-semibold text-gray-600">
-              {completedCount} / {students.length}
+            <div className="px-2.5 py-0.5 bg-white/80 backdrop-blur-sm rounded-full border border-emerald-200">
+              <span className="text-sm font-bold text-emerald-700">
+                {completedCount}
+              </span>
+              <span className="text-xs text-gray-500">
+                {" "}/ {students.length}
+              </span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-gray-200/70 rounded-full h-2 overflow-hidden shadow-inner">
             <div
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 h-full transition-all duration-300"
+              className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-full transition-all duration-300 shadow-sm"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -237,43 +242,43 @@ export const AttendanceMarkingPage = ({
                 ref={(el) => { studentRefs.current[student.id] = el; }}
                 onClick={() => isMarked && handleClickHistory(student.id)}
                 disabled={!isMarked}
-                className={`w-full text-left p-3 md:p-3 rounded-lg mb-2 md:mb-2 transition-all min-h-[52px] ${
+                className={`w-full text-left p-2.5 rounded-xl mb-2 transition-all shadow-sm ${
                   isCurrent
-                    ? "bg-blue-100 border-2 border-blue-400 shadow-md"
+                    ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-500 shadow-md"
                     : isMarked
                     ? record.status === "P"
-                      ? "bg-emerald-50 border-2 border-emerald-300 hover:bg-emerald-100 cursor-pointer"
-                      : "bg-red-50 border-2 border-red-300 hover:bg-red-100 cursor-pointer"
-                    : "bg-gray-100 border-2 border-gray-200 opacity-50 cursor-not-allowed"
+                      ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-2 border-emerald-400 hover:shadow-md cursor-pointer"
+                      : "bg-gradient-to-r from-red-50 to-red-100/50 border-2 border-red-400 hover:shadow-md cursor-pointer"
+                    : "bg-white border-2 border-gray-200/60 opacity-40 cursor-not-allowed"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 md:gap-3 flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
                     <div
-                      className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${
                         isCurrent
-                          ? "bg-blue-500"
+                          ? "bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-300"
                           : isMarked
                           ? record.status === "P"
-                            ? "bg-emerald-500"
-                            : "bg-red-500"
-                          : "bg-gray-300"
+                            ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
+                            : "bg-gradient-to-br from-red-500 to-red-600"
+                          : "bg-gradient-to-br from-gray-300 to-gray-400"
                       }`}
                     >
-                      <span className="text-white font-bold text-sm md:text-base">
+                      <span className="text-white font-bold text-sm">
                         {student.name.charAt(0)}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className={`font-medium text-sm md:text-base truncate ${
+                        className={`font-semibold text-sm truncate ${
                           isCurrent
-                            ? "text-blue-800"
+                            ? "text-blue-900"
                             : isMarked
                             ? record.status === "P"
-                              ? "text-emerald-800"
-                              : "text-red-800"
-                            : "text-gray-500"
+                              ? "text-emerald-900"
+                              : "text-red-900"
+                            : "text-gray-400"
                         }`}
                       >
                         {student.name}
@@ -282,12 +287,16 @@ export const AttendanceMarkingPage = ({
                   </div>
                   {isMarked &&
                     (record.status === "P" ? (
-                      <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 flex-shrink-0" />
+                      <div className="bg-emerald-100 rounded-full p-1">
+                        <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      </div>
                     ) : (
-                      <XCircle className="w-5 h-5 md:w-6 md:h-6 text-red-600 flex-shrink-0" />
+                      <div className="bg-red-100 rounded-full p-1">
+                        <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                      </div>
                     ))}
                   {isCurrent && !isMarked && (
-                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse flex-shrink-0" />
+                    <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0" />
                   )}
                 </div>
               </button>
