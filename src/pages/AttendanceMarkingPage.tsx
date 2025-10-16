@@ -350,6 +350,34 @@ export const AttendanceMarkingPage = ({
               background: "linear-gradient(to left, rgba(16, 185, 129, 0.1), transparent)"
             }} />
 
+            {/* Left side indicator - Falta */}
+            <div
+              className="absolute left-4 top-1/2 pointer-events-none z-10 transition-all duration-150"
+              style={{
+                opacity: swipeOffset < 0 ? Math.min(1, 0.6 + Math.abs(swipeOffset) / 200) : 0.6,
+                transform: `translateY(-50%) scale(${swipeOffset < 0 ? 1 + Math.abs(swipeOffset) / 300 : 1})`,
+              }}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <XCircle className="w-8 h-8 text-red-500" />
+                <span className="text-xs font-bold text-red-600">Falta</span>
+              </div>
+            </div>
+
+            {/* Right side indicator - Presente */}
+            <div
+              className="absolute right-4 top-1/2 pointer-events-none z-10 transition-all duration-150"
+              style={{
+                opacity: swipeOffset > 0 ? Math.min(1, 0.6 + swipeOffset / 200) : 0.6,
+                transform: `translateY(-50%) scale(${swipeOffset > 0 ? 1 + swipeOffset / 300 : 1})`,
+              }}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <CheckCircle className="w-8 h-8 text-emerald-500" />
+                <span className="text-xs font-bold text-emerald-600">Presente</span>
+              </div>
+            </div>
+
             {/* Swipe feedback indicators */}
             {swipeOffset !== 0 && (
               <div
@@ -380,7 +408,7 @@ export const AttendanceMarkingPage = ({
                 {getShortName(currentStudent.name)}
               </h2>
               <p className="text-gray-500 text-sm">
-                Toque ou deslize
+                Toque nos lados ou deslize
               </p>
             </div>
 
