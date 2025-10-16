@@ -8,9 +8,9 @@ export default defineConfig({
   plugins: [
     react(),
     tanstackRouter(),
-    VitePWA({
+VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['pre.svg', 'pre.png'],
+      includeAssets: ['pre.svg', 'pre.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'Prés-adolescentes - Registo de Presenças',
         short_name: 'Prés App',
@@ -18,6 +18,11 @@ export default defineConfig({
         theme_color: '#10b981',
         background_color: '#ffffff',
         display: 'standalone',
+        scope: '/',
+        start_url: '/',
+        orientation: 'portrait-primary',
+        lang: 'pt',
+        categories: ['education', 'productivity'],
         icons: [
           {
             src: '/pwa-192x192.png',
@@ -45,8 +50,13 @@ export default defineConfig({
           }
         ]
       },
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/accounts\.google\.com\/.*/i,
