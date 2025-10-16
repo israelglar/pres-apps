@@ -25,6 +25,7 @@ interface AttendanceMarkingPageProps {
   selectedDate: Date;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
+  onCancel: () => void;
 }
 
 export const AttendanceMarkingPage = ({
@@ -32,6 +33,7 @@ export const AttendanceMarkingPage = ({
   selectedDate,
   lessonNames,
   onComplete,
+  onCancel,
 }: AttendanceMarkingPageProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [attendanceRecords, setAttendanceRecords] = useState<
@@ -44,6 +46,10 @@ export const AttendanceMarkingPage = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+
+  // Confirmation dialog state
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const confirmingLeaveRef = useRef(false);
 
   // Minimum swipe distance (in px) to trigger action
   const minSwipeDistance = 50;
@@ -67,6 +73,54 @@ export const AttendanceMarkingPage = ({
       });
     }
   }, [currentIndex, currentStudent.id]);
+
+  // Prevent accidental navigation away from the page if there are unsaved attendance records
+  useEffect(() => {
+    const hasUnsavedData = Object.keys(attendanceRecords).length > 0 && !isComplete;
+
+    // Handle browser refresh, close tab
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedData) {
+        e.preventDefault();
+        // Modern browsers require returnValue to be set
+        e.returnValue = '';
+      }
+    };
+
+    // Handle browser back button
+    const handlePopState = () => {
+      if (hasUnsavedData && !confirmingLeaveRef.current) {
+        // Show custom confirmation dialog
+        setShowConfirmDialog(true);
+        // Push the current state back to prevent navigation until user confirms
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+
+    if (hasUnsavedData) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('popstate', handlePopState);
+      // Push a dummy state to catch the back button
+      window.history.pushState(null, '', window.location.href);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [attendanceRecords, isComplete]);
+
+  const handleConfirmLeave = () => {
+    setShowConfirmDialog(false);
+    // Set flag to allow navigation without showing dialog again
+    confirmingLeaveRef.current = true;
+    // Navigate to date selection page
+    onCancel();
+  };
+
+  const handleCancelLeave = () => {
+    setShowConfirmDialog(false);
+  };
 
   const handleMark = (status: "P" | "F") => {
     // Haptic feedback for marking
@@ -474,6 +528,41 @@ export const AttendanceMarkingPage = ({
           </div>
         </div>
       </div>
+
+      {/* Custom Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Tem a certeza?
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Tem registos de presença por guardar. Se sair agora, perderá todo o progresso.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelLeave}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:from-gray-200 hover:to-gray-300 hover:shadow-md active:scale-95 transition-all border-2 border-gray-300"
+              >
+                Continuar a Marcar
+              </button>
+              <button
+                onClick={handleConfirmLeave}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold text-sm hover:from-red-600 hover:to-red-700 hover:shadow-lg active:scale-95 transition-all shadow-md"
+              >
+                Sair Sem Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
