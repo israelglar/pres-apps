@@ -21,6 +21,8 @@ export const DateSelectionPage = ({
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownListRef = useRef<HTMLDivElement>(null);
+  const selectedItemRef = useRef<HTMLButtonElement>(null);
   const closestSunday = getClosestSunday();
 
   const isToday = (date: Date) => {
@@ -64,6 +66,27 @@ export const DateSelectionPage = ({
     };
   }, [isOpen]);
 
+  // Scroll to selected item when dropdown opens
+  useEffect(() => {
+    if (isOpen && selectedItemRef.current && dropdownListRef.current) {
+      // Use setTimeout to ensure the dropdown is rendered before scrolling
+      setTimeout(() => {
+        if (selectedItemRef.current && dropdownListRef.current) {
+          const listElement = dropdownListRef.current;
+          const itemElement = selectedItemRef.current;
+
+          // Calculate the position to center the selected item
+          const listHeight = listElement.clientHeight;
+          const itemTop = itemElement.offsetTop;
+          const itemHeight = itemElement.clientHeight;
+
+          // Scroll so the selected item is centered (or as centered as possible)
+          listElement.scrollTop = itemTop - (listHeight / 2) + (itemHeight / 2);
+        }
+      }, 10);
+    }
+  }, [isOpen]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
@@ -103,7 +126,7 @@ export const DateSelectionPage = ({
               </button>
 
               {isOpen && (
-                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                <div ref={dropdownListRef} className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
                   {allSundays.map((sunday) => {
                     const isSelected =
                       sunday.toDateString() === selectedDate.toDateString();
@@ -112,6 +135,7 @@ export const DateSelectionPage = ({
                     return (
                       <button
                         key={sunday.toISOString()}
+                        ref={isSelected ? selectedItemRef : null}
                         type="button"
                         onClick={() => {
                           setSelectedDate(sunday);
