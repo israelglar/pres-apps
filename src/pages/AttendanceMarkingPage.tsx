@@ -414,7 +414,7 @@ export const AttendanceMarkingPage = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="hidden md:grid grid-cols-2 gap-4">
             <button
               onClick={() => handleMark("F")}
               className="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group"
