@@ -24,7 +24,24 @@ export const DateSelectionPage = ({
   const closestSunday = getClosestSunday();
 
   const isToday = (date: Date) => {
-    return date.toDateString() === closestSunday.toDateString();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() === today.getTime();
+  };
+
+  const isPreviousSunday = (date: Date) => {
+    return date.toDateString() === closestSunday.toDateString() && !isToday(date);
+  };
+
+  const getDateLabel = (date: Date) => {
+    if (isToday(date)) {
+      return "Hoje";
+    } else if (isPreviousSunday(date)) {
+      return "Domingo Passado";
+    }
+    return null;
   };
 
   // Close dropdown when clicking outside
@@ -90,7 +107,7 @@ export const DateSelectionPage = ({
                   {allSundays.map((sunday) => {
                     const isSelected =
                       sunday.toDateString() === selectedDate.toDateString();
-                    const isCurrent = isToday(sunday);
+                    const dateLabel = getDateLabel(sunday);
 
                     return (
                       <button
@@ -113,9 +130,9 @@ export const DateSelectionPage = ({
                               <span className={`font-bold text-sm ${isSelected ? "text-emerald-900" : "text-gray-800"}`}>
                                 {formatDate(sunday)}
                               </span>
-                              {isCurrent && (
+                              {dateLabel && (
                                 <span className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-sm">
-                                  Atual
+                                  {dateLabel}
                                 </span>
                               )}
                             </div>
