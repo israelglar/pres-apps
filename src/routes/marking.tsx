@@ -31,10 +31,6 @@ function MarkingRoute() {
     navigate({ to: '/' })
   }
 
-  const onCancel = () => {
-    navigate({ to: '/date-selection' })
-  }
-
   // Convert students to have string IDs and parse date string to Date
   const studentsWithStringIds = students.map(s => ({ ...s, id: String(s.id) }))
   const selectedDate = new Date(date)
@@ -45,7 +41,6 @@ function MarkingRoute() {
       selectedDate={selectedDate}
       lessonNames={lessonNames}
       onComplete={onComplete}
-      onCancel={onCancel}
     />
   )
 }

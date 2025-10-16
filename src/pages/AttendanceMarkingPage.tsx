@@ -1,12 +1,12 @@
+import { useBlocker } from "@tanstack/react-router";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useBlocker } from "@tanstack/react-router";
+import { initHaptics, selectionTap, successVibration } from "../utils/haptics";
 import {
   formatDate,
   getLessonName,
   getShortName,
 } from "../utils/helperFunctions";
-import { initHaptics, selectionTap, successVibration } from "../utils/haptics";
 
 // Type definitions
 interface Student {
@@ -26,7 +26,6 @@ interface AttendanceMarkingPageProps {
   selectedDate: Date;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
-  onCancel: () => void;
 }
 
 export const AttendanceMarkingPage = ({
@@ -34,7 +33,6 @@ export const AttendanceMarkingPage = ({
   selectedDate,
   lessonNames,
   onComplete,
-  onCancel,
 }: AttendanceMarkingPageProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [attendanceRecords, setAttendanceRecords] = useState<
@@ -49,7 +47,8 @@ export const AttendanceMarkingPage = ({
   const [swipeOffset, setSwipeOffset] = useState(0);
 
   // Use TanStack Router's navigation blocker with custom UI
-  const hasUnsavedData = Object.keys(attendanceRecords).length > 0 && !isComplete;
+  const hasUnsavedData =
+    Object.keys(attendanceRecords).length > 0 && !isComplete;
   const { proceed, reset, status } = useBlocker({
     shouldBlockFn: () => hasUnsavedData,
     withResolver: true,
@@ -83,16 +82,16 @@ export const AttendanceMarkingPage = ({
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedData) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = "";
       }
     };
 
     if (hasUnsavedData) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener("beforeunload", handleBeforeUnload);
     }
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnsavedData]);
 
@@ -176,10 +175,10 @@ export const AttendanceMarkingPage = ({
 
       // Reset button backgrounds when swiping starts
       if (Math.abs(offset) > 10) {
-        const buttons = document.querySelectorAll('.click-area-button');
+        const buttons = document.querySelectorAll(".click-area-button");
         buttons.forEach((btn) => {
           if (btn instanceof HTMLElement) {
-            const isLeft = btn.classList.contains('left-button');
+            const isLeft = btn.classList.contains("left-button");
             btn.style.background = isLeft
               ? "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)"
               : "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
@@ -266,15 +265,14 @@ export const AttendanceMarkingPage = ({
       <div className="w-full md:w-80 bg-gradient-to-b from-white to-gray-50 shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen">
         <div className="sticky top-0 bg-gradient-to-br from-emerald-50 to-teal-50 border-b-2 border-emerald-200 p-3 z-10 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-gray-800 text-base">
-              Histórico
-            </h3>
+            <h3 className="font-bold text-gray-800 text-base">Histórico</h3>
             <div className="px-2.5 py-0.5 bg-white/80 backdrop-blur-sm rounded-full border border-emerald-200">
               <span className="text-sm font-bold text-emerald-700">
                 {completedCount}
               </span>
               <span className="text-xs text-gray-500">
-                {" "}/ {students.length}
+                {" "}
+                / {students.length}
               </span>
             </div>
           </div>
@@ -295,17 +293,19 @@ export const AttendanceMarkingPage = ({
             return (
               <button
                 key={student.id}
-                ref={(el) => { studentRefs.current[student.id] = el; }}
+                ref={(el) => {
+                  studentRefs.current[student.id] = el;
+                }}
                 onClick={() => isMarked && handleClickHistory(student.id)}
                 disabled={!isMarked}
                 className={`w-full text-left p-2.5 rounded-xl mb-2 transition-all shadow-sm ${
                   isCurrent
                     ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-500 shadow-md"
                     : isMarked
-                    ? record.status === "P"
-                      ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-2 border-emerald-400 hover:shadow-md cursor-pointer"
-                      : "bg-gradient-to-r from-red-50 to-red-100/50 border-2 border-red-400 hover:shadow-md cursor-pointer"
-                    : "bg-white border-2 border-gray-200/60 opacity-40 cursor-not-allowed"
+                      ? record.status === "P"
+                        ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-2 border-emerald-400 hover:shadow-md cursor-pointer"
+                        : "bg-gradient-to-r from-red-50 to-red-100/50 border-2 border-red-400 hover:shadow-md cursor-pointer"
+                      : "bg-white border-2 border-gray-200/60 opacity-40 cursor-not-allowed"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -315,10 +315,10 @@ export const AttendanceMarkingPage = ({
                         isCurrent
                           ? "bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-300"
                           : isMarked
-                          ? record.status === "P"
-                            ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
-                            : "bg-gradient-to-br from-red-500 to-red-600"
-                          : "bg-gradient-to-br from-gray-300 to-gray-400"
+                            ? record.status === "P"
+                              ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
+                              : "bg-gradient-to-br from-red-500 to-red-600"
+                            : "bg-gradient-to-br from-gray-300 to-gray-400"
                       }`}
                     >
                       <span className="text-white font-bold text-sm">
@@ -331,10 +331,10 @@ export const AttendanceMarkingPage = ({
                           isCurrent
                             ? "text-blue-900"
                             : isMarked
-                            ? record.status === "P"
-                              ? "text-emerald-900"
-                              : "text-red-900"
-                            : "text-gray-400"
+                              ? record.status === "P"
+                                ? "text-emerald-900"
+                                : "text-red-900"
+                              : "text-gray-400"
                         }`}
                       >
                         {student.name}
@@ -381,18 +381,29 @@ export const AttendanceMarkingPage = ({
             onTouchEnd={onTouchEnd}
           >
             {/* Always visible gradient backgrounds */}
-            <div className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-l-3xl z-0" style={{
-              background: "linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent)"
-            }} />
-            <div className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-r-3xl z-0" style={{
-              background: "linear-gradient(to left, rgba(16, 185, 129, 0.1), transparent)"
-            }} />
+            <div
+              className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-l-3xl z-0"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent)",
+              }}
+            />
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-r-3xl z-0"
+              style={{
+                background:
+                  "linear-gradient(to left, rgba(16, 185, 129, 0.1), transparent)",
+              }}
+            />
 
             {/* Left side indicator - Falta */}
             <div
               className="absolute left-4 top-1/2 pointer-events-none z-10 transition-all duration-150"
               style={{
-                opacity: swipeOffset < 0 ? Math.min(1, 0.6 + Math.abs(swipeOffset) / 200) : 0.6,
+                opacity:
+                  swipeOffset < 0
+                    ? Math.min(1, 0.6 + Math.abs(swipeOffset) / 200)
+                    : 0.6,
                 transform: `translateY(-50%) scale(${swipeOffset < 0 ? 1 + Math.abs(swipeOffset) / 300 : 1})`,
               }}
             >
@@ -406,13 +417,16 @@ export const AttendanceMarkingPage = ({
             <div
               className="absolute right-4 top-1/2 pointer-events-none z-10 transition-all duration-150"
               style={{
-                opacity: swipeOffset > 0 ? Math.min(1, 0.6 + swipeOffset / 200) : 0.6,
+                opacity:
+                  swipeOffset > 0 ? Math.min(1, 0.6 + swipeOffset / 200) : 0.6,
                 transform: `translateY(-50%) scale(${swipeOffset > 0 ? 1 + swipeOffset / 300 : 1})`,
               }}
             >
               <div className="flex flex-col items-center gap-1">
                 <CheckCircle className="w-8 h-8 text-emerald-500" />
-                <span className="text-xs font-bold text-emerald-600">Presente</span>
+                <span className="text-xs font-bold text-emerald-600">
+                  Presente
+                </span>
               </div>
             </div>
 
@@ -455,32 +469,40 @@ export const AttendanceMarkingPage = ({
               onClick={() => handleMark("F")}
               className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/60 transition-colors rounded-l-3xl z-20 touch-none"
               style={{
-                background: "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)"
+                background:
+                  "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)",
               }}
               onPointerDown={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent)";
               }}
               onPointerUp={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
               }}
               onPointerLeave={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
               }}
             />
             <button
               onClick={() => handleMark("P")}
               className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-emerald-200/60 transition-colors rounded-r-3xl z-20 touch-none"
               style={{
-                background: "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)"
+                background:
+                  "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)",
               }}
               onPointerDown={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0.3), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to left, rgba(16, 185, 129, 0.3), transparent)";
               }}
               onPointerUp={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
               }}
               onPointerLeave={(e) => {
-                e.currentTarget.style.background = "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+                e.currentTarget.style.background =
+                  "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
               }}
             />
           </div>
@@ -514,20 +536,31 @@ export const AttendanceMarkingPage = ({
       </div>
 
       {/* Custom Confirmation Dialog */}
-      {status === 'blocked' && (
+      {status === "blocked" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-8 h-8 text-amber-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Tem a certeza?
               </h3>
               <p className="text-gray-600 text-sm">
-                Tem registos de presença por guardar. Se sair agora, perderá todo o progresso.
+                Tem registos de presença por guardar. Se sair agora, perderá
+                todo o progresso.
               </p>
             </div>
             <div className="flex gap-3">
