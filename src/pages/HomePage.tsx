@@ -23,8 +23,6 @@ export const HomePage = ({
   onStart,
   onRefresh,
   isRefreshing,
-  isDataReady,
-  isLoading,
   dataError,
   onRetryLoad,
   waitingForData,
