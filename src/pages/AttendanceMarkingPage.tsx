@@ -47,6 +47,7 @@ export const AttendanceMarkingPage = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isAnimatingSwipe, setIsAnimatingSwipe] = useState(false);
 
   // Use TanStack Router's navigation blocker with custom UI
   const hasUnsavedData =
@@ -143,6 +144,9 @@ export const AttendanceMarkingPage = ({
 
   // Swipe gesture handlers
   const onTouchStart = (e: React.TouchEvent) => {
+    // Don't allow new swipes while animating
+    if (isAnimatingSwipe) return;
+
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
     setSwipeOffset(0);
@@ -182,18 +186,32 @@ export const AttendanceMarkingPage = ({
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe) {
-      // Swipe left = Mark as Absent (Falta)
-      handleMark("F");
-    } else if (isRightSwipe) {
-      // Swipe right = Mark as Present (Presente)
-      handleMark("P");
-    }
+    if (isLeftSwipe || isRightSwipe) {
+      // Trigger completion animation
+      setIsAnimatingSwipe(true);
+      const targetOffset = isLeftSwipe ? -300 : 300;
+      setSwipeOffset(targetOffset);
 
-    // Reset swipe state
-    setTouchStart(null);
-    setTouchEnd(null);
-    setSwipeOffset(0);
+      // Reset after animation completes (200ms)
+      setTimeout(() => {
+        setTouchStart(null);
+        setTouchEnd(null);
+        setSwipeOffset(0);
+        setIsAnimatingSwipe(false);
+      }, 200);
+
+      // Mark attendance
+      if (isLeftSwipe) {
+        handleMark("F");
+      } else {
+        handleMark("P");
+      }
+    } else {
+      // Reset swipe state if threshold not met
+      setTouchStart(null);
+      setTouchEnd(null);
+      setSwipeOffset(0);
+    }
   };
 
   if (isComplete) {
@@ -437,9 +455,12 @@ export const AttendanceMarkingPage = ({
 
             {/* Center - Student info */}
             <div
-              className="text-center transition-transform duration-150 relative z-10 pointer-events-none"
+              className="text-center relative z-10 pointer-events-none"
               style={{
                 transform: `translateX(${swipeOffset}px)`,
+                transition: isAnimatingSwipe
+                  ? "transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1)"
+                  : "transform 0ms",
               }}
             >
               <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
