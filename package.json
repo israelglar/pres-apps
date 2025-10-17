@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.14",
     "@tanstack/react-router": "^1.133.3",
+    "fuse.js": "^7.1.0",
     "gapi-script": "^1.2.0",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",

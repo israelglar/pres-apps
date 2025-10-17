@@ -4,6 +4,8 @@ import {
   Calendar,
   Check,
   ChevronDown,
+  Hand,
+  Search,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -20,6 +22,7 @@ export const DateSelectionPage = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
   const [isOpen, setIsOpen] = useState(false);
+  const [showMethodDialog, setShowMethodDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownListRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
@@ -34,7 +37,9 @@ export const DateSelectionPage = ({
   };
 
   const isPreviousSunday = (date: Date) => {
-    return date.toDateString() === closestSunday.toDateString() && !isToday(date);
+    return (
+      date.toDateString() === closestSunday.toDateString() && !isToday(date)
+    );
   };
 
   const getDateLabel = (date: Date) => {
@@ -81,7 +86,7 @@ export const DateSelectionPage = ({
           const itemHeight = itemElement.clientHeight;
 
           // Scroll so the selected item is centered (or as centered as possible)
-          listElement.scrollTop = itemTop - (listHeight / 2) + (itemHeight / 2);
+          listElement.scrollTop = itemTop - listHeight / 2 + itemHeight / 2;
         }
       }, 10);
     }
@@ -126,7 +131,10 @@ export const DateSelectionPage = ({
               </button>
 
               {isOpen && (
-                <div ref={dropdownListRef} className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                <div
+                  ref={dropdownListRef}
+                  className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto"
+                >
                   {allSundays.map((sunday) => {
                     const isSelected =
                       sunday.toDateString() === selectedDate.toDateString();
@@ -142,7 +150,9 @@ export const DateSelectionPage = ({
                           setIsOpen(false);
                         }}
                         className={`w-full px-4 py-3 text-left hover:bg-emerald-50 transition-all flex items-center justify-between border-b border-gray-100 last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
-                          isSelected ? "bg-gradient-to-r from-emerald-100 to-emerald-50" : ""
+                          isSelected
+                            ? "bg-gradient-to-r from-emerald-100 to-emerald-50"
+                            : ""
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -151,7 +161,9 @@ export const DateSelectionPage = ({
                           />
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className={`font-bold text-sm ${isSelected ? "text-emerald-900" : "text-gray-800"}`}>
+                              <span
+                                className={`font-bold text-sm ${isSelected ? "text-emerald-900" : "text-gray-800"}`}
+                              >
                                 {formatDate(sunday)}
                               </span>
                               {dateLabel && (
@@ -160,7 +172,9 @@ export const DateSelectionPage = ({
                                 </span>
                               )}
                             </div>
-                            <span className={`text-xs ${isSelected ? "text-emerald-700 font-medium" : "text-gray-600"}`}>
+                            <span
+                              className={`text-xs ${isSelected ? "text-emerald-700 font-medium" : "text-gray-600"}`}
+                            >
                               {getLessonName(sunday, lessonNames)}
                             </span>
                           </div>
@@ -206,7 +220,7 @@ export const DateSelectionPage = ({
               Voltar
             </button>
             <button
-              onClick={() => onDateSelected(selectedDate)}
+              onClick={() => setShowMethodDialog(true)}
               className="flex-1 px-5 py-3 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white rounded-xl font-bold text-base hover:shadow-xl hover:from-emerald-700 hover:to-teal-700 active:scale-95 transition-all flex items-center justify-center shadow-lg"
             >
               Continuar
@@ -215,6 +229,71 @@ export const DateSelectionPage = ({
           </div>
         </div>
       </div>
+
+      {/* Method Selection Dialog */}
+      {showMethodDialog && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Escolher Método
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Como preferes registar as presenças?
+            </p>
+
+            <div className="space-y-3">
+              {/* Search Method */}
+              <button
+                onClick={() => onDateSelected(selectedDate, "search")}
+                className="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-400 hover:shadow-lg transition-all text-left group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="bg-blue-500 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                    <Search className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 text-lg mb-1">
+                      Procurar por Nome
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Procura e seleciona cada aluno presente. Ideal para
+                      registar pela ordem em que estão sentados.
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Swipe Method */}
+              <button
+                onClick={() => onDateSelected(selectedDate, "swipe")}
+                className="w-full p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl hover:from-emerald-100 hover:to-teal-100 hover:border-emerald-400 hover:shadow-lg transition-all text-left group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="bg-emerald-500 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                    <Hand className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 text-lg mb-1">
+                      Método Tradicional
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Percorre todos por ordem alfabética e desliza para marcar
+                      presente ou falta.
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowMethodDialog(false)}
+              className="w-full mt-4 px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

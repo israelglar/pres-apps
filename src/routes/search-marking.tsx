@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AttendanceMarkingPage } from '../pages/AttendanceMarkingPage'
+import { SearchAttendanceMarkingPage } from '../pages/SearchAttendanceMarkingPage'
 
 type MarkingSearch = {
   date: string
@@ -12,19 +12,21 @@ interface AttendanceRecord {
   timestamp: Date;
 }
 
-export const Route = createFileRoute('/marking')({
+export const Route = createFileRoute('/search-marking')({
   validateSearch: (search: Record<string, unknown>): MarkingSearch => {
     return {
       date: (search.date as string) || new Date().toISOString(),
     }
   },
-  component: MarkingRoute,
+  component: SearchMarkingRoute,
 })
 
-function MarkingRoute() {
+function SearchMarkingRoute() {
   const navigate = useNavigate()
   const { date } = Route.useSearch()
   const { students, lessonNames, handleComplete } = Route.useRouteContext()
+
+  const selectedDate = new Date(date)
 
   const onComplete = async (records: AttendanceRecord[]) => {
     await handleComplete(records, date)
@@ -35,14 +37,10 @@ function MarkingRoute() {
     navigate({ to: '/date-selection' })
   }
 
-  // Convert students to have string IDs and parse date string to Date
-  const studentsWithStringIds = students.map(s => ({ ...s, id: String(s.id) }))
-  const selectedDate = new Date(date)
-
   return (
-    <AttendanceMarkingPage
-      students={studentsWithStringIds}
-      selectedDate={selectedDate}
+    <SearchAttendanceMarkingPage
+      students={students.map(s => ({ id: String(s.id), name: s.name }))}
+      date={selectedDate}
       lessonNames={lessonNames}
       onComplete={onComplete}
       onCancel={onCancel}

@@ -26,6 +26,7 @@ interface AttendanceMarkingPageProps {
   selectedDate: Date;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
+  onCancel?: () => void;
 }
 
 export const AttendanceMarkingPage = ({
@@ -33,6 +34,7 @@ export const AttendanceMarkingPage = ({
   selectedDate,
   lessonNames,
   onComplete,
+  onCancel,
 }: AttendanceMarkingPageProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [attendanceRecords, setAttendanceRecords] = useState<
@@ -245,11 +247,10 @@ export const AttendanceMarkingPage = ({
   return (
     <div className="h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col md:flex-row overflow-hidden">
       <div className="w-full md:w-80 bg-gradient-to-b from-white to-gray-50 shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen">
-        <div className="sticky top-0 bg-gradient-to-br from-emerald-50 to-teal-50 border-b-2 border-emerald-200 p-3 z-10 flex-shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-gray-800 text-base">Histórico</h3>
-            <div className="px-2.5 py-0.5 bg-white/80 backdrop-blur-sm rounded-full border border-emerald-200">
-              <span className="text-sm font-bold text-emerald-700">
+        <div className="sticky top-0 bg-gradient-to-br from-emerald-50 to-teal-50 border-b-2 border-emerald-200 px-3 py-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full border border-emerald-200 flex-shrink-0">
+              <span className="text-xs font-bold text-emerald-700">
                 {completedCount}
               </span>
               <span className="text-xs text-gray-500">
@@ -257,12 +258,20 @@ export const AttendanceMarkingPage = ({
                 / {students.length}
               </span>
             </div>
-          </div>
-          <div className="w-full bg-gray-200/70 rounded-full h-2 overflow-hidden shadow-inner">
-            <div
-              className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-full transition-all duration-300 shadow-sm"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="flex-1 bg-gray-200/70 rounded-full h-2 overflow-hidden shadow-inner">
+              <div
+                className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-full transition-all duration-300 shadow-sm"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            {onCancel && (
+              <button
+                onClick={onCancel}
+                className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 font-medium hover:bg-white/50 rounded-lg transition-all flex-shrink-0"
+              >
+                Cancelar
+              </button>
+            )}
           </div>
         </div>
 

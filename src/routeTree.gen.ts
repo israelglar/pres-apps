@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchMarkingRouteImport } from './routes/search-marking'
 import { Route as MarkingRouteImport } from './routes/marking'
 import { Route as DateSelectionRouteImport } from './routes/date-selection'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SearchMarkingRoute = SearchMarkingRouteImport.update({
+  id: '/search-marking',
+  path: '/search-marking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarkingRoute = MarkingRouteImport.update({
   id: '/marking',
   path: '/marking',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
   '/marking': typeof MarkingRoute
+  '/search-marking': typeof SearchMarkingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
   '/marking': typeof MarkingRoute
+  '/search-marking': typeof SearchMarkingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
   '/marking': typeof MarkingRoute
+  '/search-marking': typeof SearchMarkingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/date-selection' | '/marking'
+  fullPaths: '/' | '/date-selection' | '/marking' | '/search-marking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/date-selection' | '/marking'
-  id: '__root__' | '/' | '/date-selection' | '/marking'
+  to: '/' | '/date-selection' | '/marking' | '/search-marking'
+  id: '__root__' | '/' | '/date-selection' | '/marking' | '/search-marking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DateSelectionRoute: typeof DateSelectionRoute
   MarkingRoute: typeof MarkingRoute
+  SearchMarkingRoute: typeof SearchMarkingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search-marking': {
+      id: '/search-marking'
+      path: '/search-marking'
+      fullPath: '/search-marking'
+      preLoaderRoute: typeof SearchMarkingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marking': {
       id: '/marking'
       path: '/marking'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DateSelectionRoute: DateSelectionRoute,
   MarkingRoute: MarkingRoute,
+  SearchMarkingRoute: SearchMarkingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

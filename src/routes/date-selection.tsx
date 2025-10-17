@@ -9,8 +9,12 @@ function DateSelectionRoute() {
   const navigate = useNavigate()
   const { allSundays, lessonNames } = Route.useRouteContext()
 
-  const handleDateSelected = (date: Date) => {
-    navigate({ to: '/marking', search: { date: date.toISOString() } })
+  const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe") => {
+    if (method === "search") {
+      navigate({ to: '/search-marking', search: { date: date.toISOString() } })
+    } else {
+      navigate({ to: '/marking', search: { date: date.toISOString() } })
+    }
   }
 
   const handleBack = () => {
