@@ -9,6 +9,8 @@ import { useState } from "react";
 
 interface HomePageProps {
   onStart: () => void;
+  onNavigate: () => void;
+  canNavigate: boolean;
   onRefresh: () => Promise<void>;
   isRefreshing: boolean;
   isDataReady: boolean;
@@ -21,6 +23,8 @@ interface HomePageProps {
 
 export const HomePage = ({
   onStart,
+  onNavigate,
+  canNavigate,
   onRefresh,
   isRefreshing,
   dataError,
@@ -29,41 +33,84 @@ export const HomePage = ({
   onCancelWaiting,
 }: HomePageProps) => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [pullDistance, setPullDistance] = useState(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isAnimatingSwipe, setIsAnimatingSwipe] = useState(false);
 
   const minPullDistance = 80; // Minimum pull distance to trigger refresh
   const maxPullDistance = 120; // Maximum visual pull distance
+  const minSwipeDistance = 50; // Minimum swipe distance to trigger navigation
 
   const handleStartClick = () => {
     onStart();
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Only allow pull-to-refresh if at the top of the page
-    if (window.scrollY === 0) {
-      setTouchStart(e.touches[0].clientY);
-    }
+    // Don't allow new gestures while animating
+    if (isAnimatingSwipe) return;
+
+    // Store both X and Y coordinates
+    setTouchStart(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+    setSwipeOffset(0);
+    setPullDistance(0);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStart === null || isRefreshing) return;
+    if (touchStart === null || touchStartY === null || isRefreshing || isAnimatingSwipe) return;
 
-    const currentTouch = e.touches[0].clientY;
-    const distance = currentTouch - touchStart;
+    const currentTouchX = e.touches[0].clientX;
+    const currentTouchY = e.touches[0].clientY;
+    const distanceX = currentTouchX - touchStart;
+    const distanceY = currentTouchY - touchStartY;
 
-    // Only show pull indicator if pulling down
-    if (distance > 0) {
-      setPullDistance(Math.min(distance, maxPullDistance));
+    // Determine if gesture is more horizontal or vertical
+    const isHorizontal = Math.abs(distanceX) > Math.abs(distanceY);
+
+    if (isHorizontal) {
+      // Horizontal swipe - only allow left swipe
+      if (distanceX < 0) {
+        setSwipeOffset(Math.max(-150, distanceX));
+      }
+    } else if (window.scrollY === 0 && distanceY > 0) {
+      // Vertical pull - only show pull indicator if pulling down and at top
+      setPullDistance(Math.min(distanceY, maxPullDistance));
     }
   };
 
   const handleTouchEnd = async () => {
-    if (pullDistance >= minPullDistance && !isRefreshing) {
+    if (touchStart === null || touchStartY === null) return;
+
+    const currentSwipeOffset = swipeOffset;
+    const currentPullDistance = pullDistance;
+
+    // Check for swipe left gesture
+    if (Math.abs(currentSwipeOffset) > minSwipeDistance && canNavigate) {
+      // Trigger swipe animation - slide fully off screen quickly
+      setIsAnimatingSwipe(true);
+      setSwipeOffset(-window.innerWidth);
+
+      // Navigate almost immediately to create seamless transition
+      setTimeout(() => {
+        onNavigate();
+      }, 50); // Very short delay to start the animation
+
+      // Don't reset states - let the page unmount with the animation in progress
+      setTouchStart(null);
+      setTouchStartY(null);
+      return;
+    }
+    // Check for pull-to-refresh
+    else if (currentPullDistance >= minPullDistance && !isRefreshing) {
       await onRefresh();
     }
 
+    // Reset states only if not navigating
     setTouchStart(null);
+    setTouchStartY(null);
     setPullDistance(0);
+    setSwipeOffset(0);
   };
 
   return (
@@ -96,7 +143,15 @@ export const HomePage = ({
         </div>
       )}
 
-      <div className="max-w-md w-full">
+      <div
+        className="max-w-md w-full"
+        style={{
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isAnimatingSwipe
+            ? "transform 250ms cubic-bezier(0.4, 0.0, 0.2, 1)"
+            : "none",
+        }}
+      >
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">
             Pré-adolescentes
@@ -105,8 +160,20 @@ export const HomePage = ({
 
         <button
           onClick={handleStartClick}
-          className="w-full bg-white text-emerald-600 rounded-2xl shadow-2xl p-12 hover:scale-105 active:scale-95 transition-transform duration-200 group"
+          className="w-full bg-white text-emerald-600 rounded-2xl shadow-2xl p-12 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden"
         >
+          {/* Swipe indicator */}
+          {swipeOffset < 0 && !isAnimatingSwipe && (
+            <div
+              className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{
+                opacity: Math.min(Math.abs(swipeOffset) / minSwipeDistance, 1),
+              }}
+            >
+              <ArrowRight className="w-8 h-8 text-emerald-600" />
+            </div>
+          )}
+
           <Calendar className="w-24 h-24 mx-auto mb-6 text-emerald-600" />
           <h2 className="text-3xl font-bold mb-2">Registar Presenças</h2>
           <p className="text-gray-600 text-lg">
@@ -117,6 +184,11 @@ export const HomePage = ({
             <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform" />
           </div>
         </button>
+
+        {/* Swipe hint text */}
+        <p className="text-white/70 text-center mt-4 text-sm">
+          Deslize para a esquerda para começar
+        </p>
       </div>
 
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}

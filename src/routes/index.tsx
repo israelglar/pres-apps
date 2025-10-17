@@ -31,6 +31,8 @@ function HomeRoute() {
   return (
     <HomePage
       onStart={handleStart}
+      onNavigate={() => navigate({ to: '/date-selection' })}
+      canNavigate={isDataReady}
       onRefresh={handleRefresh}
       isRefreshing={isRefreshing}
       isDataReady={isDataReady}
