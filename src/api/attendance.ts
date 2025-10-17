@@ -28,6 +28,7 @@ export async function getAttendance(): Promise<{
   lessonNames: Record<string, string>;
   students: Array<{ name: string; id: number }>;
 }> {
+  console.log("Fetching attendance data from API...");
   try {
     const response = await fetchWithTimeout(API_URL);
 
@@ -39,7 +40,6 @@ export async function getAttendance(): Promise<{
 
     if (data.success) {
       return data;
-      console.log(data);
     } else {
       throw new Error(data.message || "Failed to fetch attendance data");
     }
@@ -55,6 +55,8 @@ export async function getAttendance(): Promise<{
     throw new Error(
       error.message || "Failed to connect to server. Please try again."
     );
+  } finally {
+    console.log("Finished fetching attendance data.");
   }
 }
 

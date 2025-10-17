@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
 import { RouterProvider } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { bulkUpdateAttendance, getAttendance } from "./api/attendance";
-import { ErrorDisplay } from "./components/ErrorDisplay";
-import { LoadingSpinner } from "./components/LoadingSpinner";
 import { SavingOverlay } from "./components/SavingOverlay";
-import { getCachedData, setCachedData } from "./utils/cache";
 import { router } from "./router";
+import { getCachedData, setCachedData } from "./utils/cache";
 
 interface AttendanceData {
   success: boolean;
@@ -16,15 +14,26 @@ interface AttendanceData {
 
 export default function App() {
   const [data, setData] = useState<AttendanceData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isDataReady, setIsDataReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false); // Track if we've already fetched
+  const [pendingNavigation, setPendingNavigation] = useState(false); // Track if user clicked before data ready
+  const [forceUpdate, setForceUpdate] = useState(0); // Force re-render when pendingNavigation changes
 
-  const fetchData = async (forceRefresh = false) => {
-    setLoading(true);
+  const fetchData = useCallback(async (forceRefresh = false) => {
+    // Prevent double fetch on React StrictMode remount
+    if (hasFetched && !forceRefresh) {
+      return;
+    }
+
+    setHasFetched(true);
+    setIsLoading(true);
     setError(null);
+
     try {
       // Skip cache if force refresh
       if (!forceRefresh) {
@@ -32,7 +41,8 @@ export default function App() {
         const cachedData = getCachedData();
         if (cachedData) {
           setData(cachedData);
-          setLoading(false);
+          setIsDataReady(true);
+          setIsLoading(false);
           return;
         }
       }
@@ -40,21 +50,24 @@ export default function App() {
       // If no cache or force refresh, fetch from API
       const result = await getAttendance();
       setData(result);
+      setIsDataReady(true);
 
       // Cache the fetched data
       setCachedData(result);
     } catch (err: any) {
       setError(err.message || "Failed to load data");
+      setIsDataReady(false);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  };
+  }, [hasFetched]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       const result = await getAttendance();
       setData(result);
+      setIsDataReady(true);
       setCachedData(result);
     } catch (err: any) {
       // Silently fail on refresh - don't show error, just stop refreshing
@@ -62,10 +75,12 @@ export default function App() {
     } finally {
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
+    // Start loading data in background only once
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const allSundays = useMemo(() => {
@@ -84,7 +99,7 @@ export default function App() {
       : [];
   }, [data]);
 
-  const handleComplete = async (records: any[], selectedDate: string) => {
+  const handleComplete = useCallback(async (records: any[], selectedDate: string) => {
     setSaving(true);
     setSaveError(null);
 
@@ -106,15 +121,45 @@ export default function App() {
     } finally {
       setSaving(false);
     }
-  };
+  }, []);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  const retryLoadData = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
 
-  if (error) {
-    return <ErrorDisplay message={error} onRetry={fetchData} />;
-  }
+  const requestNavigation = useCallback(() => {
+    setPendingNavigation(true);
+    // Force router to re-render immediately to show overlay
+    setForceUpdate(prev => prev + 1);
+  }, []);
+
+  const cancelNavigation = useCallback(() => {
+    setPendingNavigation(false);
+  }, []);
+
+  // Memoize the context to prevent unnecessary re-renders
+  // Note: pendingNavigation is NOT in dependencies - we update it without recreating context
+  const routerContext = useMemo(() => {
+    return {
+      allSundays,
+      lessonNames,
+      students,
+      handleComplete,
+      handleRefresh,
+      isRefreshing: refreshing,
+      isDataReady,
+      isLoading,
+      dataError: error,
+      retryLoadData,
+      pendingNavigation,
+      requestNavigation,
+      cancelNavigation,
+    };
+  }, [allSundays, lessonNames, students, handleComplete, handleRefresh, refreshing, isDataReady, isLoading, error, retryLoadData, pendingNavigation, requestNavigation, cancelNavigation]);
+
+  // Force key to change when data state changes OR when forceUpdate changes
+  // forceUpdate changes when pendingNavigation is set, ensuring immediate re-render with overlay
+  const routerKey = `router-${isDataReady}-${isLoading}-${forceUpdate}`;
 
   return (
     <>
@@ -130,15 +175,9 @@ export default function App() {
       )}
 
       <RouterProvider
+        key={routerKey}
         router={router}
-        context={{
-          allSundays,
-          lessonNames,
-          students,
-          handleComplete,
-          handleRefresh,
-          isRefreshing: refreshing,
-        }}
+        context={routerContext}
       />
     </>
   );
