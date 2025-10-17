@@ -202,9 +202,9 @@ export const SearchAttendanceMarkingPage: React.FC<
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 sticky top-0 z-10">
+      <div className="bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex-shrink-0 z-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -310,7 +310,7 @@ export const SearchAttendanceMarkingPage: React.FC<
       </div>
 
       {/* Complete Button */}
-      <div className="bg-gradient-to-b from-white to-gray-50 border-t-2 border-emerald-200 p-4 sticky bottom-0 shadow-lg">
+      <div className="bg-gradient-to-b from-white to-gray-50 border-t-2 border-emerald-200 p-4 flex-shrink-0 shadow-lg">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={handleComplete}
