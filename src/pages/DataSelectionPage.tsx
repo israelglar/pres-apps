@@ -7,8 +7,9 @@ import {
   ExternalLink,
   Hand,
   Search,
+  Eye,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   formatDate,
   getClosestSunday,
@@ -26,10 +27,28 @@ export const DateSelectionPage = ({
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
   const [isOpen, setIsOpen] = useState(false);
   const [showMethodDialog, setShowMethodDialog] = useState(false);
+  const [showFutureLessons, setShowFutureLessons] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownListRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
   const closestSunday = getClosestSunday();
+
+  // Filter sundays based on showFutureLessons
+  const filteredSundays = useMemo(() => {
+    if (showFutureLessons) {
+      return allSundays;
+    }
+
+    // Only show current and past sundays
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return allSundays.filter((sunday) => {
+      const sundayDate = new Date(sunday);
+      sundayDate.setHours(0, 0, 0, 0);
+      return sundayDate <= today;
+    });
+  }, [allSundays, showFutureLessons]);
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -138,7 +157,7 @@ export const DateSelectionPage = ({
                   ref={dropdownListRef}
                   className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto"
                 >
-                  {allSundays.map((sunday) => {
+                  {filteredSundays.map((sunday) => {
                     const isSelected =
                       sunday.toDateString() === selectedDate.toDateString();
                     const dateLabel = getDateLabel(sunday);
@@ -190,6 +209,20 @@ export const DateSelectionPage = ({
                       </button>
                     );
                   })}
+
+                  {/* Show Future Lessons Toggle */}
+                  {!showFutureLessons && (
+                    <button
+                      type="button"
+                      onClick={() => setShowFutureLessons(true)}
+                      className="w-full px-4 py-3 text-left border-t-2 border-emerald-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all flex items-center justify-center gap-2 last:rounded-b-xl"
+                    >
+                      <Eye className="w-4 h-4 text-blue-600" />
+                      <span className="font-bold text-sm text-blue-700">
+                        Ver Lições Futuras
+                      </span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
