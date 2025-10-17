@@ -9,6 +9,7 @@ interface AttendanceData {
   success: boolean;
   dates: string[];
   lessonNames: Record<string, string>;
+  lessonLinks: Record<string, string>;
   students: Array<{ name: string }>;
 }
 
@@ -91,6 +92,10 @@ export default function App() {
     return data ? data.lessonNames : {};
   }, [data]);
 
+  const lessonLinks = useMemo(() => {
+    return data ? data.lessonLinks : {};
+  }, [data]);
+
   const students = useMemo(() => {
     return data
       ? data.students
@@ -143,6 +148,7 @@ export default function App() {
     return {
       allSundays,
       lessonNames,
+      lessonLinks,
       students,
       handleComplete,
       handleRefresh,
@@ -155,7 +161,7 @@ export default function App() {
       requestNavigation,
       cancelNavigation,
     };
-  }, [allSundays, lessonNames, students, handleComplete, handleRefresh, refreshing, isDataReady, isLoading, error, retryLoadData, pendingNavigation, requestNavigation, cancelNavigation]);
+  }, [allSundays, lessonNames, lessonLinks, students, handleComplete, handleRefresh, refreshing, isDataReady, isLoading, error, retryLoadData, pendingNavigation, requestNavigation, cancelNavigation]);
 
   // Force key to change when data state changes OR when forceUpdate changes
   // forceUpdate changes when pendingNavigation is set, ensuring immediate re-render with overlay

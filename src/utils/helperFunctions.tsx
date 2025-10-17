@@ -63,3 +63,35 @@ export const getLessonName = (
   // Fallback to long date format if no match found
   return formatDateLong(date);
 };
+
+export const getLessonLink = (
+  date: Date,
+  lessonLinks: Record<string, string> | undefined
+) => {
+  // Return null if lessonLinks is undefined or empty
+  if (!lessonLinks) {
+    return null;
+  }
+
+  // Try exact match first
+  const exactKey = date.toISOString();
+  if (lessonLinks[exactKey]) {
+    return lessonLinks[exactKey];
+  }
+
+  // If no exact match, try matching by calendar date (ignoring time)
+  const targetDate = new Date(date);
+  targetDate.setHours(0, 0, 0, 0);
+
+  for (const [key, value] of Object.entries(lessonLinks)) {
+    const lessonDate = new Date(key);
+    lessonDate.setHours(0, 0, 0, 0);
+
+    if (lessonDate.getTime() === targetDate.getTime()) {
+      return value;
+    }
+  }
+
+  // Return null if no link found
+  return null;
+};

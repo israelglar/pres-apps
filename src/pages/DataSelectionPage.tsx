@@ -4,6 +4,7 @@ import {
   Calendar,
   Check,
   ChevronDown,
+  ExternalLink,
   Hand,
   Search,
 } from "lucide-react";
@@ -11,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   formatDate,
   getClosestSunday,
+  getLessonLink,
   getLessonName,
 } from "../utils/helperFunctions";
 
@@ -19,6 +21,7 @@ export const DateSelectionPage = ({
   onBack,
   allSundays,
   lessonNames,
+  lessonLinks,
 }) => {
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
   const [isOpen, setIsOpen] = useState(false);
@@ -204,9 +207,21 @@ export const DateSelectionPage = ({
                 <p className="text-xl font-bold text-emerald-800 my-0.5">
                   {formatDate(selectedDate)}
                 </p>
-                <p className="text-teal-700 font-semibold text-sm">
-                  {getLessonName(selectedDate, lessonNames)}
-                </p>
+                {getLessonLink(selectedDate, lessonLinks) ? (
+                  <a
+                    href={getLessonLink(selectedDate, lessonLinks)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-700 font-semibold text-sm hover:text-teal-900 hover:underline flex items-center gap-1 transition-colors"
+                  >
+                    {getLessonName(selectedDate, lessonNames)}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                ) : (
+                  <p className="text-teal-700 font-semibold text-sm">
+                    {getLessonName(selectedDate, lessonNames)}
+                  </p>
+                )}
               </div>
             </div>
           </div>

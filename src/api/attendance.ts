@@ -1,6 +1,4 @@
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbyBokQ6x8RyiH5kuDpNcbjmBEqhCVmOUMpdu8LzT9fKIDofyIa49FlgZZ960kPfqW0qNQ/exec";
-
+const API_URL = "https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec"
 const TIMEOUT_MS = 10000; // 10 second timeout
 
 // Helper function to add timeout to fetch
@@ -26,6 +24,7 @@ export async function getAttendance(): Promise<{
   success: boolean;
   dates: string[];
   lessonNames: Record<string, string>;
+  lessonLinks: Record<string, string>;
   students: Array<{ name: string; id: number }>;
 }> {
   console.log("Fetching attendance data from API...");

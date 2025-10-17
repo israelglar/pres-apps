@@ -7,7 +7,7 @@ export const Route = createFileRoute('/date-selection')({
 
 function DateSelectionRoute() {
   const navigate = useNavigate()
-  const { allSundays, lessonNames } = Route.useRouteContext()
+  const { allSundays, lessonNames, lessonLinks } = Route.useRouteContext()
 
   const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe") => {
     if (method === "search") {
@@ -27,6 +27,7 @@ function DateSelectionRoute() {
       onBack={handleBack}
       allSundays={allSundays}
       lessonNames={lessonNames}
+      lessonLinks={lessonLinks}
     />
   )
 }
