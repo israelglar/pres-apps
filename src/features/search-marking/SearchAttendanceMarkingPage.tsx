@@ -1,166 +1,28 @@
-import { useBlocker } from "@tanstack/react-router";
-import Fuse from "fuse.js";
 import { CheckCircle, Search } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  initHaptics,
-  selectionTap,
-  successVibration,
-} from "../../utils/haptics";
+import React from "react";
 import { formatDate, getLessonName } from "../../utils/helperFunctions";
-
-interface Student {
-  id: string;
-  name: string;
-}
-
-interface AttendanceRecord {
-  studentId: string;
-  studentName: string;
-  status: "P" | "F";
-  timestamp: Date;
-}
-
-interface SearchAttendanceMarkingPageProps {
-  students: Student[];
-  date: Date;
-  lessonNames: Record<string, string>;
-  onComplete: (records: AttendanceRecord[]) => void;
-  onCancel: () => void;
-}
+import { useSearchAttendanceMarkingLogic } from "./SearchAttendanceMarkingPage.logic";
+import type { SearchAttendanceMarkingPageProps } from "./SearchAttendanceMarkingPage.logic";
 
 export const SearchAttendanceMarkingPage: React.FC<
   SearchAttendanceMarkingPageProps
 > = ({ students, date, lessonNames, onComplete, onCancel }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [attendanceRecords, setAttendanceRecords] = useState<
-    Record<string, AttendanceRecord>
-  >({});
-  const [isComplete, setIsComplete] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Use TanStack Router's navigation blocker with custom UI
-  const hasUnsavedData =
-    Object.keys(attendanceRecords).length > 0 && !isComplete;
-  const { proceed, reset, status } = useBlocker({
-    shouldBlockFn: () => hasUnsavedData,
-    withResolver: true,
-  });
-
-  // Initialize haptics on component mount
-  useEffect(() => {
-    initHaptics();
-  }, []);
-
-  // Separate students into marked and unmarked, with marked at the bottom
-  const { unmarkedStudents, markedStudents } = useMemo(() => {
-    const unmarked: Student[] = [];
-    const marked: Student[] = [];
-
-    students.forEach((student) => {
-      if (attendanceRecords[student.id]) {
-        marked.push(student);
-      } else {
-        unmarked.push(student);
-      }
-    });
-
-    return { unmarkedStudents: unmarked, markedStudents: marked };
-  }, [students, attendanceRecords]);
-
-  // Setup Fuse.js for fuzzy search on unmarked students
-  const fuse = useMemo(() => {
-    return new Fuse(unmarkedStudents, {
-      keys: ["name"],
-      threshold: 0.3, // 0 = perfect match, 1 = match anything
-      includeScore: true,
-    });
-  }, [unmarkedStudents]);
-
-  // Filter students based on search query
-  const displayedStudents = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return [...unmarkedStudents, ...markedStudents];
-    }
-
-    // Search only among unmarked students
-    const searchResults = fuse.search(searchQuery);
-    const filteredUnmarked = searchResults.map((result) => result.item);
-
-    return [...filteredUnmarked, ...markedStudents];
-  }, [searchQuery, unmarkedStudents, markedStudents, fuse]);
-
-  // Auto-focus search input on mount
-  useEffect(() => {
-    searchInputRef.current?.focus();
-  }, []);
-
-  const handleConfirmLeave = () => {
-    // Allow navigation to proceed
-    proceed?.();
-  };
-
-  const handleCancelLeave = () => {
-    // Cancel navigation and stay on page
-    reset?.();
-  };
-
-  const handleMarkPresent = (student: Student) => {
-    selectionTap();
-
-    const newRecords = {
-      ...attendanceRecords,
-      [student.id]: {
-        studentId: student.id,
-        studentName: student.name,
-        status: "P" as const,
-        timestamp: new Date(),
-      },
-    };
-
-    setAttendanceRecords(newRecords);
-    setSearchQuery(""); // Clear search after marking
-    searchInputRef.current?.focus(); // Refocus search input
-  };
-
-  const handleUnmark = (studentId: string) => {
-    selectionTap();
-    const newRecords = { ...attendanceRecords };
-    delete newRecords[studentId];
-    setAttendanceRecords(newRecords);
-  };
-
-  const handleComplete = () => {
-    successVibration();
-
-    // Mark all unmarked students as absent
-    const finalRecords: Record<string, AttendanceRecord> = {
-      ...attendanceRecords,
-    };
-
-    students.forEach((student) => {
-      if (!finalRecords[student.id]) {
-        finalRecords[student.id] = {
-          studentId: student.id,
-          studentName: student.name,
-          status: "F",
-          timestamp: new Date(),
-        };
-      }
-    });
-
-    setIsComplete(true);
-
-    // Show completion screen briefly before calling onComplete
-    setTimeout(() => {
-      onComplete(Object.values(finalRecords));
-    }, 1500);
-  };
-
-  const presentCount = Object.values(attendanceRecords).filter(
-    (r) => r.status === "P"
-  ).length;
-  const totalCount = students.length;
+  const {
+    searchQuery,
+    setSearchQuery,
+    attendanceRecords,
+    isComplete,
+    searchInputRef,
+    displayedStudents,
+    presentCount,
+    totalCount,
+    blockerStatus,
+    handleMarkPresent,
+    handleUnmark,
+    handleComplete,
+    handleConfirmLeave,
+    handleCancelLeave,
+  } = useSearchAttendanceMarkingLogic({ students, onComplete });
 
   if (isComplete) {
     const absentCount = totalCount - presentCount;
@@ -326,7 +188,7 @@ export const SearchAttendanceMarkingPage: React.FC<
       </div>
 
       {/* Custom Confirmation Dialog */}
-      {status === "blocked" && (
+      {blockerStatus === "blocked" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
             <div className="text-center mb-6">
