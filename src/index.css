@@ -1,13 +1,18 @@
 @import "tailwindcss";
 
+/* Override Tailwind's h-screen to use dvh instead of vh for mobile browsers */
+@theme {
+  --spacing-screen: 100dvh;
+}
+
 html, body {
   overflow: hidden;
-  height: 100vh;
+  height: 100dvh; /* dvh = dynamic viewport height, accounts for mobile browser bars */
   width: 100vw;
 }
 
 #root {
-  height: 100vh;
+  height: 100dvh; /* dvh = dynamic viewport height */
   width: 100vw;
   overflow: hidden;
 }
