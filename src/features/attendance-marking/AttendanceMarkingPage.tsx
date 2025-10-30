@@ -6,6 +6,7 @@ import {
 } from "../../utils/helperFunctions";
 import { useAttendanceMarkingLogic } from "./AttendanceMarkingPage.logic";
 import type { AttendanceMarkingPageProps } from "./AttendanceMarkingPage.logic";
+import { theme, buttonClasses } from "../../config/theme";
 
 export const AttendanceMarkingPage = ({
   students,
@@ -43,11 +44,11 @@ export const AttendanceMarkingPage = ({
     ).length;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center p-4">
+      <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
         <div className="max-w-md w-full text-center">
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
-            <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-emerald-600" />
+            <div className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <CheckCircle className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`} />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
               Presenças Registadas!
@@ -57,18 +58,18 @@ export const AttendanceMarkingPage = ({
             </p>
             <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-1">
+                <div className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}>
                   {presentCount}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
                   Presentes
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-red-600 mb-1">
+                <div className={`text-3xl md:text-4xl font-bold ${theme.text.error} mb-1`}>
                   {absentCount}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
                   Faltas
                 </div>
               </div>
@@ -83,22 +84,22 @@ export const AttendanceMarkingPage = ({
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col md:flex-row overflow-hidden">
-      <div className="w-full md:w-80 bg-gradient-to-b from-white to-gray-50 shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen">
-        <div className="sticky top-0 bg-gradient-to-br from-emerald-50 to-teal-50 border-b-2 border-emerald-200 px-3 py-2.5 z-10 flex-shrink-0">
+    <div className={`h-screen ${theme.gradients.background} flex flex-col md:flex-row overflow-hidden`}>
+      <div className={`w-full md:w-80 bg-gradient-to-b from-white to-${theme.colors.neutral[50]} shadow-2xl flex flex-col max-h-[40vh] md:max-h-screen`}>
+        <div className={`sticky top-0 ${theme.gradients.cardHighlight} border-b-2 ${theme.borders.primary} px-3 py-2.5 z-10 flex-shrink-0`}>
           <div className="flex items-center gap-3">
-            <div className="px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full border border-emerald-200 flex-shrink-0">
-              <span className="text-xs font-bold text-emerald-700">
+            <div className={`px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full border ${theme.borders.primary} flex-shrink-0`}>
+              <span className={`text-xs font-bold ${theme.text.primaryDark}`}>
                 {completedCount}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className={`text-xs ${theme.text.neutral}`}>
                 {" "}
                 / {students.length}
               </span>
             </div>
-            <div className="flex-1 bg-gray-200/70 rounded-full h-2 overflow-hidden shadow-inner">
+            <div className={`flex-1 ${theme.backgrounds.neutral}/70 rounded-full h-2 overflow-hidden shadow-inner`}>
               <div
-                className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-full transition-all duration-300 shadow-sm"
+                className={`${theme.gradients.progress} h-full transition-all duration-300 shadow-sm`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -129,12 +130,12 @@ export const AttendanceMarkingPage = ({
                 disabled={!isMarked}
                 className={`w-full text-left p-2.5 rounded-xl mb-2 transition-all shadow-sm ${
                   isCurrent
-                    ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-500 shadow-md"
+                    ? `bg-gradient-to-r from-blue-100 to-blue-50 border-2 ${theme.borders.secondary} shadow-md`
                     : isMarked
                       ? record.status === "P"
-                        ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-2 border-emerald-400 hover:shadow-md cursor-pointer"
-                        : "bg-gradient-to-r from-red-50 to-red-100/50 border-2 border-red-400 hover:shadow-md cursor-pointer"
-                      : "bg-white border-2 border-gray-200/60 opacity-40 cursor-not-allowed"
+                        ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} hover:shadow-md cursor-pointer`
+                        : `bg-gradient-to-r from-red-50 to-red-100/50 border-2 ${theme.borders.error} hover:shadow-md cursor-pointer`
+                      : `bg-white border-2 ${theme.borders.neutralLight}/60 opacity-40 cursor-not-allowed`
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -142,12 +143,12 @@ export const AttendanceMarkingPage = ({
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${
                         isCurrent
-                          ? "bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-300"
+                          ? `bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-300`
                           : isMarked
                             ? record.status === "P"
-                              ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
+                              ? theme.gradients.activeItem
                               : "bg-gradient-to-br from-red-500 to-red-600"
-                            : "bg-gradient-to-br from-gray-300 to-gray-400"
+                            : `bg-gradient-to-br from-${theme.colors.neutral[300]} to-${theme.colors.neutral[300]}`
                       }`}
                     >
                       <span className="text-white font-bold text-sm">
@@ -161,9 +162,9 @@ export const AttendanceMarkingPage = ({
                             ? "text-blue-900"
                             : isMarked
                               ? record.status === "P"
-                                ? "text-emerald-900"
+                                ? theme.text.primaryDarker
                                 : "text-red-900"
-                              : "text-gray-400"
+                              : `text-${theme.colors.neutral[300]}`
                         }`}
                       >
                         {student.name}
@@ -172,12 +173,12 @@ export const AttendanceMarkingPage = ({
                   </div>
                   {isMarked &&
                     (record.status === "P" ? (
-                      <div className="bg-emerald-100 rounded-full p-1">
-                        <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <div className={`${theme.backgrounds.primaryLight} rounded-full p-1`}>
+                        <CheckCircle className={`w-4 h-4 ${theme.text.primary} flex-shrink-0`} />
                       </div>
                     ) : (
-                      <div className="bg-red-100 rounded-full p-1">
-                        <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                      <div className={`${theme.backgrounds.error} rounded-full p-1`}>
+                        <XCircle className={`w-4 h-4 ${theme.text.error} flex-shrink-0`} />
                       </div>
                     ))}
                   {isCurrent && !isMarked && (
@@ -283,7 +284,7 @@ export const AttendanceMarkingPage = ({
                   : "transform 0ms",
               }}
             >
-              <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className={`w-24 h-24 ${theme.gradients.activeItem} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
                 <span className="text-4xl font-bold text-white">
                   {currentStudent.name.charAt(0)}
                 </span>
@@ -342,7 +343,7 @@ export const AttendanceMarkingPage = ({
           <div className="hidden md:grid grid-cols-2 gap-4">
             <button
               onClick={() => handleMark("F")}
-              className="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group"
+              className={`${theme.gradients.errorButton} ${theme.gradients.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group`}
             >
               <div className="text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
@@ -354,7 +355,7 @@ export const AttendanceMarkingPage = ({
 
             <button
               onClick={() => handleMark("P")}
-              className="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group"
+              className={`${theme.gradients.activeItem} hover:from-cyan-600 hover:to-cyan-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group`}
             >
               <div className="text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
@@ -398,13 +399,13 @@ export const AttendanceMarkingPage = ({
             <div className="flex gap-3">
               <button
                 onClick={handleCancelLeave}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:from-gray-200 hover:to-gray-300 hover:shadow-md active:scale-95 transition-all border-2 border-gray-300"
+                className={`flex-1 px-4 py-3 ${buttonClasses.secondary} text-sm`}
               >
                 Continuar a Marcar
               </button>
               <button
                 onClick={handleConfirmLeave}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold text-sm hover:from-red-600 hover:to-red-700 hover:shadow-lg active:scale-95 transition-all shadow-md"
+                className={`flex-1 px-4 py-3 ${buttonClasses.danger} text-sm`}
               >
                 Sair Sem Guardar
               </button>

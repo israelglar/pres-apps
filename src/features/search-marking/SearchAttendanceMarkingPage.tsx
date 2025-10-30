@@ -3,6 +3,7 @@ import React from "react";
 import { formatDate, getLessonName } from "../../utils/helperFunctions";
 import { useSearchAttendanceMarkingLogic } from "./SearchAttendanceMarkingPage.logic";
 import type { SearchAttendanceMarkingPageProps } from "./SearchAttendanceMarkingPage.logic";
+import { theme, buttonClasses, inputClasses } from "../../config/theme";
 
 export const SearchAttendanceMarkingPage: React.FC<
   SearchAttendanceMarkingPageProps
@@ -28,11 +29,11 @@ export const SearchAttendanceMarkingPage: React.FC<
     const absentCount = totalCount - presentCount;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center p-4">
+      <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
         <div className="max-w-md w-full text-center">
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
-            <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-emerald-600" />
+            <div className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <CheckCircle className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`} />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
               Presenças Registadas!
@@ -42,18 +43,18 @@ export const SearchAttendanceMarkingPage: React.FC<
             </p>
             <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-1">
+                <div className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}>
                   {presentCount}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
                   Presentes
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-red-600 mb-1">
+                <div className={`text-3xl md:text-4xl font-bold ${theme.text.error} mb-1`}>
                   {absentCount}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
                   Faltas
                 </div>
               </div>
@@ -68,9 +69,9 @@ export const SearchAttendanceMarkingPage: React.FC<
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex flex-col overflow-hidden">
+    <div className={`h-screen ${theme.gradients.background} flex flex-col overflow-hidden`}>
       {/* Header */}
-      <div className="bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex-shrink-0 z-10">
+      <div className={`bg-gradient-to-b from-white to-${theme.colors.neutral[50]} shadow-lg p-4 flex-shrink-0 z-10`}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
@@ -90,7 +91,7 @@ export const SearchAttendanceMarkingPage: React.FC<
               </button>
               <button
                 onClick={handleComplete}
-                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2"
+                className={`px-4 py-2 ${buttonClasses.primary} text-sm flex items-center gap-2`}
               >
                 <CheckCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Terminado</span>
@@ -101,14 +102,14 @@ export const SearchAttendanceMarkingPage: React.FC<
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-600 w-5 h-5" />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.primary} w-5 h-5`} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Procurar pelo nome..."
-              className="w-full pl-10 pr-4 py-3 border-2 border-emerald-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-400 focus:border-emerald-500 text-lg bg-gradient-to-r from-white to-emerald-50/30 shadow-md"
+              className={`w-full pl-10 pr-4 py-3 text-lg ${inputClasses}`}
               autoFocus
             />
           </div>
@@ -116,13 +117,13 @@ export const SearchAttendanceMarkingPage: React.FC<
           {/* Progress */}
           <div className="mt-3">
             <div className="flex items-center justify-between text-sm mb-1">
-              <span className="text-gray-700 font-bold">
+              <span className={`${theme.text.neutralDark} font-bold`}>
                 {presentCount} / {totalCount} presentes
               </span>
             </div>
-            <div className="bg-gray-200/70 rounded-full h-2 overflow-hidden shadow-inner">
+            <div className={`${theme.backgrounds.neutral}/70 rounded-full h-2 overflow-hidden shadow-inner`}>
               <div
-                className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-full transition-all duration-300 shadow-sm"
+                className={`${theme.gradients.progress} h-full transition-all duration-300 shadow-sm`}
                 style={{
                   width: `${(presentCount / totalCount) * 100}%`,
                 }}
@@ -155,13 +156,13 @@ export const SearchAttendanceMarkingPage: React.FC<
                   }}
                   className={`w-full p-4 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
                     isMarked
-                      ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-2 border-emerald-400 opacity-60 hover:shadow-md cursor-pointer"
-                      : "bg-white border-2 border-gray-200/60 hover:border-emerald-400 hover:shadow-lg active:scale-98 transition-all"
+                      ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
+                      : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     {isMarked && (
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-600">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}>
                         <span className="text-white font-bold text-sm">
                           {student.name.charAt(0)}
                         </span>
@@ -169,15 +170,15 @@ export const SearchAttendanceMarkingPage: React.FC<
                     )}
                     <span
                       className={`text-lg font-semibold ${
-                        isMarked ? "text-emerald-900" : "text-gray-800"
+                        isMarked ? theme.text.primaryDarker : theme.text.neutralDarker
                       }`}
                     >
                       {student.name}
                     </span>
                   </div>
                   {isMarked && (
-                    <div className="bg-emerald-100 rounded-full p-1">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
+                    <div className={`${theme.backgrounds.primaryLight} rounded-full p-1`}>
+                      <CheckCircle className={`w-5 h-5 ${theme.text.primary}`} />
                     </div>
                   )}
                 </button>
@@ -218,13 +219,13 @@ export const SearchAttendanceMarkingPage: React.FC<
             <div className="flex gap-3">
               <button
                 onClick={handleCancelLeave}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:from-gray-200 hover:to-gray-300 hover:shadow-md active:scale-95 transition-all border-2 border-gray-300"
+                className={`flex-1 px-4 py-3 ${buttonClasses.secondary} text-sm`}
               >
                 Continuar a Marcar
               </button>
               <button
                 onClick={handleConfirmLeave}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold text-sm hover:from-red-600 hover:to-red-700 hover:shadow-lg active:scale-95 transition-all shadow-md"
+                className={`flex-1 px-4 py-3 ${buttonClasses.danger} text-sm`}
               >
                 Sair Sem Guardar
               </button>
