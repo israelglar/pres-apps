@@ -2,8 +2,8 @@ import { useBlocker } from "@tanstack/react-router";
 import Fuse from "fuse.js";
 import { CheckCircle, Search } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { initHaptics, selectionTap, successVibration } from "../utils/haptics";
-import { formatDate, getLessonName } from "../utils/helperFunctions";
+import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
+import { formatDate, getLessonName } from "../../utils/helperFunctions";
 
 interface Student {
   id: string;

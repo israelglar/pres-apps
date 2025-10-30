@@ -1,0 +1,1 @@
+export { SearchAttendanceMarkingPage } from './SearchAttendanceMarkingPage';

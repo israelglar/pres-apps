@@ -1,4 +1,11 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec"
+import {
+  attendanceDataSchema,
+  type AttendanceData,
+  type AttendanceRecord,
+} from "../schemas/attendance.schema";
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec";
 const TIMEOUT_MS = 10000; // 10 second timeout
 
 // Helper function to add timeout to fetch
@@ -20,13 +27,7 @@ async function fetchWithTimeout(url: string, options?: RequestInit) {
 }
 
 // Get all attendance data
-export async function getAttendance(): Promise<{
-  success: boolean;
-  dates: string[];
-  lessonNames: Record<string, string>;
-  lessonLinks: Record<string, string>;
-  students: Array<{ name: string; id: number }>;
-}> {
+export async function getAttendance(): Promise<AttendanceData> {
   console.log("Fetching attendance data from API...");
   try {
     const response = await fetchWithTimeout(API_URL);
@@ -35,12 +36,16 @@ export async function getAttendance(): Promise<{
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const rawData = await response.json();
+
+    // Validate response with Zod
+    const data = attendanceDataSchema.parse(rawData);
 
     if (data.success) {
+      console.log(data);
       return data;
     } else {
-      throw new Error(data.message || "Failed to fetch attendance data");
+      throw new Error("Failed to fetch attendance data");
     }
   } catch (error) {
     if (error.name === "AbortError") {
@@ -60,9 +65,7 @@ export async function getAttendance(): Promise<{
 }
 
 // Bulk update attendance for multiple students at once
-export async function bulkUpdateAttendance(
-  _records: Array<{ name: string; date: Date; status: string }>
-) {
+export async function bulkUpdateAttendance(_records: AttendanceRecord[]) {
   try {
     // const response = await fetchWithTimeout(API_URL, {
     //   method: "POST",

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DateSelectionPage } from '../pages/DataSelectionPage'
+import { DateSelectionPage } from '../features/date-selection'
+import { useAttendanceData } from '../hooks/useAttendanceData'
 
 export const Route = createFileRoute('/date-selection')({
   component: DateSelectionRoute,
@@ -7,7 +8,7 @@ export const Route = createFileRoute('/date-selection')({
 
 function DateSelectionRoute() {
   const navigate = useNavigate()
-  const { allSundays, lessonNames, lessonLinks } = Route.useRouteContext()
+  const { allSundays, lessonNames, lessonLinks } = useAttendanceData()
 
   const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe") => {
     if (method === "search") {

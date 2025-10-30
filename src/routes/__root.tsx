@@ -1,22 +1,13 @@
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-export interface RouterContext {
-  allSundays: Date[]
-  lessonNames: Record<string, string>
-  lessonLinks: Record<string, string>
-  students: { id: number; name: string }[]
-  handleComplete: (records: any[], selectedDate: string) => Promise<void>
-  handleRefresh: () => Promise<void>
-  isRefreshing: boolean
-  isDataReady: boolean
-  isLoading: boolean
-  dataError: string | null
-  retryLoadData: () => void
-  pendingNavigation: boolean
-  requestNavigation: () => void
-  cancelNavigation: () => void
-}
-
-export const Route = createRootRouteWithContext<RouterContext>()({
+/**
+ * Root route component
+ *
+ * Note: We no longer need RouterContext since we use:
+ * - TanStack Query hooks for data fetching
+ * - Zustand stores for global state
+ * - Custom hooks for business logic
+ */
+export const Route = createRootRoute({
   component: () => <Outlet />,
 })

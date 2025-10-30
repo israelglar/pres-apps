@@ -1,12 +1,12 @@
 import { useBlocker } from "@tanstack/react-router";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { initHaptics, selectionTap, successVibration } from "../utils/haptics";
+import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
 import {
   formatDate,
   getLessonName,
   getShortName,
-} from "../utils/helperFunctions";
+} from "../../utils/helperFunctions";
 
 // Type definitions
 interface Student {

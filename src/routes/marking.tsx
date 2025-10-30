@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AttendanceMarkingPage } from '../pages/AttendanceMarkingPage'
+import { AttendanceMarkingPage } from '../features/attendance-marking'
+import { useAttendanceData, useAttendanceSubmit } from '../hooks/useAttendanceData'
 
 type MarkingSearch = {
   date: string
@@ -24,7 +25,8 @@ export const Route = createFileRoute('/marking')({
 function MarkingRoute() {
   const navigate = useNavigate()
   const { date } = Route.useSearch()
-  const { students, lessonNames, handleComplete } = Route.useRouteContext()
+  const { students, lessonNames } = useAttendanceData()
+  const { handleComplete } = useAttendanceSubmit()
 
   const onComplete = async (records: AttendanceRecord[]) => {
     await handleComplete(records, date)

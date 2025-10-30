@@ -8,111 +8,39 @@ import {
   Hand,
   Search,
   Eye,
-} from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+} from 'lucide-react';
+import { useDateSelectionLogic } from './DateSelectionPage.logic';
 import {
   formatDate,
-  getClosestSunday,
   getLessonLink,
   getLessonName,
-} from "../utils/helperFunctions";
+} from '../../utils/helperFunctions';
 
-export const DateSelectionPage = ({
+interface DateSelectionPageProps {
+  onDateSelected: (date: Date, method: 'search' | 'swipe') => void;
+  onBack: () => void;
+  allSundays: Date[];
+  lessonNames: Record<string, string>;
+  lessonLinks: Record<string, string>;
+}
+
+/**
+ * Date Selection Page - Choose a date and method for attendance marking
+ *
+ * Features:
+ * - Dropdown date picker
+ * - Filter future lessons
+ * - Method selection dialog (search vs swipe)
+ * - Lesson name and link display
+ */
+export function DateSelectionPage({
   onDateSelected,
   onBack,
   allSundays,
   lessonNames,
   lessonLinks,
-}) => {
-  const [selectedDate, setSelectedDate] = useState(getClosestSunday());
-  const [isOpen, setIsOpen] = useState(false);
-  const [showMethodDialog, setShowMethodDialog] = useState(false);
-  const [showFutureLessons, setShowFutureLessons] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const dropdownListRef = useRef<HTMLDivElement>(null);
-  const selectedItemRef = useRef<HTMLButtonElement>(null);
-  const closestSunday = getClosestSunday();
-
-  // Filter sundays based on showFutureLessons
-  const filteredSundays = useMemo(() => {
-    if (showFutureLessons) {
-      return allSundays;
-    }
-
-    // Only show current and past sundays
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return allSundays.filter((sunday) => {
-      const sundayDate = new Date(sunday);
-      sundayDate.setHours(0, 0, 0, 0);
-      return sundayDate <= today;
-    });
-  }, [allSundays, showFutureLessons]);
-
-  const isToday = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
-    return checkDate.getTime() === today.getTime();
-  };
-
-  const isPreviousSunday = (date: Date) => {
-    return (
-      date.toDateString() === closestSunday.toDateString() && !isToday(date)
-    );
-  };
-
-  const getDateLabel = (date: Date) => {
-    if (isToday(date)) {
-      return "Hoje";
-    } else if (isPreviousSunday(date)) {
-      return "Domingo Passado";
-    }
-    return null;
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
-  // Scroll to selected item when dropdown opens
-  useEffect(() => {
-    if (isOpen && selectedItemRef.current && dropdownListRef.current) {
-      // Use setTimeout to ensure the dropdown is rendered before scrolling
-      setTimeout(() => {
-        if (selectedItemRef.current && dropdownListRef.current) {
-          const listElement = dropdownListRef.current;
-          const itemElement = selectedItemRef.current;
-
-          // Calculate the position to center the selected item
-          const listHeight = listElement.clientHeight;
-          const itemTop = itemElement.offsetTop;
-          const itemHeight = itemElement.clientHeight;
-
-          // Scroll so the selected item is centered (or as centered as possible)
-          listElement.scrollTop = itemTop - listHeight / 2 + itemHeight / 2;
-        }
-      }, 10);
-    }
-  }, [isOpen]);
+}: DateSelectionPageProps) {
+  const logic = useDateSelectionLogic({ allSundays });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center p-4">
@@ -133,10 +61,10 @@ export const DateSelectionPage = ({
             </label>
 
             {/* Custom Select Dropdown */}
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={logic.dropdownRef}>
               <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => logic.setIsOpen(!logic.isOpen)}
                 className="w-full px-4 py-3 text-base border-2 border-emerald-300 rounded-xl focus:ring-4 focus:ring-emerald-400 focus:border-emerald-500 cursor-pointer bg-gradient-to-r from-white to-emerald-50/30 hover:from-emerald-50/50 hover:to-emerald-100/50 hover:border-emerald-400 transition-all shadow-md hover:shadow-lg flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
@@ -144,47 +72,47 @@ export const DateSelectionPage = ({
                     <Calendar className="w-5 h-5 text-emerald-600" />
                   </div>
                   <span className="font-bold text-gray-800 text-sm">
-                    {formatDate(selectedDate)}
+                    {formatDate(logic.selectedDate)}
                   </span>
                 </div>
                 <ChevronDown
-                  className={`w-5 h-5 text-emerald-600 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                  className={`w-5 h-5 text-emerald-600 transition-transform ${logic.isOpen ? 'rotate-180' : ''}`}
                 />
               </button>
 
-              {isOpen && (
+              {logic.isOpen && (
                 <div
-                  ref={dropdownListRef}
+                  ref={logic.dropdownListRef}
                   className="absolute z-10 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto"
                 >
-                  {filteredSundays.map((sunday) => {
+                  {logic.filteredSundays.map((sunday) => {
                     const isSelected =
-                      sunday.toDateString() === selectedDate.toDateString();
-                    const dateLabel = getDateLabel(sunday);
+                      sunday.toDateString() === logic.selectedDate.toDateString();
+                    const dateLabel = logic.getDateLabel(sunday);
 
                     return (
                       <button
                         key={sunday.toISOString()}
-                        ref={isSelected ? selectedItemRef : null}
+                        ref={isSelected ? logic.selectedItemRef : null}
                         type="button"
                         onClick={() => {
-                          setSelectedDate(sunday);
-                          setIsOpen(false);
+                          logic.setSelectedDate(sunday);
+                          logic.setIsOpen(false);
                         }}
                         className={`w-full px-4 py-3 text-left hover:bg-emerald-50 transition-all flex items-center justify-between border-b border-gray-100 last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
                           isSelected
-                            ? "bg-gradient-to-r from-emerald-100 to-emerald-50"
-                            : ""
+                            ? 'bg-gradient-to-r from-emerald-100 to-emerald-50'
+                            : ''
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-2 h-2 rounded-full transition-all ${isSelected ? "bg-emerald-600 scale-125" : "bg-gray-300"}`}
+                            className={`w-2 h-2 rounded-full transition-all ${isSelected ? 'bg-emerald-600 scale-125' : 'bg-gray-300'}`}
                           />
                           <div>
                             <div className="flex items-center gap-2">
                               <span
-                                className={`font-bold text-sm ${isSelected ? "text-emerald-900" : "text-gray-800"}`}
+                                className={`font-bold text-sm ${isSelected ? 'text-emerald-900' : 'text-gray-800'}`}
                               >
                                 {formatDate(sunday)}
                               </span>
@@ -195,7 +123,7 @@ export const DateSelectionPage = ({
                               )}
                             </div>
                             <span
-                              className={`text-xs ${isSelected ? "text-emerald-700 font-medium" : "text-gray-600"}`}
+                              className={`text-xs ${isSelected ? 'text-emerald-700 font-medium' : 'text-gray-600'}`}
                             >
                               {getLessonName(sunday, lessonNames)}
                             </span>
@@ -211,10 +139,10 @@ export const DateSelectionPage = ({
                   })}
 
                   {/* Show Future Lessons Toggle */}
-                  {!showFutureLessons && (
+                  {!logic.showFutureLessons && (
                     <button
                       type="button"
-                      onClick={() => setShowFutureLessons(true)}
+                      onClick={() => logic.setShowFutureLessons(true)}
                       className="w-full px-4 py-3 text-left border-t-2 border-emerald-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all flex items-center justify-center gap-2 last:rounded-b-xl"
                     >
                       <Eye className="w-4 h-4 text-blue-600" />
@@ -238,21 +166,21 @@ export const DateSelectionPage = ({
                   Data Selecionada
                 </p>
                 <p className="text-xl font-bold text-emerald-800 my-0.5">
-                  {formatDate(selectedDate)}
+                  {formatDate(logic.selectedDate)}
                 </p>
-                {getLessonLink(selectedDate, lessonLinks) ? (
+                {getLessonLink(logic.selectedDate, lessonLinks) ? (
                   <a
-                    href={getLessonLink(selectedDate, lessonLinks)!}
+                    href={getLessonLink(logic.selectedDate, lessonLinks)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-teal-700 font-semibold text-sm hover:text-teal-900 hover:underline flex items-center gap-1 transition-colors"
                   >
-                    {getLessonName(selectedDate, lessonNames)}
+                    {getLessonName(logic.selectedDate, lessonNames)}
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 ) : (
                   <p className="text-teal-700 font-semibold text-sm">
-                    {getLessonName(selectedDate, lessonNames)}
+                    {getLessonName(logic.selectedDate, lessonNames)}
                   </p>
                 )}
               </div>
@@ -268,7 +196,7 @@ export const DateSelectionPage = ({
               Voltar
             </button>
             <button
-              onClick={() => setShowMethodDialog(true)}
+              onClick={() => logic.setShowMethodDialog(true)}
               className="flex-1 px-5 py-3 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white rounded-xl font-bold text-base hover:shadow-xl hover:from-emerald-700 hover:to-teal-700 active:scale-95 transition-all flex items-center justify-center shadow-lg"
             >
               Continuar
@@ -279,7 +207,7 @@ export const DateSelectionPage = ({
       </div>
 
       {/* Method Selection Dialog */}
-      {showMethodDialog && (
+      {logic.showMethodDialog && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -292,7 +220,7 @@ export const DateSelectionPage = ({
             <div className="space-y-3">
               {/* Search Method */}
               <button
-                onClick={() => onDateSelected(selectedDate, "search")}
+                onClick={() => onDateSelected(logic.selectedDate, 'search')}
                 className="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-400 hover:shadow-lg transition-all text-left group"
               >
                 <div className="flex items-start gap-3">
@@ -313,7 +241,7 @@ export const DateSelectionPage = ({
 
               {/* Swipe Method */}
               <button
-                onClick={() => onDateSelected(selectedDate, "swipe")}
+                onClick={() => onDateSelected(logic.selectedDate, 'swipe')}
                 className="w-full p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl hover:from-emerald-100 hover:to-teal-100 hover:border-emerald-400 hover:shadow-lg transition-all text-left group"
               >
                 <div className="flex items-start gap-3">
@@ -334,7 +262,7 @@ export const DateSelectionPage = ({
             </div>
 
             <button
-              onClick={() => setShowMethodDialog(false)}
+              onClick={() => logic.setShowMethodDialog(false)}
               className="w-full mt-4 px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
             >
               Cancelar
@@ -344,4 +272,4 @@ export const DateSelectionPage = ({
       )}
     </div>
   );
-};
+}
