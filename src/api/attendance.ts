@@ -65,27 +65,27 @@ export async function getAttendance(): Promise<AttendanceData> {
 }
 
 // Bulk update attendance for multiple students at once
-export async function bulkUpdateAttendance(_records: AttendanceRecord[]) {
+export async function bulkUpdateAttendance(records: AttendanceRecord[]) {
   try {
-    // const response = await fetchWithTimeout(API_URL, {
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     action: "bulkUpdateAttendance",
-    //     records: records.map((r) => ({
-    //       name: r.name,
-    //       date: r.date.toISOString(),
-    //       status: r.status,
-    //     })),
-    //   }),
-    // });
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-    // const data = await response.json();
-    // if (!data.success) {
-    //   throw new Error(data.message || "Failed to update attendance");
-    // }
-    // return data;
+    const response = await fetchWithTimeout(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "bulkUpdateAttendance",
+        records: records.map((r) => ({
+          name: r.name,
+          date: r.date.toISOString(),
+          status: r.status,
+        })),
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || "Failed to update attendance");
+    }
+    return data;
   } catch (error) {
     if (error.name === "AbortError") {
       throw new Error(
