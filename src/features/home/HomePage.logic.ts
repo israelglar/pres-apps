@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAttendanceData } from '../../hooks/useAttendanceData';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useSwipeGesture } from '../../hooks/useSwipeGesture';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 export interface UseHomePageLogicProps {
   onNavigate: () => void;
@@ -19,6 +20,8 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     refetch,
     isRefreshing: isRefetchingData,
   } = useAttendanceData();
+
+  const { canInstall, promptInstall, isInstalled } = usePWAInstall();
 
   const [waitingForData, setWaitingForData] = useState(false);
 
@@ -97,6 +100,11 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     pullDistance: pullToRefresh.pullDistance,
     swipeOffset: swipeGesture.swipeOffset,
     isAnimatingSwipe: swipeGesture.isAnimating,
+
+    // PWA Install
+    canInstall,
+    promptInstall,
+    isInstalled,
 
     // Handlers
     handleStartClick,

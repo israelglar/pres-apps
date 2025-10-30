@@ -4,6 +4,8 @@ import {
   Calendar,
   Loader2,
   RefreshCw,
+  Download,
+  CheckCircle2,
 } from 'lucide-react';
 import { useHomePageLogic } from './HomePage.logic';
 
@@ -99,6 +101,27 @@ export function HomePage({ onNavigate }: HomePageProps) {
         <p className="text-white/70 text-center mt-4 text-sm">
           Deslize para a esquerda para começar
         </p>
+
+        {/* PWA Install Button */}
+        {logic.canInstall && (
+          <div className="mt-6">
+            <button
+              onClick={logic.promptInstall}
+              className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl shadow-lg px-6 py-4 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30"
+            >
+              <Download className="w-5 h-5" />
+              <span className="font-semibold">Instalar Aplicação</span>
+            </button>
+          </div>
+        )}
+
+        {/* PWA Installed Message */}
+        {logic.isInstalled && (
+          <div className="mt-6 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center justify-center gap-3 border border-white/30">
+            <CheckCircle2 className="w-5 h-5 text-white" />
+            <span className="text-white font-semibold">Aplicação Instalada</span>
+          </div>
+        )}
       </div>
 
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}
