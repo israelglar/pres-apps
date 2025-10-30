@@ -218,11 +218,15 @@ export function DateSelectionPage({
             </p>
 
             <div className="space-y-3">
-              {/* Search Method */}
+              {/* Search Method - DEFAULT */}
               <button
                 onClick={() => onDateSelected(logic.selectedDate, 'search')}
-                className="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-400 hover:shadow-lg transition-all text-left group"
+                className="w-full p-4 bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-400 rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-500 hover:shadow-lg transition-all text-left group relative shadow-md"
               >
+                {/* Recommended Badge */}
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  Recomendado
+                </div>
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-500 p-2 rounded-lg group-hover:scale-110 transition-transform">
                     <Search className="w-6 h-6 text-white" />
