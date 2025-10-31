@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 /**
@@ -15,14 +15,17 @@ interface BeforeInstallPromptEvent extends Event {
  * - isRunningInPWA: Whether the app is currently running in standalone mode
  */
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isRunningInPWA, setIsRunningInPWA] = useState(false);
 
   useEffect(() => {
     // Check if app is already running in standalone mode (PWA)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
     setIsRunningInPWA(isStandalone);
 
     if (isStandalone) {
@@ -47,12 +50,15 @@ export function usePWAInstall() {
       setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -67,10 +73,10 @@ export function usePWAInstall() {
     // Wait for the user's response
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
     } else {
-      console.log('User dismissed the install prompt');
+      console.log("User dismissed the install prompt");
     }
 
     // Clear the deferredPrompt for next time
@@ -80,12 +86,19 @@ export function usePWAInstall() {
 
   // Function to open the PWA app from browser
   const openPWAApp = useCallback(() => {
-    // Get the current origin (e.g., https://yourdomain.com)
+    // Check if we're on Android and can use the TWA/intent approach
+    const isAndroid = /Android/i.test(navigator.userAgent);
     const appUrl = window.location.origin;
 
-    // Try to open the PWA app
-    // This will work if the app is installed and registered
-    window.location.href = appUrl;
+    if (isAndroid) {
+      // Try Android intent to open the installed PWA
+      const intentUrl = `intent://${window.location.host}${window.location.pathname}#Intent;scheme=https;package=com.android.chrome;end`;
+      window.location.href = intentUrl;
+    } else {
+      // For iOS and other platforms, just navigate to the app URL
+      // If the app is installed, it should open in standalone mode
+      window.location.href = appUrl;
+    }
   }, []);
 
   return {
