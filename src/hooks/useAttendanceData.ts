@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAttendance, bulkUpdateAttendance } from '../api/attendance';
-import type { AttendanceRecord, StudentWithId } from '../schemas/attendance.schema';
+import type { StudentWithId } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
 
 /**
@@ -40,7 +40,19 @@ export function useAttendanceData() {
 
   // Mutation for saving attendance
   const saveMutation = useMutation({
-    mutationFn: bulkUpdateAttendance,
+    mutationFn: ({
+      date,
+      serviceTimeId,
+      records,
+    }: {
+      date: string;
+      serviceTimeId: number;
+      records: Array<{
+        student_id: number;
+        status: 'present' | 'absent' | 'excused' | 'late';
+        notes?: string;
+      }>;
+    }) => bulkUpdateAttendance(date, serviceTimeId, records),
     onSuccess: () => {
       // Invalidate and refetch attendance data after successful save
       queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
@@ -63,7 +75,7 @@ export function useAttendanceData() {
   const students = useMemo<StudentWithId[]>(() => {
     return data
       ? data.students
-          .map((s, id) => ({ id, name: s.name }))
+          .map((s) => ({ id: s.id, name: s.name }))
           .sort((a, b) => a.name.localeCompare(b.name))
       : [];
   }, [data]);
@@ -102,17 +114,23 @@ export function useAttendanceSubmit() {
   const { saveAttendance, isSaving, saveError } = useAttendanceData();
 
   const handleComplete = async (
-    records: Array<{ studentName: string; status: string }>,
-    selectedDate: string
+    records: Array<{ studentId: number; status: string; notes?: string }>,
+    selectedDate: string,
+    serviceTimeId: number = 2 // Default to 11h service
   ) => {
-    // Transform records to match API format
-    const attendanceRecords: AttendanceRecord[] = records.map((record) => ({
-      name: record.studentName,
-      date: new Date(selectedDate),
-      status: record.status as any, // Cast to match the enum
+    // Transform records to match new API format
+    const attendanceRecords = records.map((record) => ({
+      student_id: record.studentId,
+      status: record.status as 'present' | 'absent' | 'excused' | 'late',
+      notes: record.notes,
     }));
 
-    await saveAttendance(attendanceRecords);
+    // Call save attendance with properly structured parameters
+    await saveAttendance({
+      date: selectedDate,
+      serviceTimeId,
+      records: attendanceRecords,
+    });
 
     // Wait a moment to show success message
     await new Promise((resolve) => setTimeout(resolve, 1500));

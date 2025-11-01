@@ -29,7 +29,12 @@ function MarkingRoute() {
   const { handleComplete } = useAttendanceSubmit()
 
   const onComplete = async (records: AttendanceRecord[]) => {
-    await handleComplete(records, date)
+    // Transform records from component format to API format
+    const apiRecords = records.map(r => ({
+      studentId: parseInt(r.studentId), // Convert string ID to number
+      status: r.status === 'P' ? 'present' : 'absent',
+    }))
+    await handleComplete(apiRecords, date)
     navigate({ to: '/' })
   }
 

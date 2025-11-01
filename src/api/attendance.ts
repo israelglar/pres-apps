@@ -1,102 +1,128 @@
+/**
+ * Attendance API
+ * Main API layer for attendance operations
+ * Now powered by Supabase instead of Google Sheets
+ */
+
 import {
   attendanceDataSchema,
   type AttendanceData,
-  type AttendanceRecord,
+  type Student,
 } from "../schemas/attendance.schema";
+import { getActiveStudents } from "./supabase/students";
+import { getAllSchedules, getScheduleDates } from "./supabase/schedules";
+import { bulkSaveAttendance as supabaseBulkSave } from "./supabase/attendance";
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec";
-const TIMEOUT_MS = 10000; // 10 second timeout
-
-// Helper function to add timeout to fetch
-async function fetchWithTimeout(url: string, options?: RequestInit) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
-}
-
-// Get all attendance data
+/**
+ * Get all attendance data
+ * This is the main function used by the frontend to load all necessary data
+ */
 export async function getAttendance(): Promise<AttendanceData> {
-  console.log("Fetching attendance data from API...");
+  console.log("Fetching attendance data from Supabase...");
   try {
-    const response = await fetchWithTimeout(API_URL);
+    // Fetch all necessary data in parallel
+    const [students, schedules, dates] = await Promise.all([
+      getActiveStudents(),
+      getAllSchedules(),
+      getScheduleDates(),
+    ]);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Transform schedules into lesson maps (date -> lesson name/link)
+    const lessonNames: Record<string, string> = {};
+    const lessonLinks: Record<string, string> = {};
 
-    const rawData = await response.json();
+    schedules.forEach((schedule) => {
+      if (schedule.lesson) {
+        lessonNames[schedule.date] = schedule.lesson.name;
+        if (schedule.lesson.resource_url) {
+          lessonLinks[schedule.date] = schedule.lesson.resource_url;
+        }
+      }
+    });
+
+    // Transform students to match expected schema
+    const transformedStudents: Student[] = students.map((s) => ({
+      id: s.id,
+      name: s.name,
+      is_visitor: s.is_visitor,
+    }));
+
+    // Build response matching the expected schema
+    const response: AttendanceData = {
+      success: true,
+      dates,
+      lessonNames,
+      lessonLinks,
+      students: transformedStudents,
+    };
 
     // Validate response with Zod
-    const data = attendanceDataSchema.parse(rawData);
+    const validatedData = attendanceDataSchema.parse(response);
 
-    if (data.success) {
-      console.log(data);
-      return data;
-    } else {
-      throw new Error("Failed to fetch attendance data");
-    }
+    console.log("✅ Attendance data fetched successfully from Supabase");
+    return validatedData;
   } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error(
-        "Request timeout. Please check your internet connection."
-      );
-    }
+    console.error("❌ Error fetching attendance data:", error);
     if (!navigator.onLine) {
       throw new Error("No internet connection. Please check your network.");
     }
     throw new Error(
-      error.message || "Failed to connect to server. Please try again."
+      error instanceof Error ? error.message : "Failed to fetch attendance data. Please try again."
     );
-  } finally {
-    console.log("Finished fetching attendance data.");
   }
 }
 
-// Bulk update attendance for multiple students at once
-export async function bulkUpdateAttendance(records: AttendanceRecord[]) {
+/**
+ * Bulk save attendance records
+ * @param date - ISO date string (YYYY-MM-DD)
+ * @param serviceTimeId - Service time ID (1 = 9h, 2 = 11h)
+ * @param records - Array of attendance records
+ */
+export async function bulkUpdateAttendance(
+  date: string,
+  serviceTimeId: number,
+  records: Array<{
+    student_id: number;
+    status: 'present' | 'absent' | 'excused' | 'late';
+    notes?: string;
+  }>
+) {
   try {
-    const response = await fetchWithTimeout(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "bulkUpdateAttendance",
-        records: records.map((r) => ({
-          name: r.name,
-          date: r.date.toISOString(),
-          status: r.status,
-        })),
-      }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    console.log(`Saving attendance for ${date}, service time ${serviceTimeId}...`);
+
+    // First, find or create the schedule for this date/service time
+    const { getAllSchedules, createSchedule } = await import('./supabase/schedules');
+    const schedules = await getAllSchedules();
+
+    let schedule = schedules.find(
+      (s) => s.date === date && s.service_time_id === serviceTimeId
+    );
+
+    // If schedule doesn't exist, create it
+    if (!schedule) {
+      console.log("Schedule not found, creating new schedule...");
+      schedule = await createSchedule({
+        date,
+        service_time_id: serviceTimeId,
+        lesson_id: null,
+        event_type: 'regular',
+        is_cancelled: false,
+        notes: null,
+      });
     }
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.message || "Failed to update attendance");
-    }
-    return data;
+
+    // Save attendance records
+    const savedRecords = await supabaseBulkSave(schedule.id, records);
+
+    console.log(`✅ Saved ${savedRecords.length} attendance records`);
+    return { success: true, count: savedRecords.length };
   } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error(
-        "Request timeout. Please check your internet connection."
-      );
-    }
+    console.error("❌ Error saving attendance:", error);
     if (!navigator.onLine) {
       throw new Error("No internet connection. Please check your network.");
     }
     throw new Error(
-      error.message || "Failed to save attendance. Please try again."
+      error instanceof Error ? error.message : "Failed to save attendance. Please try again."
     );
   }
 }
