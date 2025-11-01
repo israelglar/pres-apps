@@ -19,55 +19,17 @@ Then follow the instructions to:
 
 This creates all 7 core tables with proper indexes and Row Level Security policies.
 
-### 2. Migrate Data from Google Sheets
+### 2. Next Steps
 
-After the tables are created, run the migration script to import existing data:
-
-```bash
-npm run db:migrate
-```
-
-This will:
-- Fetch all student data from Google Sheets
-- Import all lessons with curriculum links
-- Create schedules for all lesson dates
-
-### 3. Populate Teacher Assignments (NEW!)
-
-Import teacher assignments to schedules:
-
-```bash
-npm run db:populate-assignments
-```
-
-This will:
-- Map teachers to schedules from "Transformada" sheet
-- Assign lead and supporting teachers
-- Handle multi-teacher assignments
-
-### 4. Populate Attendance Records (NEW!)
-
-Import historical attendance data:
-
-```bash
-npm run db:populate-attendance
-```
-
-This will:
-- Import attendance records from "Presenças" sheet
-- Link students to schedules with present/absent status
-- Handle 9h vs 11h service time distinctions
-
-**📖 For detailed documentation on population scripts, see [POPULATION_GUIDE.md](POPULATION_GUIDE.md)**
+After the tables are created:
+- Use the app to start marking attendance
+- Data will be stored directly in Supabase
+- Check the Supabase Table Editor to verify saved data
 
 ## Files
 
 - **`schema.sql`** - Complete database schema (run in Supabase SQL Editor)
 - **`setup.ts`** - Helper script that displays setup instructions
-- **`migrate-from-sheets.ts`** - Data migration script from Google Sheets
-- **`populate-schedule-assignments.ts`** - Populates teacher assignments to schedules
-- **`populate-attendance-records.ts`** - Populates historical attendance data
-- **`POPULATION_GUIDE.md`** - Detailed guide for population scripts
 - **`README.md`** - This file
 
 ## Database Tables
@@ -93,12 +55,6 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 ## Troubleshooting
-
-### Migration Fails
-
-**Problem:** Migration script can't connect to Google Sheets
-
-**Solution:** Check that the Google Sheets API URL is still valid in `migrate-from-sheets.ts`
 
 ### Tables Already Exist
 
@@ -130,39 +86,28 @@ When implementing Google OAuth authentication:
 2. Restrict teacher table to specific email addresses
 3. Add role-based access control (admin vs teacher)
 
-## Data Migration Strategy
+## Data Strategy
 
-### What Gets Migrated
-
-✅ Students (names, visitor status)
-✅ Lessons (names, curriculum links, series)
-✅ Schedules (dates, lesson assignments)
-
-### What Doesn't Get Migrated
-
-❌ Attendance records (start fresh)
-❌ Historical teacher assignments
-❌ Student notes/comments
-
-**Reason:** Clean slate for the new system. Teachers will mark attendance going forward.
+The app stores all data directly in Supabase:
+- Students can be added through the app
+- Lessons and schedules managed in Supabase
+- Attendance marked and saved in real-time
 
 ## Next Steps After Setup
 
 1. ✅ Run `npm run db:setup` (get instructions)
 2. ✅ Execute SQL in Supabase SQL Editor
-3. ✅ Run `npm run db:migrate` (import data)
-4. ✅ Run `npm run dev` (test the app)
-5. ✅ Verify data appears correctly in the app
-6. ✅ Mark test attendance to confirm save works
-7. ✅ Check Supabase Table Editor to see saved data
+3. ✅ Run `npm run dev` (test the app)
+4. ✅ Add students through the app or directly in Supabase
+5. ✅ Mark test attendance to confirm save works
+6. ✅ Check Supabase Table Editor to see saved data
 
 ## Support
 
 If you encounter issues:
 1. Check the Supabase logs in the Dashboard
 2. Verify environment variables are correct
-3. Ensure the Google Sheets API is still accessible
-4. Check the browser console for errors
+3. Check the browser console for errors
 
 ---
 

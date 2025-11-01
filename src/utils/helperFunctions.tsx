@@ -41,7 +41,15 @@ export const getLessonName = (
   date: Date,
   lessonNames: Record<string, string>
 ) => {
-  // Try exact match first
+  // Convert date to YYYY-MM-DD format to match Supabase keys
+  const dateKey = date.toISOString().split('T')[0];
+
+  // Try exact match with YYYY-MM-DD format
+  if (lessonNames[dateKey]) {
+    return lessonNames[dateKey];
+  }
+
+  // Try full ISO string (for backward compatibility)
   const exactKey = date.toISOString();
   if (lessonNames[exactKey]) {
     return lessonNames[exactKey];
@@ -73,7 +81,15 @@ export const getLessonLink = (
     return null;
   }
 
-  // Try exact match first
+  // Convert date to YYYY-MM-DD format to match Supabase keys
+  const dateKey = date.toISOString().split('T')[0];
+
+  // Try exact match with YYYY-MM-DD format
+  if (lessonLinks[dateKey]) {
+    return lessonLinks[dateKey];
+  }
+
+  // Try full ISO string (for backward compatibility)
   const exactKey = date.toISOString();
   if (lessonLinks[exactKey]) {
     return lessonLinks[exactKey];

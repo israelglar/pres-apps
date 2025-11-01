@@ -9,11 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "db:setup": "tsx database/setup.ts",
-    "db:migrate": "tsx database/migrate-from-sheets.ts",
-    "db:populate-assignments": "tsx database/populate-schedule-assignments.ts",
-    "db:populate-attendance": "tsx database/populate-attendance-records.ts",
     "db:fix-dates": "tsx database/fix-dates-and-duplicate-schedules.ts",
-    "db:diagnose-dates": "tsx database/diagnose-and-fix-dates.ts"
+    "db:diagnose-dates": "tsx database/diagnose-and-fix-dates.ts",
+    "db:link-lessons": "tsx database/link-lessons-to-schedules.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.78.0",

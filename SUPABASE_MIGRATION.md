@@ -74,18 +74,9 @@ Follow the instructions to:
 2. Copy contents of `database/schema.sql`
 3. Run the SQL in Supabase
 
-### Step 2: Migrate Data from Google Sheets
+### Step 2: Add Initial Data
 
-```bash
-npm run db:migrate
-```
-
-This will import:
-- All students
-- All lessons with curriculum links
-- All schedules
-
-**Note:** Attendance records are NOT migrated (start fresh).
+You can add students, lessons, and schedules directly through the app or via the Supabase dashboard.
 
 ### Step 3: Test the Application
 
@@ -145,7 +136,6 @@ Test these flows:
 ### Database Tools
 - `database/schema.sql` - SQL schema
 - `database/setup.ts` - Setup instructions
-- `database/migrate-from-sheets.ts` - Migration script
 - `database/README.md` - Setup guide
 
 ### Documentation
@@ -222,12 +212,6 @@ Before going live, test:
 ---
 
 ## Troubleshooting
-
-### Migration Fails
-
-**Problem:** Can't connect to Google Sheets
-
-**Solution:** Check that the Google Sheets API URL is still valid in `migrate-from-sheets.ts`
 
 ### App Can't Connect to Supabase
 
