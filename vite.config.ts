@@ -15,7 +15,7 @@ VitePWA({
         name: 'Prés-adolescentes - Registo de Presenças',
         short_name: 'Prés App',
         description: 'Aplicação para registo de presenças dos pré-adolescentes',
-        theme_color: '#06b6d4',
+        theme_color: '#0891b2',
         background_color: '#ffffff',
         display: 'standalone',
         scope: '/',
