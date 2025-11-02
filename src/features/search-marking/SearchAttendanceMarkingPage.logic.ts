@@ -2,22 +2,22 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useBlocker } from "@tanstack/react-router";
 import Fuse from "fuse.js";
 import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
+import { useVisitorManagement, type Student } from "../../hooks/useVisitorManagement";
 
 // Type definitions
-export interface Student {
-  id: string;
-  name: string;
-}
+export type { Student };
 
 export interface AttendanceRecord {
   studentId: string;
   studentName: string;
   status: "P" | "F";
   timestamp: Date;
+  notes?: string;
 }
 
 export interface SearchAttendanceMarkingPageProps {
   students: Student[];
+  visitorStudents: Student[];
   date: Date;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
@@ -26,9 +26,11 @@ export interface SearchAttendanceMarkingPageProps {
 
 export const useSearchAttendanceMarkingLogic = ({
   students,
+  visitorStudents,
   onComplete,
 }: {
   students: Student[];
+  visitorStudents: Student[];
   onComplete: (records: AttendanceRecord[]) => void;
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +39,9 @@ export const useSearchAttendanceMarkingLogic = ({
   >({});
   const [isComplete, setIsComplete] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Visitor management with existing visitors
+  const visitorManagement = useVisitorManagement(visitorStudents);
 
   // Use TanStack Router's navigation blocker with custom UI
   const hasUnsavedData =
@@ -129,6 +134,45 @@ export const useSearchAttendanceMarkingLogic = ({
     setAttendanceRecords(newRecords);
   };
 
+  const handleAddVisitor = async () => {
+    let result;
+
+    // Case 1: Existing visitor selected - mark them present
+    if (visitorManagement.selectedVisitor) {
+      result = visitorManagement.markExistingVisitor();
+    } else {
+      // Case 2: New visitor - create and mark present
+      result = await visitorManagement.addNewVisitor();
+    }
+
+    if (result) {
+      // Immediately mark visitor as present with notes
+      const tempStudent: Student = {
+        id: String(result.student.id),
+        name: result.student.name,
+        isVisitor: true,
+      };
+
+      // Mark as present and store notes in the record
+      selectionTap();
+
+      const newRecords = {
+        ...attendanceRecords,
+        [tempStudent.id]: {
+          studentId: tempStudent.id,
+          studentName: tempStudent.name,
+          status: "P" as const,
+          timestamp: new Date(),
+          notes: result.notes,
+        },
+      };
+
+      setAttendanceRecords(newRecords);
+      setSearchQuery(""); // Clear search after marking
+      searchInputRef.current?.focus(); // Refocus search input
+    }
+  };
+
   const handleComplete = () => {
     successVibration();
 
@@ -174,10 +218,14 @@ export const useSearchAttendanceMarkingLogic = ({
     totalCount,
     blockerStatus: status,
 
+    // Visitor management
+    visitorManagement,
+
     // Handlers
     handleMarkPresent,
     handleUnmark,
     handleComplete,
+    handleAddVisitor,
     handleConfirmLeave,
     handleCancelLeave,
   };

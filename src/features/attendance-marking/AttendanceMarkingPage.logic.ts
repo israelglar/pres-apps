@@ -1,22 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { useBlocker } from "@tanstack/react-router";
 import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
+import { useVisitorManagement, type Student } from "../../hooks/useVisitorManagement";
 
 // Type definitions
-export interface Student {
-  id: string;
-  name: string;
-}
+export type { Student };
 
 export interface AttendanceRecord {
   studentId: string;
   studentName: string;
   status: "P" | "F";
   timestamp: Date;
+  notes?: string;
 }
 
 export interface AttendanceMarkingPageProps {
   students: Student[];
+  visitorStudents: Student[];
   selectedDate: Date;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void;
@@ -25,9 +25,11 @@ export interface AttendanceMarkingPageProps {
 
 export const useAttendanceMarkingLogic = ({
   students,
+  visitorStudents,
   onComplete,
 }: {
   students: Student[];
+  visitorStudents: Student[];
   onComplete: (records: AttendanceRecord[]) => void;
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +38,9 @@ export const useAttendanceMarkingLogic = ({
   >({});
   const [isComplete, setIsComplete] = useState(false);
   const studentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  // Visitor management with existing visitors
+  const visitorManagement = useVisitorManagement(visitorStudents);
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -210,6 +215,41 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
+  const handleAddVisitor = async () => {
+    let result;
+
+    // Case 1: Existing visitor selected - mark them present
+    if (visitorManagement.selectedVisitor) {
+      result = visitorManagement.markExistingVisitor();
+    } else {
+      // Case 2: New visitor - create and mark present
+      result = await visitorManagement.addNewVisitor();
+    }
+
+    if (result) {
+      // Immediately mark visitor as present with notes
+      const tempStudent: Student = {
+        id: String(result.student.id),
+        name: result.student.name,
+        isVisitor: true,
+      };
+
+      // Add visitor to attendance records with notes
+      const newRecords = {
+        ...attendanceRecords,
+        [tempStudent.id]: {
+          studentId: tempStudent.id,
+          studentName: tempStudent.name,
+          status: "P" as const,
+          timestamp: new Date(),
+          notes: result.notes,
+        },
+      };
+
+      setAttendanceRecords(newRecords);
+    }
+  };
+
   return {
     // State
     currentIndex,
@@ -223,11 +263,15 @@ export const useAttendanceMarkingLogic = ({
     progress,
     blockerStatus: status,
 
+    // Visitor management
+    visitorManagement,
+
     // Handlers
     handleMark,
     handleClickHistory,
     handleConfirmLeave,
     handleCancelLeave,
+    handleAddVisitor,
     onTouchStart,
     onTouchMove,
     onTouchEnd,

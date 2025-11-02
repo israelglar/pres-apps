@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAttendance, bulkUpdateAttendance } from '../api/attendance';
-import type { StudentWithId, ServiceTime, Schedule } from '../schemas/attendance.schema';
+import type { ServiceTime, Schedule } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
 
 /**
@@ -68,10 +68,20 @@ export function useAttendanceData() {
     return data ? data.dates.map((d) => new Date(d)) : [];
   }, [data]);
 
-  const students = useMemo<StudentWithId[]>(() => {
+  const students = useMemo(() => {
     return data
       ? data.students
-          .map((s) => ({ id: s.id, name: s.name }))
+          .filter((s) => !s.is_visitor) // ONLY regular students
+          .map((s) => ({ id: s.id, name: s.name, is_visitor: false }))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      : [];
+  }, [data]);
+
+  const visitorStudents = useMemo(() => {
+    return data
+      ? data.students
+          .filter((s) => s.is_visitor) // ONLY visitors
+          .map((s) => ({ id: s.id, name: s.name, is_visitor: true }))
           .sort((a, b) => a.name.localeCompare(b.name))
       : [];
   }, [data]);
@@ -133,6 +143,7 @@ export function useAttendanceData() {
     schedules,
     allSundays,
     students,
+    visitorStudents,
     serviceTimes,
     lessonNames, // Backward compatibility - should be removed once components are updated
 

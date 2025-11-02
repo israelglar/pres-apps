@@ -12,6 +12,7 @@ interface AttendanceRecord {
   studentName: string;
   status: "P" | "F";
   timestamp: Date;
+  notes?: string;
 }
 
 export const Route = createFileRoute('/search-marking')({
@@ -27,7 +28,7 @@ export const Route = createFileRoute('/search-marking')({
 function SearchMarkingRoute() {
   const navigate = useNavigate()
   const { date, serviceTimeId } = Route.useSearch()
-  const { students, lessonNames } = useAttendanceData()
+  const { students, visitorStudents, lessonNames } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
 
   const selectedDate = new Date(date)
@@ -37,6 +38,7 @@ function SearchMarkingRoute() {
     const apiRecords = records.map(r => ({
       studentId: parseInt(r.studentId), // Convert string ID to number
       status: r.status === 'P' ? 'present' : 'absent',
+      notes: r.notes,
     }))
     await handleComplete(apiRecords, date, serviceTimeId)
     navigate({ to: '/' })
@@ -48,7 +50,16 @@ function SearchMarkingRoute() {
 
   return (
     <SearchAttendanceMarkingPage
-      students={students.map(s => ({ id: String(s.id), name: s.name }))}
+      students={students.map(s => ({
+        id: String(s.id),
+        name: s.name,
+        isVisitor: s.is_visitor
+      }))}
+      visitorStudents={visitorStudents.map(s => ({
+        id: String(s.id),
+        name: s.name,
+        isVisitor: true
+      }))}
       date={selectedDate}
       lessonNames={lessonNames}
       onComplete={onComplete}

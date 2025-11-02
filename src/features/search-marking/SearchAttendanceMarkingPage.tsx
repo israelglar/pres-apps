@@ -1,4 +1,4 @@
-import { CheckCircle, Search } from "lucide-react";
+import { CheckCircle, Search, UserPlus } from "lucide-react";
 import React from "react";
 import { formatDate, getLessonName } from "../../utils/helperFunctions";
 import { useSearchAttendanceMarkingLogic } from "./SearchAttendanceMarkingPage.logic";
@@ -7,7 +7,7 @@ import { theme, buttonClasses, inputClasses } from "../../config/theme";
 
 export const SearchAttendanceMarkingPage: React.FC<
   SearchAttendanceMarkingPageProps
-> = ({ students, date, lessonNames, onComplete, onCancel }) => {
+> = ({ students, visitorStudents, date, lessonNames, onComplete, onCancel }) => {
   const {
     searchQuery,
     setSearchQuery,
@@ -18,12 +18,14 @@ export const SearchAttendanceMarkingPage: React.FC<
     presentCount,
     totalCount,
     blockerStatus,
+    visitorManagement,
     handleMarkPresent,
     handleUnmark,
     handleComplete,
+    handleAddVisitor,
     handleConfirmLeave,
     handleCancelLeave,
-  } = useSearchAttendanceMarkingLogic({ students, onComplete });
+  } = useSearchAttendanceMarkingLogic({ students, visitorStudents, onComplete });
 
   if (isComplete) {
     const absentCount = totalCount - presentCount;
@@ -130,6 +132,15 @@ export const SearchAttendanceMarkingPage: React.FC<
               />
             </div>
           </div>
+
+          {/* Add Visitor Button */}
+          <button
+            onClick={visitorManagement.openVisitorDialog}
+            className={`w-full mt-3 px-4 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Adicionar Visitante</span>
+          </button>
         </div>
       </div>
 
@@ -168,13 +179,22 @@ export const SearchAttendanceMarkingPage: React.FC<
                         </span>
                       </div>
                     )}
-                    <span
-                      className={`text-base font-semibold ${
-                        isMarked ? theme.text.primaryDarker : theme.text.neutralDarker
-                      }`}
-                    >
-                      {student.name}
-                    </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-base font-semibold ${
+                            isMarked ? theme.text.primaryDarker : theme.text.neutralDarker
+                          }`}
+                        >
+                          {student.name}
+                        </span>
+                        {student.isVisitor && (
+                          <span className={`px-2 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}>
+                            Visitante
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   {isMarked && (
                     <div className={`${theme.backgrounds.primaryLight} rounded-full p-1`}>
@@ -187,6 +207,187 @@ export const SearchAttendanceMarkingPage: React.FC<
           )}
         </div>
       </div>
+
+      {/* Visitor Dialog */}
+      {visitorManagement.isVisitorDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200">
+            <div className="text-center mb-6">
+              <div className={`w-16 h-16 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                <UserPlus className={`w-8 h-8 ${theme.text.primary}`} />
+              </div>
+              <h3 className="text-base font-bold text-gray-800 mb-2">
+                {visitorManagement.selectedVisitor ? 'Marcar Visitante' : 'Adicionar Visitante'}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {visitorManagement.selectedVisitor
+                  ? 'Este visitante já existe. Clique para marcar presente.'
+                  : 'Procure por visitantes existentes ou adicione um novo. Será marcado como presente automaticamente.'}
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-5">
+              {/* Search Input */}
+              <div className="relative">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Nome do Visitante
+                </label>
+                <div className="relative">
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.primary} w-4 h-4 z-10`} />
+                  <input
+                    type="text"
+                    value={visitorManagement.searchQuery}
+                    onChange={(e) => visitorManagement.handleSearchChange(e.target.value)}
+                    placeholder="Procurar ou criar visitante..."
+                    className={`w-full pl-10 pr-4 py-3 text-sm ${inputClasses}`}
+                    autoFocus
+                    disabled={visitorManagement.isAddingVisitor}
+                  />
+                </div>
+
+                {/* Search Results Dropdown - Only show if there are results */}
+                {visitorManagement.showResults && visitorManagement.searchResults.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                    <ul className="py-1">
+                      {visitorManagement.searchResults.map((visitor) => (
+                        <li
+                          key={visitor.id}
+                          onClick={() => visitorManagement.handleSelectVisitor(visitor)}
+                          className="px-4 py-3 hover:bg-cyan-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-800">
+                              {visitor.name}
+                            </span>
+                            <span className={`px-2 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}>
+                              Visitante
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {visitorManagement.error && (
+                  <p className="text-red-500 text-xs mt-2">{visitorManagement.error}</p>
+                )}
+              </div>
+
+              {/* Selected Visitor Card */}
+              {visitorManagement.selectedVisitor && (
+                <div className={`p-3 ${theme.gradients.cardPrimary} rounded-xl border-2 ${theme.borders.success}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={`w-5 h-5 ${theme.text.primary}`} />
+                      <span className="text-sm font-bold text-gray-800">
+                        {visitorManagement.selectedVisitor.name}
+                      </span>
+                    </div>
+                    <button
+                      onClick={visitorManagement.handleClearSelection}
+                      className="text-gray-500 hover:text-gray-700 transition-colors"
+                      aria-label="Limpar seleção"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Questions - Only show for new visitors */}
+              {!visitorManagement.selectedVisitor && (
+                <>
+                  {/* Question 1: First time at church? */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Primeira vez na igreja?
+                    </label>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => visitorManagement.setFirstTimeAtChurch('yes')}
+                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-xl border-2 transition-all ${
+                          visitorManagement.firstTimeAtChurch === 'yes'
+                            ? `${theme.gradients.primaryButton} text-white border-transparent`
+                            : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        }`}
+                      >
+                        Sim
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => visitorManagement.setFirstTimeAtChurch('no')}
+                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-xl border-2 transition-all ${
+                          visitorManagement.firstTimeAtChurch === 'no'
+                            ? `${theme.gradients.primaryButton} text-white border-transparent`
+                            : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        }`}
+                      >
+                        Não
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Question 2: Will come regularly? */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Vai vir regularmente?
+                    </label>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => visitorManagement.setWillComeRegularly('yes')}
+                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-xl border-2 transition-all ${
+                          visitorManagement.willComeRegularly === 'yes'
+                            ? `${theme.gradients.primaryButton} text-white border-transparent`
+                            : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        }`}
+                      >
+                        Sim
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => visitorManagement.setWillComeRegularly('no')}
+                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-xl border-2 transition-all ${
+                          visitorManagement.willComeRegularly === 'no'
+                            ? `${theme.gradients.primaryButton} text-white border-transparent`
+                            : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        }`}
+                      >
+                        Não
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={visitorManagement.closeVisitorDialog}
+                disabled={visitorManagement.isAddingVisitor}
+                className={`flex-1 px-4 py-3 ${buttonClasses.secondary} text-sm`}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddVisitor}
+                disabled={!visitorManagement.searchQuery.trim() || visitorManagement.isAddingVisitor}
+                className={`flex-1 px-4 py-3 ${buttonClasses.primary} text-sm disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {visitorManagement.isAddingVisitor
+                  ? 'A processar...'
+                  : visitorManagement.selectedVisitor
+                  ? 'Marcar Presente'
+                  : 'Adicionar Visitante'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Custom Confirmation Dialog */}
       {blockerStatus === "blocked" && (
