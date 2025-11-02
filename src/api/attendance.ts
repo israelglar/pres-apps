@@ -12,6 +12,7 @@ import {
 import { getActiveStudents } from "./supabase/students";
 import { getAllSchedules, getScheduleDates, getScheduleByDateAndService, createSchedule } from "./supabase/schedules";
 import { bulkSaveAttendance as supabaseBulkSave } from "./supabase/attendance";
+import { getActiveServiceTimes } from "./supabase/service-times";
 
 /**
  * Get all attendance data
@@ -21,10 +22,11 @@ export async function getAttendance(): Promise<AttendanceData> {
   console.log("Fetching attendance data from Supabase...");
   try {
     // Fetch all necessary data in parallel
-    const [students, schedules, dates] = await Promise.all([
+    const [students, schedules, dates, serviceTimes] = await Promise.all([
       getActiveStudents(),
       getAllSchedules(),
       getScheduleDates(),
+      getActiveServiceTimes(),
     ]);
 
     // Transform schedules into lesson maps (date -> lesson name/link)
@@ -54,6 +56,7 @@ export async function getAttendance(): Promise<AttendanceData> {
       lessonNames,
       lessonLinks,
       students: transformedStudents,
+      serviceTimes,
     };
 
     // Validate response with Zod
@@ -121,8 +124,13 @@ export async function bulkUpdateAttendance(
       }
     }
 
-    // Save attendance records
-    const savedRecords = await supabaseBulkSave(schedule.id, records);
+    // Save attendance records with service_time_id
+    const recordsWithServiceTime = records.map(record => ({
+      ...record,
+      service_time_id: serviceTimeId,
+    }));
+
+    const savedRecords = await supabaseBulkSave(schedule.id, recordsWithServiceTime);
 
     console.log(`✅ Saved ${savedRecords.length} attendance records`);
     return { success: true, count: savedRecords.length };

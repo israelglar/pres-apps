@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAttendance, bulkUpdateAttendance } from '../api/attendance';
-import type { StudentWithId } from '../schemas/attendance.schema';
+import type { StudentWithId, ServiceTime } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
 
 /**
@@ -80,6 +80,10 @@ export function useAttendanceData() {
       : [];
   }, [data]);
 
+  const serviceTimes = useMemo<ServiceTime[]>(() => {
+    return data ? data.serviceTimes : [];
+  }, [data]);
+
   return {
     // Raw data
     data,
@@ -89,6 +93,7 @@ export function useAttendanceData() {
     lessonNames,
     lessonLinks,
     students,
+    serviceTimes,
 
     // States
     isLoading,

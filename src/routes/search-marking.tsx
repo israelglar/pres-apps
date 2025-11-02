@@ -4,6 +4,7 @@ import { useAttendanceData, useAttendanceSubmit } from '../hooks/useAttendanceDa
 
 type MarkingSearch = {
   date: string
+  serviceTimeId: number
 }
 
 interface AttendanceRecord {
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/search-marking')({
   validateSearch: (search: Record<string, unknown>): MarkingSearch => {
     return {
       date: (search.date as string) || new Date().toISOString(),
+      serviceTimeId: (search.serviceTimeId as number) || 2, // Default to 11h service
     }
   },
   component: SearchMarkingRoute,
@@ -24,7 +26,7 @@ export const Route = createFileRoute('/search-marking')({
 
 function SearchMarkingRoute() {
   const navigate = useNavigate()
-  const { date } = Route.useSearch()
+  const { date, serviceTimeId } = Route.useSearch()
   const { students, lessonNames } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
 
@@ -36,7 +38,7 @@ function SearchMarkingRoute() {
       studentId: parseInt(r.studentId), // Convert string ID to number
       status: r.status === 'P' ? 'present' : 'absent',
     }))
-    await handleComplete(apiRecords, date)
+    await handleComplete(apiRecords, date, serviceTimeId)
     navigate({ to: '/' })
   }
 

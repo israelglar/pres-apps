@@ -8,6 +8,7 @@ import {
   Hand,
   Search,
   Eye,
+  Clock,
 } from 'lucide-react';
 import { useDateSelectionLogic } from './DateSelectionPage.logic';
 import {
@@ -18,11 +19,12 @@ import {
 import { theme, buttonClasses } from '../../config/theme';
 
 interface DateSelectionPageProps {
-  onDateSelected: (date: Date, method: 'search' | 'swipe') => void;
+  onDateSelected: (date: Date, method: 'search' | 'swipe', serviceTimeId: number) => void;
   onBack: () => void;
   allSundays: Date[];
   lessonNames: Record<string, string>;
   lessonLinks: Record<string, string>;
+  serviceTimes: Array<{ id: number; name: string; time: string }>;
 }
 
 /**
@@ -40,6 +42,7 @@ export function DateSelectionPage({
   allSundays,
   lessonNames,
   lessonLinks,
+  serviceTimes,
 }: DateSelectionPageProps) {
   const logic = useDateSelectionLogic({ allSundays });
 
@@ -156,7 +159,7 @@ export function DateSelectionPage({
           </div>
 
           <div className={`${theme.gradients.cardHighlight} border-2 ${theme.borders.primary} rounded-xl p-4 mb-5 shadow-inner`}>
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center mb-4">
               <div className="bg-white p-2 rounded-xl shadow-md mr-3">
                 <Calendar className={`w-8 h-8 ${theme.text.primary}`} />
               </div>
@@ -182,6 +185,42 @@ export function DateSelectionPage({
                     {getLessonName(logic.selectedDate, lessonNames)}
                   </p>
                 )}
+              </div>
+            </div>
+
+            {/* Service Time Selector */}
+            <div className="border-t border-cyan-200 pt-4">
+              <label className={`block ${theme.text.primaryDark} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}>
+                <Clock className="w-4 h-4" />
+                Horário do Culto
+              </label>
+              <div className="space-y-2">
+                {serviceTimes.map((serviceTime) => (
+                  <label
+                    key={serviceTime.id}
+                    className={`flex items-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                      logic.selectedServiceTimeId === serviceTime.id
+                        ? `${theme.borders.primary} bg-white shadow-md`
+                        : 'border-cyan-200 bg-white/50 hover:bg-white hover:border-cyan-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="serviceTime"
+                      value={serviceTime.id}
+                      checked={logic.selectedServiceTimeId === serviceTime.id}
+                      onChange={() => logic.setSelectedServiceTimeId(serviceTime.id)}
+                      className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
+                    />
+                    <span className={`ml-3 font-bold text-sm ${
+                      logic.selectedServiceTimeId === serviceTime.id
+                        ? theme.text.primaryDarker
+                        : theme.text.neutralDarker
+                    }`}>
+                      {serviceTime.time.substring(0, 5)} ({serviceTime.name})
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
           </div>
@@ -219,7 +258,7 @@ export function DateSelectionPage({
             <div className="space-y-3">
               {/* Search Method - DEFAULT */}
               <button
-                onClick={() => onDateSelected(logic.selectedDate, 'search')}
+                onClick={() => onDateSelected(logic.selectedDate, 'search', logic.selectedServiceTimeId)}
                 className={`w-full p-4 bg-gradient-to-r from-blue-100 to-indigo-100 border-2 ${theme.borders.secondary} rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-500 hover:shadow-lg transition-all text-left group relative shadow-md`}
               >
                 {/* Recommended Badge */}
@@ -244,7 +283,7 @@ export function DateSelectionPage({
 
               {/* Swipe Method */}
               <button
-                onClick={() => onDateSelected(logic.selectedDate, 'swipe')}
+                onClick={() => onDateSelected(logic.selectedDate, 'swipe', logic.selectedServiceTimeId)}
                 className={`w-full p-4 ${theme.gradients.cardHighlight} border-2 ${theme.borders.primary} rounded-xl hover:from-cyan-100 hover:to-blue-100 ${theme.borders.primaryHover} hover:shadow-lg transition-all text-left group`}
               >
                 <div className="flex items-start gap-3">

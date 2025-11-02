@@ -8,13 +8,13 @@ export const Route = createFileRoute('/date-selection')({
 
 function DateSelectionRoute() {
   const navigate = useNavigate()
-  const { allSundays, lessonNames, lessonLinks } = useAttendanceData()
+  const { allSundays, lessonNames, lessonLinks, serviceTimes } = useAttendanceData()
 
-  const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe") => {
+  const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe", serviceTimeId: number) => {
     if (method === "search") {
-      navigate({ to: '/search-marking', search: { date: date.toISOString() } })
+      navigate({ to: '/search-marking', search: { date: date.toISOString(), serviceTimeId } })
     } else {
-      navigate({ to: '/marking', search: { date: date.toISOString() } })
+      navigate({ to: '/marking', search: { date: date.toISOString(), serviceTimeId } })
     }
   }
 
@@ -29,6 +29,7 @@ function DateSelectionRoute() {
       allSundays={allSundays}
       lessonNames={lessonNames}
       lessonLinks={lessonLinks}
+      serviceTimes={serviceTimes}
     />
   )
 }

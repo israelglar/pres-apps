@@ -6,11 +6,29 @@ export interface UseDateSelectionLogicProps {
 }
 
 /**
+ * Get default service time ID based on current device time
+ * Between 9:00-11:00 → default to 9h service (ID: 1)
+ * All other times → default to 11h service (ID: 2)
+ */
+function getDefaultServiceTimeId(): number {
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  // Between 9h and 11h (9:00-10:59)
+  if (currentHour >= 9 && currentHour < 11) {
+    return 1; // 9h service
+  }
+
+  return 2; // 11h service (default)
+}
+
+/**
  * Business logic for Date Selection Page
  * Handles date selection, dropdown, method dialog, and filtering
  */
 export function useDateSelectionLogic({ allSundays }: UseDateSelectionLogicProps) {
   const [selectedDate, setSelectedDate] = useState(getClosestSunday());
+  const [selectedServiceTimeId, setSelectedServiceTimeId] = useState(getDefaultServiceTimeId());
   const [isOpen, setIsOpen] = useState(false);
   const [showMethodDialog, setShowMethodDialog] = useState(false);
   const [showFutureLessons, setShowFutureLessons] = useState(false);
@@ -102,6 +120,7 @@ export function useDateSelectionLogic({ allSundays }: UseDateSelectionLogicProps
   return {
     // State
     selectedDate,
+    selectedServiceTimeId,
     isOpen,
     showMethodDialog,
     showFutureLessons,
@@ -114,6 +133,7 @@ export function useDateSelectionLogic({ allSundays }: UseDateSelectionLogicProps
 
     // Actions
     setSelectedDate,
+    setSelectedServiceTimeId,
     setIsOpen,
     setShowMethodDialog,
     setShowFutureLessons,

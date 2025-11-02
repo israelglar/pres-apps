@@ -56,6 +56,7 @@ export const attendanceDataSchema = z.object({
   lessonNames: z.record(z.string(), z.string()), // date -> lesson name
   lessonLinks: z.record(z.string(), z.string()), // date -> resource URL
   students: z.array(studentSchema),
+  serviceTimes: z.array(serviceTimeSchema),
 });
 
 /**
