@@ -1,8 +1,13 @@
-import { ArrowLeft, Loader2, RefreshCw, History as HistoryIcon } from 'lucide-react';
-import { theme, buttonClasses } from '../../config/theme';
-import { useAttendanceHistoryLogic } from './AttendanceHistoryPage.logic';
-import { DateGroupCard } from './components/DateGroupCard';
-import { EditAttendanceDialog } from './components/EditAttendanceDialog';
+import {
+  ArrowLeft,
+  History as HistoryIcon,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
+import { buttonClasses, theme } from "../../config/theme";
+import { useAttendanceHistoryLogic } from "./AttendanceHistoryPage.logic";
+import { DateGroupCard } from "./components/DateGroupCard";
+import { EditAttendanceDialog } from "./components/EditAttendanceDialog";
 
 interface AttendanceHistoryPageProps {
   onBack: () => void;
@@ -31,7 +36,9 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
   } = useAttendanceHistoryLogic();
 
   return (
-    <div className={`fixed inset-0 ${theme.gradients.background} overflow-y-auto`}>
+    <div
+      className={`fixed inset-0 ${theme.gradients.background} overflow-y-auto`}
+    >
       <div className="max-w-4xl mx-auto p-3 pb-20">
         {/* Header */}
         <div className="mb-4">
@@ -45,11 +52,10 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <HistoryIcon className="w-4 h-4 text-white" />
-              </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Histórico de Presenças</h1>
+                <h1 className="text-3xl font-bold text-white">
+                  Histórico de Presenças
+                </h1>
                 <p className="text-white/80 text-base mt-0.5 font-medium">
                   Ver e editar registos anteriores
                 </p>
@@ -62,7 +68,9 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               disabled={isLoading}
               className="p-2 bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all active:scale-95 disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 text-white ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 text-white ${isLoading ? "animate-spin" : ""}`}
+              />
             </button>
           </div>
         </div>
@@ -71,21 +79,21 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         <div className="mb-4">
           <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1">
             <button
-              onClick={() => handleServiceTimeChange('11:00:00')}
+              onClick={() => handleServiceTimeChange("11:00:00")}
               className={`flex-1 px-4 py-2 rounded-md font-bold text-sm transition-all ${
-                selectedServiceTime === '11:00:00'
-                  ? 'bg-white text-cyan-700 shadow-md'
-                  : 'text-white hover:bg-white/10'
+                selectedServiceTime === "11:00:00"
+                  ? "bg-white text-cyan-700 shadow-md"
+                  : "text-white hover:bg-white/10"
               }`}
             >
               11:00
             </button>
             <button
-              onClick={() => handleServiceTimeChange('09:00:00')}
+              onClick={() => handleServiceTimeChange("09:00:00")}
               className={`flex-1 px-4 py-2 rounded-md font-bold text-sm transition-all ${
-                selectedServiceTime === '09:00:00'
-                  ? 'bg-white text-cyan-700 shadow-md'
-                  : 'text-white hover:bg-white/10'
+                selectedServiceTime === "09:00:00"
+                  ? "bg-white text-cyan-700 shadow-md"
+                  : "text-white hover:bg-white/10"
               }`}
             >
               09:00
@@ -97,14 +105,18 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         {isLoading && !history && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
-            <p className="text-white text-base font-semibold">A carregar histórico...</p>
+            <p className="text-white text-base font-semibold">
+              A carregar histórico...
+            </p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
           <div className="bg-red-100 border-2 border-red-400 rounded-2xl p-6 text-center">
-            <p className="text-red-800 font-semibold mb-2">Erro ao carregar histórico</p>
+            <p className="text-red-800 font-semibold mb-2">
+              Erro ao carregar histórico
+            </p>
             <p className="text-red-700 text-sm mb-4">{error.toString()}</p>
             <button
               onClick={handleRefresh}
@@ -149,11 +161,11 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
-                      A carregar...
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />A
+                      carregar...
                     </>
                   ) : (
-                    'Carregar Mais'
+                    "Carregar Mais"
                   )}
                 </button>
               </div>
