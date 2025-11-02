@@ -114,11 +114,6 @@ export function HomePage({ onNavigate, onManageStudents }: HomePageProps) {
           <span className="font-semibold">Gerir Alunos</span>
         </button>
 
-        {/* Swipe hint text */}
-        <p className="text-white/70 text-center mt-4 text-sm">
-          Deslize para a esquerda para começar
-        </p>
-
         {/* PWA Button - Only show if NOT running in PWA mode */}
         {!logic.isRunningInPWA && (
           <div className="mt-6">
