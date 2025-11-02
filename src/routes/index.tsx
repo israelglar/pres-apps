@@ -18,5 +18,9 @@ function HomeRoute() {
     navigate({ to: '/date-selection' })
   }
 
-  return <HomePage onNavigate={handleNavigate} />
+  const handleManageStudents = () => {
+    navigate({ to: '/manage-students' })
+  }
+
+  return <HomePage onNavigate={handleNavigate} onManageStudents={handleManageStudents} />
 }

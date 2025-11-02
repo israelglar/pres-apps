@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchMarkingRouteImport } from './routes/search-marking'
 import { Route as MarkingRouteImport } from './routes/marking'
+import { Route as ManageStudentsRouteImport } from './routes/manage-students'
 import { Route as DateSelectionRouteImport } from './routes/date-selection'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const SearchMarkingRoute = SearchMarkingRouteImport.update({
 const MarkingRoute = MarkingRouteImport.update({
   id: '/marking',
   path: '/marking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManageStudentsRoute = ManageStudentsRouteImport.update({
+  id: '/manage-students',
+  path: '/manage-students',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DateSelectionRoute = DateSelectionRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
+  '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
   '/search-marking': typeof SearchMarkingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
+  '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
   '/search-marking': typeof SearchMarkingRoute
 }
@@ -51,20 +59,38 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/date-selection': typeof DateSelectionRoute
+  '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
   '/search-marking': typeof SearchMarkingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/date-selection' | '/marking' | '/search-marking'
+  fullPaths:
+    | '/'
+    | '/date-selection'
+    | '/manage-students'
+    | '/marking'
+    | '/search-marking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/date-selection' | '/marking' | '/search-marking'
-  id: '__root__' | '/' | '/date-selection' | '/marking' | '/search-marking'
+  to:
+    | '/'
+    | '/date-selection'
+    | '/manage-students'
+    | '/marking'
+    | '/search-marking'
+  id:
+    | '__root__'
+    | '/'
+    | '/date-selection'
+    | '/manage-students'
+    | '/marking'
+    | '/search-marking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DateSelectionRoute: typeof DateSelectionRoute
+  ManageStudentsRoute: typeof ManageStudentsRoute
   MarkingRoute: typeof MarkingRoute
   SearchMarkingRoute: typeof SearchMarkingRoute
 }
@@ -83,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/marking'
       fullPath: '/marking'
       preLoaderRoute: typeof MarkingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manage-students': {
+      id: '/manage-students'
+      path: '/manage-students'
+      fullPath: '/manage-students'
+      preLoaderRoute: typeof ManageStudentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/date-selection': {
@@ -105,6 +138,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DateSelectionRoute: DateSelectionRoute,
+  ManageStudentsRoute: ManageStudentsRoute,
   MarkingRoute: MarkingRoute,
   SearchMarkingRoute: SearchMarkingRoute,
 }

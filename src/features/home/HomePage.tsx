@@ -6,12 +6,14 @@ import {
   Download,
   Loader2,
   RefreshCw,
+  Users,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 import { useHomePageLogic } from "./HomePage.logic";
 
 interface HomePageProps {
   onNavigate: () => void;
+  onManageStudents: () => void;
 }
 
 /**
@@ -23,7 +25,7 @@ interface HomePageProps {
  * - Loading state overlay
  * - Error handling
  */
-export function HomePage({ onNavigate }: HomePageProps) {
+export function HomePage({ onNavigate, onManageStudents }: HomePageProps) {
   const logic = useHomePageLogic({ onNavigate });
 
   return (
@@ -101,6 +103,15 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <span>Começar</span>
             <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform" />
           </div>
+        </button>
+
+        {/* Manage Students Button */}
+        <button
+          onClick={onManageStudents}
+          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl shadow-lg px-6 py-4 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-4"
+        >
+          <Users className="w-5 h-5" />
+          <span className="font-semibold">Gerir Alunos</span>
         </button>
 
         {/* Swipe hint text */}
