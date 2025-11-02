@@ -72,13 +72,13 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
         {/* Student Info */}
         <div className="flex items-start gap-3 flex-1 min-w-0">
           {/* Avatar */}
-          <div className={`${theme.backgrounds.primaryLight} p-3 rounded-xl flex-shrink-0`}>
-            <User className={`w-6 h-6 ${theme.text.primary}`} />
+          <div className={`${theme.backgrounds.primaryLight} p-2 rounded-xl flex-shrink-0`}>
+            <User className={`w-4 h-4 ${theme.text.primary}`} />
           </div>
 
           {/* Details */}
           <div className="flex-1 min-w-0">
-            <h3 className={`text-lg font-bold ${theme.text.neutralDarker} mb-2 break-words`}>
+            <h3 className={`text-base font-bold ${theme.text.neutralDarker} mb-2 break-words`}>
               {student.name}
             </h3>
 
@@ -117,14 +117,14 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
             className={`p-2 ${theme.backgrounds.primaryLight} ${theme.text.primary} rounded-lg hover:bg-cyan-200 transition-colors`}
             title="Editar aluno"
           >
-            <Edit2 className="w-5 h-5" />
+            <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(student)}
             className={`p-2 ${theme.backgrounds.error} ${theme.text.error} rounded-lg hover:bg-red-200 transition-colors`}
             title="Eliminar aluno"
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>

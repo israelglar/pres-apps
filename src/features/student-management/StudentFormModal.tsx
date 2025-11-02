@@ -98,7 +98,7 @@ export function StudentFormModal({
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             disabled={isSubmitting}
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-4 h-4 text-white" />
           </button>
         </div>
 
@@ -214,14 +214,14 @@ export function StudentFormModal({
             <button
               type="button"
               onClick={onClose}
-              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-base`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm`}
               disabled={isSubmitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
