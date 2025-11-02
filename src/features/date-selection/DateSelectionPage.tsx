@@ -47,9 +47,7 @@ export function DateSelectionPage({
     <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
       <div className="max-w-2xl w-full">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
-            Selecionar Data
-          </h1>
+          <h1 className="text-3xl font-bold text-white">Selecionar Data</h1>
           <p className={`${theme.text.primaryLight} text-base font-medium`}>
             Escolha o domingo para registar as presenças
           </p>
@@ -57,7 +55,7 @@ export function DateSelectionPage({
 
         <div className="bg-white rounded-2xl shadow-2xl p-5 mb-6">
           <div className="mb-5">
-            <label className="block text-gray-800 font-bold mb-3 text-base">
+            <label className="block text-gray-800 font-bold mb-3 text-sm">
               Data da Lição
             </label>
 
@@ -66,18 +64,18 @@ export function DateSelectionPage({
               <button
                 type="button"
                 onClick={() => logic.setIsOpen(!logic.isOpen)}
-                className={`w-full px-4 py-3 text-base border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.gradients.cardNeutral} ${theme.borders.primaryHover} hover:from-cyan-50/50 hover:to-cyan-100/50 transition-all shadow-md hover:shadow-lg flex items-center justify-between`}
+                className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.gradients.cardNeutral} ${theme.borders.primaryHover} hover:from-cyan-50/50 hover:to-cyan-100/50 transition-all shadow-md hover:shadow-lg flex items-center justify-between`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg`}>
-                    <Calendar className={`w-5 h-5 ${theme.text.primary}`} />
+                    <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
                   </div>
                   <span className={`font-bold ${theme.text.neutralDarker} text-sm`}>
                     {formatDate(logic.selectedDate)}
                   </span>
                 </div>
                 <ChevronDown
-                  className={`w-5 h-5 ${theme.text.primary} transition-transform ${logic.isOpen ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 ${theme.text.primary} transition-transform ${logic.isOpen ? 'rotate-180' : ''}`}
                 />
               </button>
 
@@ -160,13 +158,13 @@ export function DateSelectionPage({
           <div className={`${theme.gradients.cardHighlight} border-2 ${theme.borders.primary} rounded-xl p-4 mb-5 shadow-inner`}>
             <div className="flex items-center justify-center">
               <div className="bg-white p-2 rounded-xl shadow-md mr-3">
-                <Calendar className={`w-10 h-10 ${theme.text.primary}`} />
+                <Calendar className={`w-8 h-8 ${theme.text.primary}`} />
               </div>
               <div>
                 <p className={`${theme.text.primaryDark} text-xs font-bold uppercase tracking-wide`}>
                   Data Selecionada
                 </p>
-                <p className={`text-xl font-bold ${theme.text.primaryDarker} my-0.5`}>
+                <p className={`text-base font-bold ${theme.text.primaryDarker} my-0.5`}>
                   {formatDate(logic.selectedDate)}
                 </p>
                 {getLessonLink(logic.selectedDate, lessonLinks) ? (
@@ -191,14 +189,14 @@ export function DateSelectionPage({
           <div className="flex gap-3">
             <button
               onClick={onBack}
-              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm flex items-center justify-center`}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
             </button>
             <button
               onClick={() => logic.setShowMethodDialog(true)}
-              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
             >
               Continuar
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -210,11 +208,11 @@ export function DateSelectionPage({
       {/* Method Selection Dialog */}
       {logic.showMethodDialog && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-scale-in">
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
               Escolher Método
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 text-sm mb-6">
               Como preferes registar as presenças?
             </p>
 
@@ -230,10 +228,10 @@ export function DateSelectionPage({
                 </div>
                 <div className="flex items-start gap-3">
                   <div className={`${theme.backgrounds.secondary} p-2 rounded-lg group-hover:scale-110 transition-transform`}>
-                    <Search className="w-6 h-6 text-white" />
+                    <Search className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`font-bold ${theme.text.neutralDarker} text-lg mb-1`}>
+                    <h3 className={`font-bold ${theme.text.neutralDarker} text-base mb-1`}>
                       Procurar por Nome
                     </h3>
                     <p className={`text-sm ${theme.text.neutral}`}>
@@ -251,10 +249,10 @@ export function DateSelectionPage({
               >
                 <div className="flex items-start gap-3">
                   <div className={`${theme.backgrounds.primary} p-2 rounded-lg group-hover:scale-110 transition-transform`}>
-                    <Hand className="w-6 h-6 text-white" />
+                    <Hand className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`font-bold ${theme.text.neutralDarker} text-lg mb-1`}>
+                    <h3 className={`font-bold ${theme.text.neutralDarker} text-base mb-1`}>
                       Método Tradicional
                     </h3>
                     <p className={`text-sm ${theme.text.neutral}`}>

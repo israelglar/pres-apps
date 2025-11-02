@@ -13,6 +13,7 @@ import { Route as SearchMarkingRouteImport } from './routes/search-marking'
 import { Route as MarkingRouteImport } from './routes/marking'
 import { Route as ManageStudentsRouteImport } from './routes/manage-students'
 import { Route as DateSelectionRouteImport } from './routes/date-selection'
+import { Route as AttendanceHistoryRouteImport } from './routes/attendance-history'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SearchMarkingRoute = SearchMarkingRouteImport.update({
@@ -35,6 +36,11 @@ const DateSelectionRoute = DateSelectionRouteImport.update({
   path: '/date-selection',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AttendanceHistoryRoute = AttendanceHistoryRouteImport.update({
+  id: '/attendance-history',
+  path: '/attendance-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/attendance-history': typeof AttendanceHistoryRoute
   '/date-selection': typeof DateSelectionRoute
   '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/attendance-history': typeof AttendanceHistoryRoute
   '/date-selection': typeof DateSelectionRoute
   '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/attendance-history': typeof AttendanceHistoryRoute
   '/date-selection': typeof DateSelectionRoute
   '/manage-students': typeof ManageStudentsRoute
   '/marking': typeof MarkingRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/attendance-history'
     | '/date-selection'
     | '/manage-students'
     | '/marking'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/attendance-history'
     | '/date-selection'
     | '/manage-students'
     | '/marking'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/attendance-history'
     | '/date-selection'
     | '/manage-students'
     | '/marking'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AttendanceHistoryRoute: typeof AttendanceHistoryRoute
   DateSelectionRoute: typeof DateSelectionRoute
   ManageStudentsRoute: typeof ManageStudentsRoute
   MarkingRoute: typeof MarkingRoute
@@ -125,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DateSelectionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/attendance-history': {
+      id: '/attendance-history'
+      path: '/attendance-history'
+      fullPath: '/attendance-history'
+      preLoaderRoute: typeof AttendanceHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AttendanceHistoryRoute: AttendanceHistoryRoute,
   DateSelectionRoute: DateSelectionRoute,
   ManageStudentsRoute: ManageStudentsRoute,
   MarkingRoute: MarkingRoute,

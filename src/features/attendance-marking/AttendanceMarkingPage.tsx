@@ -46,35 +46,35 @@ export const AttendanceMarkingPage = ({
     return (
       <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
         <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
-            <div className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
-              <CheckCircle className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`} />
+          <div className="bg-white rounded-2xl shadow-2xl p-5">
+            <div className={`w-20 h-20 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <CheckCircle className={`w-12 h-12 ${theme.text.primary}`} />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Presenças Registadas!
             </h2>
-            <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">
+            <p className="text-gray-600 mb-6 text-sm">
               {getLessonName(selectedDate, lessonNames)}
             </p>
-            <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
+            <div className="flex justify-center gap-6 mb-6">
               <div className="text-center">
-                <div className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}>
+                <div className={`text-3xl font-bold ${theme.text.primary} mb-1`}>
                   {presentCount}
                 </div>
-                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>
                   Presentes
                 </div>
               </div>
               <div className="text-center">
-                <div className={`text-3xl md:text-4xl font-bold ${theme.text.error} mb-1`}>
+                <div className={`text-3xl font-bold ${theme.text.error} mb-1`}>
                   {absentCount}
                 </div>
-                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>
                   Faltas
                 </div>
               </div>
             </div>
-            <p className="text-gray-500 text-xs md:text-sm">
+            <p className="text-gray-500 text-xs">
               A regressar ao início...
             </p>
           </div>
@@ -284,15 +284,15 @@ export const AttendanceMarkingPage = ({
                   : "transform 0ms",
               }}
             >
-              <div className={`w-24 h-24 ${theme.gradients.activeItem} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-                <span className="text-4xl font-bold text-white">
+              <div className={`w-20 h-20 ${theme.gradients.activeItem} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                <span className="text-3xl font-bold text-white">
                   {currentStudent.name.charAt(0)}
                 </span>
               </div>
-              <h2 className="text-gray-800 text-2xl font-bold mb-2 leading-tight">
+              <h2 className="text-gray-800 text-xl font-bold mb-2 leading-tight">
                 {getShortName(currentStudent.name)}
               </h2>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 text-xs">
                 Toque nos lados ou deslize
               </p>
             </div>
@@ -343,25 +343,25 @@ export const AttendanceMarkingPage = ({
           <div className="hidden md:grid grid-cols-2 gap-4">
             <button
               onClick={() => handleMark("F")}
-              className={`${theme.gradients.errorButton} ${theme.gradients.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group`}
+              className={`${theme.gradients.errorButton} ${theme.gradients.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
             >
               <div className="text-center">
-                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                  <XCircle className="w-12 h-12 text-white" />
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
+                  <XCircle className="w-10 h-10 text-white" />
                 </div>
-                <p className="text-white text-lg font-bold">Falta</p>
+                <p className="text-white text-base font-bold">Falta</p>
               </div>
             </button>
 
             <button
               onClick={() => handleMark("P")}
-              className={`${theme.gradients.activeItem} hover:from-cyan-600 hover:to-cyan-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-6 group`}
+              className={`${theme.gradients.activeItem} hover:from-cyan-600 hover:to-cyan-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
             >
               <div className="text-center">
-                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                  <CheckCircle className="w-12 h-12 text-white" />
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
+                  <CheckCircle className="w-10 h-10 text-white" />
                 </div>
-                <p className="text-white text-lg font-bold">Presente</p>
+                <p className="text-white text-base font-bold">Presente</p>
               </div>
             </button>
           </div>
@@ -371,7 +371,7 @@ export const AttendanceMarkingPage = ({
       {/* Custom Confirmation Dialog */}
       {blockerStatus === "blocked" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -388,7 +388,7 @@ export const AttendanceMarkingPage = ({
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              <h3 className="text-base font-bold text-gray-800 mb-2">
                 Tem a certeza?
               </h3>
               <p className="text-gray-600 text-sm">

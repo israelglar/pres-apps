@@ -31,35 +31,35 @@ export const SearchAttendanceMarkingPage: React.FC<
     return (
       <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
         <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
-            <div className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
-              <CheckCircle className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`} />
+          <div className="bg-white rounded-2xl shadow-2xl p-5">
+            <div className={`w-20 h-20 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <CheckCircle className={`w-12 h-12 ${theme.text.primary}`} />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Presenças Registadas!
             </h2>
-            <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">
+            <p className="text-gray-600 mb-6 text-sm">
               {getLessonName(date, lessonNames)}
             </p>
-            <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
+            <div className="flex justify-center gap-6 mb-6">
               <div className="text-center">
-                <div className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}>
+                <div className={`text-3xl font-bold ${theme.text.primary} mb-1`}>
                   {presentCount}
                 </div>
-                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>
                   Presentes
                 </div>
               </div>
               <div className="text-center">
-                <div className={`text-3xl md:text-4xl font-bold ${theme.text.error} mb-1`}>
+                <div className={`text-3xl font-bold ${theme.text.error} mb-1`}>
                   {absentCount}
                 </div>
-                <div className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>
                   Faltas
                 </div>
               </div>
             </div>
-            <p className="text-gray-500 text-xs md:text-sm">
+            <p className="text-gray-500 text-xs">
               A regressar ao início...
             </p>
           </div>
@@ -75,10 +75,10 @@ export const SearchAttendanceMarkingPage: React.FC<
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
-              <h1 className="text-base font-bold text-gray-800">
+              <h1 className="text-sm font-bold text-gray-800">
                 {formatDate(date)}
               </h1>
-              <p className="text-sm text-gray-600 font-medium mt-0.5">
+              <p className="text-xs text-gray-600 font-medium mt-0.5">
                 {getLessonName(date, lessonNames)}
               </p>
             </div>
@@ -102,14 +102,14 @@ export const SearchAttendanceMarkingPage: React.FC<
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.primary} w-5 h-5`} />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.primary} w-4 h-4`} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Procurar pelo nome..."
-              className={`w-full pl-10 pr-4 py-3 text-lg ${inputClasses}`}
+              className={`w-full pl-10 pr-4 py-3 text-sm ${inputClasses}`}
               autoFocus
             />
           </div>
@@ -169,7 +169,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                       </div>
                     )}
                     <span
-                      className={`text-lg font-semibold ${
+                      className={`text-base font-semibold ${
                         isMarked ? theme.text.primaryDarker : theme.text.neutralDarker
                       }`}
                     >
@@ -178,7 +178,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                   </div>
                   {isMarked && (
                     <div className={`${theme.backgrounds.primaryLight} rounded-full p-1`}>
-                      <CheckCircle className={`w-5 h-5 ${theme.text.primary}`} />
+                      <CheckCircle className={`w-4 h-4 ${theme.text.primary}`} />
                     </div>
                   )}
                 </button>
@@ -191,7 +191,7 @@ export const SearchAttendanceMarkingPage: React.FC<
       {/* Custom Confirmation Dialog */}
       {blockerStatus === "blocked" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -208,7 +208,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              <h3 className="text-base font-bold text-gray-800 mb-2">
                 Tem a certeza?
               </h3>
               <p className="text-gray-600 text-sm">

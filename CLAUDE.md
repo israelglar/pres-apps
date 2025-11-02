@@ -85,6 +85,53 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
   - Present: Green (#10b981)
   - Absent: Red
   - White cards with shadows, rounded corners
+- **Centralized Theme:** All colors and styling tokens defined in `src/config/theme.ts`
+
+### Design Standards (Mobile-First)
+
+The app follows a consistent design system for optimal mobile experience:
+
+#### Typography
+- **Page Headings (h1):** `text-3xl font-bold` - Main page titles
+- **Section Headings (h2):** `text-2xl font-bold` - Completion screens, dialog titles
+- **Subheadings (h3):** `text-base font-bold` - Card titles, method options
+- **Body Text:** `text-sm` - Standard readable text
+- **Labels:** `text-xs` - Form labels, secondary information
+- **Descriptive Text:** `text-base font-medium` - Page subtitles
+
+#### Spacing
+- **Card Padding:** `p-5` - All main content cards (consistent across pages)
+- **Dialog Padding:** `p-5` - Modal dialogs, confirmation screens
+- **Button Gaps:** `gap-3` - Space between side-by-side buttons
+- **Vertical Margins:** `mb-6` - Standard spacing between major sections
+- **Section Margins:** `mb-5` - Spacing within cards
+
+#### Components
+- **Buttons:**
+  - Padding: `px-5 py-3` for primary/secondary buttons
+  - Text: `text-sm` for button labels
+  - Icons: `w-4 h-4` for button icons
+- **Icons:**
+  - Standard: `w-4 h-4` - Navigation, form controls
+  - Large: `w-8 h-8` - Selected date display
+  - Extra Large: `w-16 h-16` - Loading spinners, empty states
+- **Input Fields:**
+  - Padding: `py-3` vertical, `px-4` horizontal
+  - Text: `text-sm`
+  - Icons: `w-4 h-4`
+- **Cards:**
+  - Border radius: `rounded-2xl`
+  - Shadow: `shadow-2xl`
+  - Padding: `p-5` (consistent)
+
+#### Why These Standards?
+1. **Mobile-First:** Optimized for thumb accessibility on phones
+2. **Readability:** Text sizes tested on various phone screens
+3. **Consistency:** Users know what to expect across all pages
+4. **Performance:** Standardized sizes reduce layout shifts
+5. **Accessibility:** Large touch targets (minimum 44x44px for buttons)
+
+All pages should follow these standards. Reference: `src/features/home/HomePage.tsx`
 
 ### Data & Validation
 - **Schema Validation:** Zod 4.1.12 (runtime type safety for API responses)
@@ -760,6 +807,34 @@ npm run lint
 # Type check
 tsc -b
 ```
+
+### Testing the Application
+
+**Important Note:** When AI assistants are testing or validating changes:
+- **DO NOT run `npm run dev`** - The development server is resource-intensive and not necessary for validation
+- **Instead, run `npm run build`** - This performs a full TypeScript type check and build verification
+- The build command will catch:
+  - TypeScript compilation errors
+  - Missing imports or exports
+  - Type mismatches
+  - Syntax errors
+  - Build-time configuration issues
+
+**Why this approach?**
+- The dev server runs continuously in the background and can accumulate multiple instances
+- Building is faster for validation purposes
+- Build errors are more comprehensive than dev server hot-reload errors
+- Matches the production deployment process
+
+**Testing workflow for AI assistants:**
+1. Make code changes
+2. Run `npm run build` to verify compilation
+3. If build succeeds → changes are valid
+4. If build fails → fix the reported errors and rebuild
+
+**Manual testing by users:**
+- Users should run `npm run dev` when they want to interact with the app
+- The app is deployed on Vercel, so manual testing can also be done there
 
 ### Environment Variables (Future)
 When adding authentication and migrating backend:

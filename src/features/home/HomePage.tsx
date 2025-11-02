@@ -2,8 +2,8 @@ import {
   AlertCircle,
   ArrowRight,
   Calendar,
-  CheckCircle2,
   Download,
+  History,
   Loader2,
   RefreshCw,
   Users,
@@ -14,6 +14,7 @@ import { useHomePageLogic } from "./HomePage.logic";
 interface HomePageProps {
   onNavigate: () => void;
   onManageStudents: () => void;
+  onViewHistory: () => void;
 }
 
 /**
@@ -25,7 +26,11 @@ interface HomePageProps {
  * - Loading state overlay
  * - Error handling
  */
-export function HomePage({ onNavigate, onManageStudents }: HomePageProps) {
+export function HomePage({
+  onNavigate,
+  onManageStudents,
+  onViewHistory,
+}: HomePageProps) {
   const logic = useHomePageLogic({ onNavigate });
 
   return (
@@ -60,7 +65,7 @@ export function HomePage({ onNavigate, onManageStudents }: HomePageProps) {
       )}
 
       <div
-        className="max-w-md w-full"
+        className="max-w-md w-full px-4"
         style={{
           transform: `translateX(${logic.swipeOffset}px)`,
           transition: logic.isAnimatingSwipe
@@ -68,72 +73,72 @@ export function HomePage({ onNavigate, onManageStudents }: HomePageProps) {
             : "none",
         }}
       >
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            Pré-adolescentes
-          </h1>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-white">Pré-adolescentes</h1>
         </div>
 
         <button
           onClick={logic.handleStartClick}
-          className={`w-full bg-white ${theme.text.primary} rounded-2xl shadow-2xl p-12 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden`}
+          className={`w-full bg-white ${theme.text.primary} rounded-xl shadow-xl p-8 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden`}
         >
           {/* Swipe indicator */}
           {logic.swipeOffset < 0 && !logic.isAnimatingSwipe && (
             <div
-              className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{
                 opacity: Math.min(Math.abs(logic.swipeOffset) / 50, 1),
               }}
             >
-              <ArrowRight className={`w-8 h-8 ${theme.text.primary}`} />
+              <ArrowRight className={`w-6 h-6 ${theme.text.primary}`} />
             </div>
           )}
 
           <Calendar
-            className={`w-24 h-24 mx-auto mb-6 ${theme.text.primary}`}
+            className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`}
           />
-          <h2 className="text-3xl font-bold mb-2">Registar Presenças</h2>
-          <p className={`${theme.text.neutral} text-lg`}>
+          <h2 className="text-2xl font-bold mb-1">Registar Presenças</h2>
+          <p className={`${theme.text.neutral} text-sm`}>
             Marcar presenças para a lição de hoje
           </p>
           <div
-            className={`mt-6 flex items-center justify-center ${theme.text.primary} font-semibold`}
+            className={`mt-4 flex items-center justify-center ${theme.text.primary} font-semibold text-sm`}
           >
             <span>Começar</span>
-            <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform" />
+            <ArrowRight className="ml-1.5 w-5 h-5 group-hover:translate-x-2 transition-transform" />
           </div>
+        </button>
+
+        {/* History Button */}
+        <button
+          onClick={onViewHistory}
+          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 mt-3"
+        >
+          <History className="w-4 h-4" />
+          <span className="font-semibold text-sm">Histórico de Presenças</span>
         </button>
 
         {/* Manage Students Button */}
         <button
           onClick={onManageStudents}
-          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl shadow-lg px-6 py-4 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-4"
+          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 mt-3"
         >
-          <Users className="w-5 h-5" />
-          <span className="font-semibold">Gerir Alunos</span>
+          <Users className="w-4 h-4" />
+          <span className="font-semibold text-sm">Gerir Alunos</span>
         </button>
 
         {/* PWA Button - Only show if NOT running in PWA mode */}
         {!logic.isRunningInPWA && (
-          <div className="mt-6">
-            {logic.canInstall ? (
+          <div className="mt-4">
+            {logic.canInstall && (
               // Show install button if app can be installed
               <button
                 onClick={logic.promptInstall}
-                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl shadow-lg px-6 py-4 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30"
+                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30"
               >
-                <Download className="w-5 h-5" />
-                <span className="font-semibold">Instalar Aplicação</span>
-              </button>
-            ) : (
-              // Show "Open App" button if in browser but app might be installed
-              <button
-                onClick={logic.openPWAApp}
-                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl shadow-lg px-6 py-4 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30"
-              >
-                <CheckCircle2 className="w-5 h-5" />
-                <span className="font-semibold">Abrir Aplicação</span>
+                <Download className="w-4 h-4" />
+                <span className="font-semibold text-sm">
+                  Instalar Aplicação
+                </span>
               </button>
             )}
           </div>

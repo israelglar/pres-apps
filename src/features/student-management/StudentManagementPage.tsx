@@ -93,10 +93,8 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
     >
       <div className="max-w-4xl w-full py-4 pb-8">
         {/* Header */}
-        <div className="text-center mb-6 mt-4">
-          <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
-            Gerir Alunos
-          </h1>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-white">Gerir Alunos</h1>
           <p className={`${theme.text.primaryLight} text-base font-medium`}>
             Adicionar, editar ou remover alunos
           </p>
@@ -108,14 +106,14 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           <div className="flex gap-3 mb-5">
             <button
               onClick={onBack}
-              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm flex items-center justify-center`}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
             </button>
             <button
               onClick={handleAddStudent}
-              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
               disabled={isCreating}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -126,8 +124,8 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className={`w-12 h-12 ${theme.text.primary} animate-spin mb-4`} />
-              <p className={`text-lg ${theme.text.neutral} font-medium`}>
+              <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
+              <p className={`text-base ${theme.text.neutral} font-medium`}>
                 A carregar alunos...
               </p>
             </div>
@@ -155,20 +153,20 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           {!isLoading && !isError && students.length > 0 && (
             <div className="mb-5">
               <div className="relative">
-                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${theme.text.neutral}`} />
+                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${theme.text.neutral}`} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Procurar aluno por nome..."
-                  className={`w-full pl-12 pr-12 py-3 ${inputClasses} text-base`}
+                  className={`w-full pl-12 pr-12 py-3 ${inputClasses} text-sm`}
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
                     className={`absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors`}
                   >
-                    <X className={`w-5 h-5 ${theme.text.neutral}`} />
+                    <X className={`w-4 h-4 ${theme.text.neutral}`} />
                   </button>
                 )}
               </div>
@@ -180,12 +178,12 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
             <>
               {students.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className={`text-lg ${theme.text.neutral} font-medium mb-4`}>
+                  <p className={`text-base ${theme.text.neutral} font-medium mb-4`}>
                     Nenhum aluno encontrado
                   </p>
                   <button
                     onClick={handleAddStudent}
-                    className={`px-5 py-3 ${buttonClasses.primary} text-base inline-flex items-center`}
+                    className={`px-5 py-3 ${buttonClasses.primary} text-sm inline-flex items-center`}
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Adicionar Primeiro Aluno
@@ -193,8 +191,8 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                 </div>
               ) : filteredStudents.length === 0 ? (
                 <div className="text-center py-16">
-                  <Search className={`w-12 h-12 ${theme.text.neutral} mx-auto mb-4`} />
-                  <p className={`text-lg ${theme.text.neutral} font-medium mb-2`}>
+                  <Search className={`w-16 h-16 ${theme.text.neutral} mx-auto mb-4`} />
+                  <p className={`text-base ${theme.text.neutral} font-medium mb-2`}>
                     Nenhum aluno encontrado
                   </p>
                   <p className={`text-sm ${theme.text.neutral}`}>
@@ -202,7 +200,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                   </p>
                   <button
                     onClick={() => setSearchQuery('')}
-                    className={`mt-4 px-5 py-2 ${buttonClasses.secondary} text-sm`}
+                    className={`mt-4 px-5 py-3 ${buttonClasses.secondary} text-sm`}
                   >
                     Limpar pesquisa
                   </button>

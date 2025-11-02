@@ -22,5 +22,15 @@ function HomeRoute() {
     navigate({ to: '/manage-students' })
   }
 
-  return <HomePage onNavigate={handleNavigate} onManageStudents={handleManageStudents} />
+  const handleViewHistory = () => {
+    navigate({ to: '/attendance-history' })
+  }
+
+  return (
+    <HomePage
+      onNavigate={handleNavigate}
+      onManageStudents={handleManageStudents}
+      onViewHistory={handleViewHistory}
+    />
+  )
 }
