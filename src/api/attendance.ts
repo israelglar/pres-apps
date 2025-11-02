@@ -10,7 +10,7 @@ import {
   type Student,
 } from "../schemas/attendance.schema";
 import { getActiveStudents } from "./supabase/students";
-import { getAllSchedules, getScheduleDates } from "./supabase/schedules";
+import { getAllSchedules, getScheduleDates, getScheduleByDateAndService, createSchedule } from "./supabase/schedules";
 import { bulkSaveAttendance as supabaseBulkSave } from "./supabase/attendance";
 
 /**
@@ -91,24 +91,34 @@ export async function bulkUpdateAttendance(
     console.log(`Saving attendance for ${date}, service time ${serviceTimeId}...`);
 
     // First, find or create the schedule for this date/service time
-    const { getAllSchedules, createSchedule } = await import('./supabase/schedules');
-    const schedules = await getAllSchedules();
-
-    let schedule = schedules.find(
-      (s) => s.date === date && s.service_time_id === serviceTimeId
-    );
+    // Use the dedicated function to check for existing schedule
+    let schedule = await getScheduleByDateAndService(date, serviceTimeId);
 
     // If schedule doesn't exist, create it
     if (!schedule) {
       console.log("Schedule not found, creating new schedule...");
-      schedule = await createSchedule({
-        date,
-        service_time_id: serviceTimeId,
-        lesson_id: null,
-        event_type: 'regular',
-        is_cancelled: false,
-        notes: null,
-      });
+      try {
+        schedule = await createSchedule({
+          date,
+          service_time_id: serviceTimeId,
+          lesson_id: null,
+          event_type: 'regular',
+          is_cancelled: false,
+          notes: null,
+        });
+      } catch (createError: any) {
+        // Handle race condition: another request may have just created the schedule
+        if (createError?.message?.includes('duplicate key') ||
+            createError?.code === '23505') {
+          console.log("Schedule was created by another request, fetching it...");
+          schedule = await getScheduleByDateAndService(date, serviceTimeId);
+          if (!schedule) {
+            throw new Error("Failed to retrieve schedule after duplicate error");
+          }
+        } else {
+          throw createError;
+        }
+      }
     }
 
     // Save attendance records
