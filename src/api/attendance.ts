@@ -8,11 +8,49 @@ import {
   attendanceDataSchema,
   type AttendanceData,
   type Student,
+  type Schedule,
 } from "../schemas/attendance.schema";
 import { getActiveStudents } from "./supabase/students";
 import { getAllSchedules, getScheduleDates, getScheduleByDateAndService, createSchedule } from "./supabase/schedules";
 import { bulkSaveAttendance as supabaseBulkSave } from "./supabase/attendance";
 import { getActiveServiceTimes } from "./supabase/service-times";
+import type { ScheduleWithRelations } from "../types/database.types";
+
+/**
+ * Transform Supabase schedule to frontend schema
+ */
+function transformSchedule(schedule: ScheduleWithRelations): Schedule {
+  // Count attendance records
+  const attendanceCount = Array.isArray(schedule.attendance_records)
+    ? schedule.attendance_records.length
+    : 0;
+
+  return {
+    id: schedule.id,
+    date: schedule.date,
+    service_time_id: schedule.service_time_id,
+    lesson_id: schedule.lesson_id,
+    event_type: schedule.event_type,
+    is_cancelled: schedule.is_cancelled,
+    lesson: schedule.lesson ? {
+      id: schedule.lesson.id,
+      name: schedule.lesson.name,
+      resource_url: schedule.lesson.resource_url,
+      curriculum_series: schedule.lesson.curriculum_series,
+      lesson_number: schedule.lesson.lesson_number,
+      is_special_event: schedule.lesson.is_special_event,
+    } : undefined,
+    service_time: schedule.service_time ? {
+      id: schedule.service_time.id,
+      time: schedule.service_time.time,
+      name: schedule.service_time.name,
+      is_active: schedule.service_time.is_active,
+      display_order: schedule.service_time.display_order,
+    } : undefined,
+    attendance_count: attendanceCount,
+    has_attendance: attendanceCount > 0,
+  };
+}
 
 /**
  * Get all attendance data
@@ -29,19 +67,6 @@ export async function getAttendance(): Promise<AttendanceData> {
       getActiveServiceTimes(),
     ]);
 
-    // Transform schedules into lesson maps (date -> lesson name/link)
-    const lessonNames: Record<string, string> = {};
-    const lessonLinks: Record<string, string> = {};
-
-    schedules.forEach((schedule) => {
-      if (schedule.lesson) {
-        lessonNames[schedule.date] = schedule.lesson.name;
-        if (schedule.lesson.resource_url) {
-          lessonLinks[schedule.date] = schedule.lesson.resource_url;
-        }
-      }
-    });
-
     // Transform students to match expected schema
     const transformedStudents: Student[] = students.map((s) => ({
       id: s.id,
@@ -49,12 +74,14 @@ export async function getAttendance(): Promise<AttendanceData> {
       is_visitor: s.is_visitor,
     }));
 
+    // Transform schedules to match expected schema
+    const transformedSchedules: Schedule[] = schedules.map(transformSchedule);
+
     // Build response matching the expected schema
     const response: AttendanceData = {
       success: true,
       dates,
-      lessonNames,
-      lessonLinks,
+      schedules: transformedSchedules,
       students: transformedStudents,
       serviceTimes,
     };

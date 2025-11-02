@@ -8,7 +8,7 @@ export const Route = createFileRoute('/date-selection')({
 
 function DateSelectionRoute() {
   const navigate = useNavigate()
-  const { allSundays, lessonNames, lessonLinks, serviceTimes } = useAttendanceData()
+  const { serviceTimes, getSchedule, getAvailableDates } = useAttendanceData()
 
   const handleDateSelected = (date: Date, method: "search" | "swipe" = "swipe", serviceTimeId: number) => {
     if (method === "search") {
@@ -26,10 +26,9 @@ function DateSelectionRoute() {
     <DateSelectionPage
       onDateSelected={handleDateSelected}
       onBack={handleBack}
-      allSundays={allSundays}
-      lessonNames={lessonNames}
-      lessonLinks={lessonLinks}
       serviceTimes={serviceTimes}
+      getSchedule={getSchedule}
+      getAvailableDates={getAvailableDates}
     />
   )
 }

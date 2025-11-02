@@ -94,6 +94,7 @@ export interface ScheduleWithRelations extends Schedule {
   lesson?: Lesson;
   service_time?: ServiceTime;
   assignments?: (ScheduleAssignment & { teacher?: Teacher })[];
+  attendance_records?: { count: number }[] | AttendanceRecord[];
 }
 
 export interface AttendanceRecordWithRelations extends AttendanceRecord {

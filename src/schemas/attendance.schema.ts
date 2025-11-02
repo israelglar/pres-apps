@@ -44,6 +44,8 @@ export const scheduleSchema = z.object({
   is_cancelled: z.boolean(),
   lesson: lessonSchema.optional(),
   service_time: serviceTimeSchema.optional(),
+  attendance_count: z.number().optional(), // Count of attendance records for this schedule
+  has_attendance: z.boolean().optional(), // Derived: whether attendance has been marked
 });
 
 /**
@@ -53,8 +55,7 @@ export const scheduleSchema = z.object({
 export const attendanceDataSchema = z.object({
   success: z.boolean(),
   dates: z.array(z.string()), // Array of ISO date strings
-  lessonNames: z.record(z.string(), z.string()), // date -> lesson name
-  lessonLinks: z.record(z.string(), z.string()), // date -> resource URL
+  schedules: z.array(scheduleSchema), // Full schedule data with lessons and service times
   students: z.array(studentSchema),
   serviceTimes: z.array(serviceTimeSchema),
 });

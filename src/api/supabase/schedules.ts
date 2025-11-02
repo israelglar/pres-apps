@@ -11,7 +11,7 @@ import type {
 } from '../../types/database.types';
 
 /**
- * Get all schedules with related data (lessons, service times, teachers)
+ * Get all schedules with related data (lessons, service times, teachers, attendance records)
  */
 export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
   try {
@@ -24,7 +24,8 @@ export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
         assignments:schedule_assignments(
           *,
           teacher:teachers(*)
-        )
+        ),
+        attendance_records(id)
       `)
       .order('date', { ascending: false });
 

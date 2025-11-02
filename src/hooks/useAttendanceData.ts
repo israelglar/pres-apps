@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAttendance, bulkUpdateAttendance } from '../api/attendance';
-import type { StudentWithId, ServiceTime } from '../schemas/attendance.schema';
+import type { StudentWithId, ServiceTime, Schedule } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
 
 /**
@@ -60,16 +60,12 @@ export function useAttendanceData() {
   });
 
   // Derived data - memoized to prevent unnecessary recalculations
+  const schedules = useMemo<Schedule[]>(() => {
+    return data ? data.schedules : [];
+  }, [data]);
+
   const allSundays = useMemo(() => {
     return data ? data.dates.map((d) => new Date(d)) : [];
-  }, [data]);
-
-  const lessonNames = useMemo(() => {
-    return data ? data.lessonNames : {};
-  }, [data]);
-
-  const lessonLinks = useMemo(() => {
-    return data ? data.lessonLinks : {};
   }, [data]);
 
   const students = useMemo<StudentWithId[]>(() => {
@@ -84,16 +80,65 @@ export function useAttendanceData() {
     return data ? data.serviceTimes : [];
   }, [data]);
 
+  // Helper function to get a schedule for a specific date and service time
+  const getSchedule = useMemo(() => {
+    return (date: string, serviceTimeId: number | null): Schedule | undefined => {
+      if (!data) return undefined;
+      return data.schedules.find(
+        (s) => s.date === date && s.service_time_id === serviceTimeId
+      );
+    };
+  }, [data]);
+
+  // Helper function to get all dates available for a specific service time
+  const getAvailableDates = useMemo(() => {
+    return (serviceTimeId?: number | null): Date[] => {
+      if (!data) return [];
+
+      // If no service time specified, return all dates
+      if (serviceTimeId === undefined || serviceTimeId === null) {
+        return data.dates.map((d) => new Date(d));
+      }
+
+      // Filter schedules by service time and extract unique dates
+      const datesForService = data.schedules
+        .filter((s) => s.service_time_id === serviceTimeId)
+        .map((s) => s.date);
+
+      const uniqueDates = [...new Set(datesForService)];
+      return uniqueDates.map((d) => new Date(d));
+    };
+  }, [data]);
+
+  // Backward compatibility: Generate lessonNames map from schedules
+  // This creates a simplified map that picks the first lesson for each date
+  // Note: This is a temporary helper - components should eventually use getSchedule() with serviceTimeId
+  const lessonNames = useMemo(() => {
+    if (!data) return {};
+
+    const names: Record<string, string> = {};
+    data.schedules.forEach((schedule) => {
+      if (schedule.lesson && !names[schedule.date]) {
+        names[schedule.date] = schedule.lesson.name;
+      }
+    });
+    return names;
+  }, [data]);
+
   return {
     // Raw data
     data,
 
     // Derived data
+    schedules,
     allSundays,
-    lessonNames,
-    lessonLinks,
     students,
     serviceTimes,
+    lessonNames, // Backward compatibility - should be removed once components are updated
+
+    // Helper functions
+    getSchedule,
+    getAvailableDates,
 
     // States
     isLoading,

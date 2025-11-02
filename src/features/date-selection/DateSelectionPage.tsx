@@ -9,42 +9,81 @@ import {
   Search,
   Eye,
   Clock,
+  AlertCircle,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useDateSelectionLogic } from './DateSelectionPage.logic';
-import {
-  formatDate,
-  getLessonLink,
-  getLessonName,
-} from '../../utils/helperFunctions';
+import { formatDate } from '../../utils/helperFunctions';
 import { theme, buttonClasses } from '../../config/theme';
+import type { Schedule } from '../../schemas/attendance.schema';
 
 interface DateSelectionPageProps {
   onDateSelected: (date: Date, method: 'search' | 'swipe', serviceTimeId: number) => void;
   onBack: () => void;
-  allSundays: Date[];
-  lessonNames: Record<string, string>;
-  lessonLinks: Record<string, string>;
   serviceTimes: Array<{ id: number; name: string; time: string }>;
+  getSchedule: (date: string, serviceTimeId: number | null) => Schedule | undefined;
+  getAvailableDates: (serviceTimeId?: number | null) => Date[];
 }
 
 /**
  * Date Selection Page - Choose a date and method for attendance marking
  *
  * Features:
- * - Dropdown date picker
+ * - Dropdown date picker filtered by service time
  * - Filter future lessons
  * - Method selection dialog (search vs swipe)
- * - Lesson name and link display
+ * - Lesson name and link display per service time
  */
 export function DateSelectionPage({
   onDateSelected,
   onBack,
-  allSundays,
-  lessonNames,
-  lessonLinks,
   serviceTimes,
+  getSchedule,
+  getAvailableDates,
 }: DateSelectionPageProps) {
-  const logic = useDateSelectionLogic({ allSundays });
+  const logic = useDateSelectionLogic({ getAvailableDates });
+
+  // Get the schedule for the selected date and service time
+  const selectedSchedule = getSchedule(
+    logic.selectedDate.toISOString().split('T')[0],
+    logic.selectedServiceTimeId
+  );
+
+  // Get lesson info for a specific date and current service time (for dropdown)
+  const getLessonForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const schedule = getSchedule(dateStr, logic.selectedServiceTimeId);
+    return schedule?.lesson?.name || 'Sem lição agendada';
+  };
+
+  // Check if a date is in the past (for attendance status badge)
+  const isPastDate = (date: Date): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() < today.getTime();
+  };
+
+  // Get attendance status for all service times for a date
+  const getAllAttendanceStatuses = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+
+    // Get status for each service time
+    const statuses = serviceTimes.map(serviceTime => {
+      const schedule = getSchedule(dateStr, serviceTime.id);
+      return {
+        serviceTimeId: serviceTime.id,
+        serviceTimeName: serviceTime.name,
+        hasAttendance: schedule?.has_attendance || false,
+        attendanceCount: schedule?.attendance_count || 0,
+        hasSchedule: !!schedule,
+      };
+    });
+
+    return statuses.filter(s => s.hasSchedule); // Only return service times that have schedules
+  };
 
   return (
     <div className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}>
@@ -91,6 +130,8 @@ export function DateSelectionPage({
                     const isSelected =
                       sunday.toDateString() === logic.selectedDate.toDateString();
                     const dateLabel = logic.getDateLabel(sunday);
+                    const isPast = isPastDate(sunday);
+                    const allAttendanceStatuses = getAllAttendanceStatuses(sunday);
 
                     return (
                       <button
@@ -107,12 +148,12 @@ export function DateSelectionPage({
                             : ''
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1">
                           <div
                             className={`w-2 h-2 rounded-full transition-all ${isSelected ? `${theme.backgrounds.primary} scale-125` : `${theme.backgrounds.neutral}`}`}
                           />
-                          <div>
-                            <div className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span
                                 className={`font-bold text-sm ${isSelected ? theme.text.primaryDarker : theme.text.neutralDarker}`}
                               >
@@ -123,16 +164,30 @@ export function DateSelectionPage({
                                   {dateLabel}
                                 </span>
                               )}
+                              {/* Attendance status badges for past dates only - show all service times */}
+                              {isPast && allAttendanceStatuses.map(status => (
+                                status.hasAttendance ? (
+                                  <span key={status.serviceTimeId} className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow-sm flex items-center gap-1">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    {status.serviceTimeName}
+                                  </span>
+                                ) : (
+                                  <span key={status.serviceTimeId} className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-sm flex items-center gap-1">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    {status.serviceTimeName}
+                                  </span>
+                                )
+                              ))}
                             </div>
                             <span
                               className={`text-xs ${isSelected ? `${theme.text.primaryDark} font-medium` : theme.text.neutral}`}
                             >
-                              {getLessonName(sunday, lessonNames)}
+                              {getLessonForDate(sunday)}
                             </span>
                           </div>
                         </div>
                         {isSelected && (
-                          <div className={`${theme.backgrounds.primaryLight} p-1 rounded-full`}>
+                          <div className={`${theme.backgrounds.primaryLight} p-1 rounded-full flex-shrink-0`}>
                             <Check className={`w-4 h-4 ${theme.text.primary}`} />
                           </div>
                         )}
@@ -170,20 +225,29 @@ export function DateSelectionPage({
                 <p className={`text-base font-bold ${theme.text.primaryDarker} my-0.5`}>
                   {formatDate(logic.selectedDate)}
                 </p>
-                {getLessonLink(logic.selectedDate, lessonLinks) ? (
-                  <a
-                    href={getLessonLink(logic.selectedDate, lessonLinks)!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${theme.text.primaryDark} font-semibold text-sm ${theme.text.primaryDarker} hover:underline flex items-center gap-1 transition-colors`}
-                  >
-                    {getLessonName(logic.selectedDate, lessonNames)}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                {selectedSchedule?.lesson ? (
+                  selectedSchedule.lesson.resource_url ? (
+                    <a
+                      href={selectedSchedule.lesson.resource_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${theme.text.primaryDark} font-semibold text-sm ${theme.text.primaryDarker} hover:underline flex items-center gap-1 transition-colors`}
+                    >
+                      {selectedSchedule.lesson.name}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <p className={`${theme.text.primaryDark} font-semibold text-sm`}>
+                      {selectedSchedule.lesson.name}
+                    </p>
+                  )
                 ) : (
-                  <p className={`${theme.text.primaryDark} font-semibold text-sm`}>
-                    {getLessonName(logic.selectedDate, lessonNames)}
-                  </p>
+                  <div className="flex items-center gap-1 text-amber-600">
+                    <AlertCircle className="w-3 h-3" />
+                    <p className="font-semibold text-sm">
+                      Sem lição agendada
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
