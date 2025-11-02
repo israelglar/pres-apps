@@ -53,9 +53,9 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
 
         {/* Student Name */}
         <div className="flex-1">
-          <p className="font-medium text-gray-800">{record.student?.name || 'Unknown'}</p>
+          <p className="font-medium text-gray-800 text-sm">{record.student?.name || 'Unknown'}</p>
           {record.notes && (
-            <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">
+            <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
               {record.notes}
             </p>
           )}
@@ -70,7 +70,7 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
       {/* Edit Button */}
       <button
         onClick={() => onEdit(record)}
-        className={`ml-3 px-3 py-1.5 text-sm font-semibold ${theme.text.primary} ${theme.borders.primary} border rounded-lg hover:bg-cyan-50 active:scale-95 transition-all flex-shrink-0`}
+        className={`ml-3 px-3 py-2 text-sm font-semibold ${theme.text.primary} ${theme.borders.primary} border rounded-lg hover:bg-cyan-50 active:scale-95 transition-all flex-shrink-0`}
       >
         Editar
       </button>

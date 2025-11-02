@@ -41,7 +41,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
     >
       <div className="max-w-4xl mx-auto p-3 pb-20">
         {/* Header */}
-        <div className="mb-4">
+        <div className="mb-6">
           <button
             onClick={onBack}
             className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors mb-3"
@@ -76,11 +76,11 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         </div>
 
         {/* Service Time Tabs */}
-        <div className="mb-4">
+        <div className="mb-5">
           <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1">
             <button
               onClick={() => handleServiceTimeChange("11:00:00")}
-              className={`flex-1 px-4 py-2 rounded-md font-bold text-sm transition-all ${
+              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-all ${
                 selectedServiceTime === "11:00:00"
                   ? "bg-white text-cyan-700 shadow-md"
                   : "text-white hover:bg-white/10"
@@ -90,7 +90,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
             </button>
             <button
               onClick={() => handleServiceTimeChange("09:00:00")}
-              className={`flex-1 px-4 py-2 rounded-md font-bold text-sm transition-all ${
+              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-all ${
                 selectedServiceTime === "09:00:00"
                   ? "bg-white text-cyan-700 shadow-md"
                   : "text-white hover:bg-white/10"
@@ -113,14 +113,14 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-100 border-2 border-red-400 rounded-2xl p-6 text-center">
-            <p className="text-red-800 font-semibold mb-2">
+          <div className="bg-red-100 border-2 border-red-400 rounded-2xl p-5 text-center">
+            <p className="text-red-800 font-semibold mb-2 text-base">
               Erro ao carregar histórico
             </p>
             <p className="text-red-700 text-sm mb-4">{error.toString()}</p>
             <button
               onClick={handleRefresh}
-              className={`${buttonClasses.danger} px-6 py-2`}
+              className={`${buttonClasses.danger} px-5 py-3 text-sm`}
             >
               Tentar Novamente
             </button>
@@ -157,12 +157,11 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoading}
-                  className={`${buttonClasses.secondary} px-5 py-3 text-sm bg-white/90 hover:bg-white disabled:opacity-50`}
+                  className={`${buttonClasses.secondary} px-5 py-3 text-sm bg-white/90 hover:bg-white disabled:opacity-50 flex items-center gap-3`}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />A
-                      carregar...
+                      <Loader2 className="w-4 h-4 animate-spin" />A carregar...
                     </>
                   ) : (
                     "Carregar Mais"

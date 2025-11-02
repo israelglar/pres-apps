@@ -114,7 +114,7 @@ export function EditAttendanceDialog({
 
           {/* Status Selection */}
           <div>
-            <label className={`block ${theme.text.neutralDarker} font-bold mb-3 text-sm`}>
+            <label className={`block ${theme.text.neutralDarker} font-bold mb-3 text-xs`}>
               Estado <span className={theme.text.error}>*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -125,7 +125,7 @@ export function EditAttendanceDialog({
                   onClick={() => setStatus(option.value)}
                   disabled={isSubmitting}
                   className={`
-                    p-4 rounded-xl border-2 transition-all
+                    p-3 rounded-xl border-2 transition-all
                     ${status === option.value
                       ? `${option.bgColor} ${option.borderColor} ${option.color} font-bold shadow-md`
                       : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
@@ -148,7 +148,7 @@ export function EditAttendanceDialog({
           <div>
             <label
               htmlFor="notes"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-sm`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
             >
               Notas (opcional)
             </label>
@@ -156,7 +156,7 @@ export function EditAttendanceDialog({
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className={`w-full px-4 py-3 ${inputClasses} resize-none`}
+              className={`w-full px-4 py-3 ${inputClasses} resize-none text-sm`}
               rows={3}
               placeholder="Observações (ex: Chegou atrasado por causa do trânsito)"
               disabled={isSubmitting}
@@ -171,19 +171,19 @@ export function EditAttendanceDialog({
             <button
               type="button"
               onClick={onClose}
-              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-base`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm`}
               disabled={isSubmitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-base flex items-center justify-center`}
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   A guardar...
                 </>
               ) : (

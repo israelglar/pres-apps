@@ -44,13 +44,13 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-white/50">
+    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/50">
       {/* Header - Clickable to expand/collapse */}
       <button
         onClick={toggleExpand}
-        className="bg-white p-3 w-full text-left hover:bg-gray-50 transition-all active:scale-[0.99]"
+        className="bg-white p-5 w-full text-left hover:bg-gray-50 transition-all active:scale-[0.99]"
       >
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
               <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
@@ -113,7 +113,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
         <>
           {/* Lesson Link - Show when expanded */}
           {schedule.lesson?.resource_url && (
-            <div className="px-4 pt-3 pb-2">
+            <div className="px-5 pt-3 pb-2">
               <a
                 href={schedule.lesson.resource_url}
                 target="_blank"
@@ -129,7 +129,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
 
           {/* Student List */}
           {records.length > 0 ? (
-            <div className="p-4 space-y-2">
+            <div className="p-5 space-y-2">
               {sortedRecords.map((record) => (
                 <StudentAttendanceRow
                   key={record.id}
@@ -139,14 +139,14 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center">
-              <p className="text-gray-500">Nenhuma presença registada</p>
+            <div className="p-5 text-center">
+              <p className="text-gray-500 text-sm">Nenhuma presença registada</p>
             </div>
           )}
 
           {/* Summary Stats - Detailed view when expanded */}
           {records.length > 0 && (
-            <div className={`${theme.gradients.cardHighlight} p-4 border-t ${theme.borders.neutralLight}`}>
+            <div className={`${theme.gradients.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {/* Present */}
                 <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                   </div>
                   <div>
                     <p className="text-xs text-gray-600">Presenças</p>
-                    <p className="text-lg font-bold text-green-600">{stats.present}</p>
+                    <p className="text-base font-bold text-green-600">{stats.present}</p>
                   </div>
                 </div>
 
@@ -166,7 +166,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                   </div>
                   <div>
                     <p className="text-xs text-gray-600">Faltas</p>
-                    <p className="text-lg font-bold text-red-600">{stats.absent}</p>
+                    <p className="text-base font-bold text-red-600">{stats.absent}</p>
                   </div>
                 </div>
 
@@ -178,7 +178,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                     </div>
                     <div>
                       <p className="text-xs text-gray-600">Atrasados</p>
-                      <p className="text-lg font-bold text-amber-600">{stats.late}</p>
+                      <p className="text-base font-bold text-amber-600">{stats.late}</p>
                     </div>
                   </div>
                 )}
@@ -191,7 +191,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                     </div>
                     <div>
                       <p className="text-xs text-gray-600">Justificadas</p>
-                      <p className="text-lg font-bold text-blue-600">{stats.excused}</p>
+                      <p className="text-base font-bold text-blue-600">{stats.excused}</p>
                     </div>
                   </div>
                 )}
