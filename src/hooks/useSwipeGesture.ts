@@ -33,20 +33,20 @@ export function useSwipeGesture({
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!enabled || isAnimating) return;
+    if (!enabled) return;
 
     setTouchStartX(e.touches[0].clientX);
     setTouchStartY(e.touches[0].clientY);
     setSwipeOffset(0);
-  }, [enabled, isAnimating]);
+    setIsAnimating(false); // Cancel any ongoing animation
+  }, [enabled]);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
       if (
         !enabled ||
         touchStartX === null ||
-        touchStartY === null ||
-        isAnimating
+        touchStartY === null
       )
         return;
 
@@ -67,7 +67,7 @@ export function useSwipeGesture({
         }
       }
     },
-    [enabled, touchStartX, touchStartY, isAnimating, onSwipeLeft, onSwipeRight]
+    [enabled, touchStartX, touchStartY, onSwipeLeft, onSwipeRight]
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -80,15 +80,10 @@ export function useSwipeGesture({
       currentSwipeOffset < -minSwipeDistance &&
       onSwipeLeft
     ) {
-      setIsAnimating(true);
-      setSwipeOffset(-window.innerWidth);
-
-      setTimeout(() => {
-        onSwipeLeft();
-      }, 50);
-
+      onSwipeLeft();
       setTouchStartX(null);
       setTouchStartY(null);
+      setSwipeOffset(0);
       return;
     }
 
@@ -97,15 +92,10 @@ export function useSwipeGesture({
       currentSwipeOffset > minSwipeDistance &&
       onSwipeRight
     ) {
-      setIsAnimating(true);
-      setSwipeOffset(window.innerWidth);
-
-      setTimeout(() => {
-        onSwipeRight();
-      }, 50);
-
+      onSwipeRight();
       setTouchStartX(null);
       setTouchStartY(null);
+      setSwipeOffset(0);
       return;
     }
 

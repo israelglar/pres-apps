@@ -28,6 +28,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
     canLoadMore,
     selectedServiceTime,
     handleServiceTimeChange,
+    swipeGesture,
     handleOpenEdit,
     handleCloseEdit,
     handleSubmitEdit,
@@ -38,29 +39,21 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
   return (
     <div
       className={`fixed inset-0 ${theme.gradients.background} overflow-y-auto`}
+      onTouchStart={swipeGesture.handleTouchStart}
+      onTouchMove={swipeGesture.handleTouchMove}
+      onTouchEnd={swipeGesture.handleTouchEnd}
     >
       <div className="max-w-4xl mx-auto p-3 pb-20">
         {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors mb-3"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-semibold text-sm">Voltar</span>
-          </button>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div>
-                <h1 className="text-3xl font-bold text-white">
-                  Histórico de Presenças
-                </h1>
-                <p className="text-white/80 text-base mt-0.5 font-medium">
-                  Ver e editar registos anteriores
-                </p>
-              </div>
-            </div>
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="font-semibold text-sm">Voltar</span>
+            </button>
 
             {/* Refresh Button */}
             <button
@@ -73,30 +66,51 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               />
             </button>
           </div>
+
+          <div className="flex items-center gap-2">
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Histórico de Presenças
+              </h1>
+              <p className="text-white/80 text-base mt-0.5 font-medium">
+                Ver e editar registos anteriores
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Service Time Tabs */}
         <div className="mb-5">
-          <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1">
-            <button
-              onClick={() => handleServiceTimeChange("11:00:00")}
-              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-all ${
-                selectedServiceTime === "11:00:00"
-                  ? "bg-white text-cyan-700 shadow-md"
-                  : "text-white hover:bg-white/10"
-              }`}
-            >
-              11:00
-            </button>
+          <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1 relative">
+            {/* Animated background slider */}
+            <div
+              className="absolute top-1 bottom-1 rounded-md bg-white shadow-md transition-all duration-300 ease-out"
+              style={{
+                width: "calc(50% - 3px)",
+                left: selectedServiceTime === "09:00:00" ? "4px" : "calc(50% + 0px)",
+              }}
+            />
+
+            {/* Tab buttons */}
             <button
               onClick={() => handleServiceTimeChange("09:00:00")}
-              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-all ${
+              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
                 selectedServiceTime === "09:00:00"
-                  ? "bg-white text-cyan-700 shadow-md"
+                  ? "text-cyan-700"
                   : "text-white hover:bg-white/10"
               }`}
             >
               09:00
+            </button>
+            <button
+              onClick={() => handleServiceTimeChange("11:00:00")}
+              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
+                selectedServiceTime === "11:00:00"
+                  ? "text-cyan-700"
+                  : "text-white hover:bg-white/10"
+              }`}
+            >
+              11:00
             </button>
           </div>
         </div>

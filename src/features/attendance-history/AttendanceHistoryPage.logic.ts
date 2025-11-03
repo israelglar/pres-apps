@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAttendanceHistory, useEditAttendance } from './hooks/useAttendanceHistory';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 /**
  * Business logic for Attendance History Page
@@ -80,11 +81,31 @@ export function useAttendanceHistoryLogic() {
   /**
    * Switch between service time tabs
    */
-  const handleServiceTimeChange = (serviceTime: '09:00:00' | '11:00:00') => {
+  const handleServiceTimeChange = useCallback((serviceTime: '09:00:00' | '11:00:00') => {
     lightTap();
     setSelectedServiceTime(serviceTime);
     setLimit(5); // Reset to 5 when switching tabs
-  };
+  }, []);
+
+  /**
+   * Swipe gesture for tab switching
+   */
+  const swipeGesture = useSwipeGesture({
+    minSwipeDistance: 80,
+    enabled: true,
+    onSwipeLeft: useCallback(() => {
+      // Swipe left: 11h -> 9h
+      if (selectedServiceTime === '11:00:00') {
+        handleServiceTimeChange('09:00:00');
+      }
+    }, [selectedServiceTime, handleServiceTimeChange]),
+    onSwipeRight: useCallback(() => {
+      // Swipe right: 9h -> 11h
+      if (selectedServiceTime === '09:00:00') {
+        handleServiceTimeChange('11:00:00');
+      }
+    }, [selectedServiceTime, handleServiceTimeChange]),
+  });
 
   return {
     // Data
@@ -100,6 +121,9 @@ export function useAttendanceHistoryLogic() {
     // Service time tab state
     selectedServiceTime,
     handleServiceTimeChange,
+
+    // Swipe gesture
+    swipeGesture,
 
     // Pagination
     limit,
