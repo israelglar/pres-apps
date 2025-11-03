@@ -581,10 +581,12 @@ Choose appropriate icon for the context:
 For non-destructive confirmations:
 
 ```tsx
+import { buttonClasses } from '../../config/theme';
+
 <div className="flex flex-col gap-3 pt-2">
   <button
     onClick={onConfirm}
-    className="w-full px-6 py-4 rounded-2xl text-base font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 transition-all"
+    className={`w-full px-6 py-4 ${buttonClasses.primary} text-base font-semibold`}
   >
     OK
   </button>

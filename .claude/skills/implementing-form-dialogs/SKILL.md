@@ -51,14 +51,14 @@ function EditDialog({ isOpen, onClose, initialData }) {
   return (
     <>
       {/* Blurred Backdrop */}
-      <div className="fixed inset-0 bg-gradient-to-br from-cyan-900/80 via-teal-900/80 to-emerald-900/80 backdrop-blur-md z-40" />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
 
       {/* Modal Container */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-cyan-500 to-teal-500 px-6 py-5 flex items-center justify-between">
+          <div className={`${theme.gradients.primaryButton} px-6 py-5 flex items-center justify-between`}>
             <h2 className="text-2xl font-bold text-white">
               {dialogTitle}
             </h2>
@@ -85,7 +85,7 @@ function EditDialog({ isOpen, onClose, initialData }) {
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 px-5 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg"
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm`}
             >
               Guardar
             </button>
@@ -117,15 +117,21 @@ className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
 
 **Blurred Backdrop:**
 ```tsx
-className="fixed inset-0 bg-gradient-to-br from-cyan-900/80 via-teal-900/80 to-emerald-900/80 backdrop-blur-md z-40"
+className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
 ```
-- Must use `backdrop-blur-md` for the blur effect
-- Gradient overlay matches app theme
+- Must use `backdrop-blur-sm` for the blur effect
+- Black overlay with 50% opacity (simpler and works better with theme changes)
 - `z-40` for backdrop, `z-50` for modal content
 
 **Header Section:**
+
+Import the theme:
 ```tsx
-className="bg-gradient-to-r from-cyan-500 to-teal-500 px-6 py-5 flex items-center justify-between"
+import { theme } from '../../config/theme';
+```
+
+```tsx
+className={`${theme.gradients.primaryButton} px-6 py-5 flex items-center justify-between`}
 ```
 - Title: `text-2xl font-bold text-white`
 - Close button (X): `text-white hover:bg-white/20 rounded-full p-2`
@@ -161,9 +167,11 @@ className="px-6 py-4 bg-gray-50 flex gap-3"
 
 **Save Button (Blue Gradient):**
 ```tsx
+import { buttonClasses } from '../../config/theme';
+
 <button
   onClick={handleSave}
-  className="flex-1 px-5 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg"
+  className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm`}
 >
   Guardar
 </button>
@@ -349,7 +357,7 @@ function ConfirmExitDialog({ onConfirm, onCancel }) {
 
 ```tsx
 <div
-  className="fixed inset-0 bg-gradient-to-br from-cyan-900/80 via-teal-900/80 to-emerald-900/80 backdrop-blur-md z-40"
+  className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
   onClick={handleClose} // Trigger close confirmation
 />
 
@@ -371,6 +379,7 @@ function ConfirmExitDialog({ onConfirm, onCancel }) {
 ```tsx
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { theme, buttonClasses } from '../../config/theme';
 
 interface EditAttendanceDialogProps {
   isOpen: boolean;
@@ -443,7 +452,7 @@ function EditAttendanceDialog({
     <>
       {/* Blurred Backdrop */}
       <div
-        className="fixed inset-0 bg-gradient-to-br from-cyan-900/80 via-teal-900/80 to-emerald-900/80 backdrop-blur-md z-40"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
         onClick={handleClose}
       />
 
@@ -455,7 +464,7 @@ function EditAttendanceDialog({
         >
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-cyan-500 to-teal-500 px-6 py-5 flex items-center justify-between">
+          <div className={`${theme.gradients.primaryButton} px-6 py-5 flex items-center justify-between`}>
             <h2 className="text-2xl font-bold text-white">
               Editar Presença
             </h2>
@@ -554,7 +563,7 @@ function EditAttendanceDialog({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex-1 px-5 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg disabled:opacity-50"
+              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm disabled:opacity-50`}
             >
               {isSaving ? 'A guardar...' : 'Guardar'}
             </button>
@@ -643,11 +652,11 @@ When this skill is invoked:
 
 After implementing/fixing a form dialog:
 
-- [ ] Blurred gradient backdrop (`backdrop-blur-md`)
+- [ ] Blurred backdrop (`backdrop-blur-sm` with `bg-black/50`)
 - [ ] Modal container: `rounded-3xl shadow-2xl`
-- [ ] Header: Gradient background with title and X button
+- [ ] Header: `${theme.gradients.primaryButton}` background with title and X button
 - [ ] Body: `p-6 space-y-6 max-h-[60vh] overflow-y-auto`
-- [ ] Footer: `bg-gray-50` with Cancel (white) and Save (blue gradient)
+- [ ] Footer: `bg-gray-50` with Cancel (white) and Save (`${buttonClasses.primary}`)
 - [ ] X button triggers same logic as Cancel
 - [ ] Exit confirmation appears when unsaved changes exist
 - [ ] Exit confirmation has "Continuar a Editar" and "Descartar" options

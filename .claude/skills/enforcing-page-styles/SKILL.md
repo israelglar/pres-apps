@@ -23,9 +23,11 @@ Invoke this skill when:
 Every page MUST have this header pattern:
 
 ```tsx
-<div className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white">
+import { theme } from '../../config/theme';
+
+<div className={`min-h-screen ${theme.gradients.background} text-white`}>
   {/* Header Section */}
-  <header className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-teal-600 shadow-lg">
+  <header className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}>
     <div className="flex items-center justify-between px-4 pt-4 pb-2">
       {/* Left: Back Button with "Voltar" text */}
       <button
@@ -74,9 +76,16 @@ Every page MUST have this header pattern:
 
 ### 2. Background & Colors
 
+**IMPORTANT: Always use the centralized theme from `src/config/theme.ts`**
+
+Import the theme:
+```tsx
+import { theme, buttonClasses } from '../../config/theme';
+```
+
 **Background Gradient:**
 ```tsx
-className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500"
+className={`min-h-screen ${theme.gradients.background} text-white`}
 ```
 
 **Text Colors:**
@@ -86,7 +95,7 @@ className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-
 
 **Header Background:**
 ```tsx
-className="bg-gradient-to-r from-cyan-600 to-teal-600"
+className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}
 ```
 
 **Cards/Panels:**
@@ -257,7 +266,9 @@ When this skill is invoked:
 ### ✅ Correct Background
 
 ```tsx
-<div className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white">
+import { theme } from '../../config/theme';
+
+<div className={`min-h-screen ${theme.gradients.background} text-white`}>
 ```
 
 ### ❌ Incorrect Card Padding
@@ -291,7 +302,7 @@ After fixing, verify:
 - [ ] Header has back button with "Voltar" text (`text-base font-medium`, icon `w-5 h-5`)
 - [ ] Page title is `text-2xl font-bold` with NO icon beside it (compact)
 - [ ] Subtitle is `text-sm font-medium text-white/90` (compact)
-- [ ] Background uses full gradient: `from-cyan-500 via-teal-500 to-emerald-500`
+- [ ] Background uses centralized theme: `${theme.gradients.background}`
 - [ ] All text is white (`text-white` or variations)
 - [ ] Cards use `rounded-2xl shadow-2xl p-5`
 - [ ] Search/filter UI is at top of body section
