@@ -1,7 +1,15 @@
 /**
  * Attendance API
  * Main API layer for attendance operations
- * Now powered by Supabase instead of Google Sheets
+ *
+ * STATUS: ✅ ACTIVE - Uses Supabase PostgreSQL
+ *
+ * This file has been migrated from Google Sheets to Supabase.
+ * It wraps Supabase API calls from src/api/supabase/ with the
+ * original AttendanceData schema for backwards compatibility.
+ *
+ * NOTE: The old Google Sheets integration was removed during the
+ * Supabase migration (2025-11-03).
  */
 
 import {

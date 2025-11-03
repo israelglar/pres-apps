@@ -13,12 +13,14 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 ## Ministry Context
 
 ### Team Structure
+
 - **Total Teachers/Volunteers:** ~6 people
 - **Administrators:** 2 (Israel and wife) - responsible for overall ministry coordination
 - **Teachers:** 4 active volunteer teachers
 - **Role Distinction:** Some features should be admin-only (future implementation)
 
 ### Student Population
+
 - **Total Pre-Teens:** ~40 students in the system
 - **Regular Attendees:** ~20 students attend consistently
 - **Age Range:** Pre-teens (approximately 10-13 years old)
@@ -30,15 +32,21 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 - **Visitors:** Friends who visit occasionally; some become regular attendees over time
 
 ### Class Schedule
-- **Current:** One class every Sunday at 11:00 AM (single service)
-- **Future Expansion (Planned):** Add second class at 9:00 AM for growing 9 AM service
-- **Important:** Will need to support multiple service times with separate attendance tracking
+
+- **Current:** Two classes every Sunday
+  - **09:00 AM service** - Morning class
+  - **11:00 AM service** - Late morning class
+- **Implementation:** ✅ Multiple service times fully supported
+  - Separate attendance tracking per service
+  - Service time selector on date selection page
+  - Can expand to additional service times in future if needed
 
 ---
 
 ## Core Problem Being Solved
 
 ### Previous Workflow (Google Sheets)
+
 - Manual entry into spreadsheets during or after class
 - Time-consuming during lesson time (takes away from teaching)
 - Difficult to quickly identify attendance trends
@@ -47,12 +55,16 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 - Multiple disconnected sheets for different types of data
 
 ### Current Solution (This App)
+
 - Fast, mobile-first attendance marking (designed for phones)
 - Two marking methods: **Search-based (default)** and Swipe-based
 - Instant visual feedback with haptic vibrations
 - Automatic tracking of lesson dates and curriculum links
 - Quick access on teachers' personal phones during class
-- Integration with existing Google Sheets backend
+- Supabase PostgreSQL database for reliable data storage
+- Student management with CRUD operations
+- Attendance history with editing capabilities
+- Multiple service times support (09:00 and 11:00)
 - Future: Identify students missing multiple lessons with automatic alerts
 
 ---
@@ -60,11 +72,13 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 ## Complete Technical Stack
 
 ### Frontend Framework
+
 - **React:** 19.1.1 with TypeScript 5.9.3
 - **Build Tool:** Vite 7.1.7 (fast HMR, optimized builds)
 - **Routing:** TanStack React Router 1.133.3 (file-based routing with type safety)
 
 ### State Management Architecture
+
 - **Server State:** TanStack React Query 5.90.5
   - Primary data fetching and caching layer
   - 60-minute cache duration (gcTime)
@@ -77,6 +91,7 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 - **Legacy:** LocalStorage cache in `utils/cache.ts` is unused (React Query handles caching)
 
 ### UI & Styling
+
 - **Styling:** Tailwind CSS 4.1.14 (utility-first)
 - **Icons:** Lucide React 0.545.0
 - **Animations:** CSS transitions and transforms (GPU-accelerated)
@@ -92,6 +107,7 @@ A Progressive Web App (PWA) designed to help track attendance for pre-teen Sunda
 The app follows a consistent design system for optimal mobile experience:
 
 #### Typography
+
 - **Page Headings (h1):** `text-3xl font-bold` - Main page titles
 - **Section Headings (h2):** `text-2xl font-bold` - Completion screens, dialog titles
 - **Subheadings (h3):** `text-base font-bold` - Card titles, method options
@@ -100,6 +116,7 @@ The app follows a consistent design system for optimal mobile experience:
 - **Descriptive Text:** `text-base font-medium` - Page subtitles
 
 #### Spacing
+
 - **Card Padding:** `p-5` - All main content cards (consistent across pages)
 - **Dialog Padding:** `p-5` - Modal dialogs, confirmation screens
 - **Button Gaps:** `gap-3` - Space between side-by-side buttons
@@ -107,6 +124,7 @@ The app follows a consistent design system for optimal mobile experience:
 - **Section Margins:** `mb-5` - Spacing within cards
 
 #### Components
+
 - **Buttons:**
   - Padding: `px-5 py-3` for primary/secondary buttons
   - Text: `text-sm` for button labels
@@ -125,6 +143,7 @@ The app follows a consistent design system for optimal mobile experience:
   - Padding: `p-5` (consistent)
 
 #### Why These Standards?
+
 1. **Mobile-First:** Optimized for thumb accessibility on phones
 2. **Readability:** Text sizes tested on various phone screens
 3. **Consistency:** Users know what to expect across all pages
@@ -134,18 +153,40 @@ The app follows a consistent design system for optimal mobile experience:
 All pages should follow these standards. Reference: `src/features/home/HomePage.tsx`
 
 ### Data & Validation
+
 - **Schema Validation:** Zod 4.1.12 (runtime type safety for API responses)
 - **Search:** Fuse.js 7.1.0 (fuzzy search for student names, 0.3 threshold)
 - **Forms:** react-hook-form 7.65.0 (installed but unused - **can be removed**)
 
 ### Backend & Data Storage
-- **Primary Storage:** Google Sheets
-- **API Layer:** Google Apps Script (deployed and working)
-- **Endpoint:** `https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec`
-- **Authentication:** None currently (planned: Google OAuth restricted to teacher accounts)
-- **Note:** Bulk save function is currently **commented out for testing** in frontend
+
+- **Primary Storage:** Supabase (PostgreSQL)
+- **Client:** @supabase/supabase-js 2.78.0
+- **Database Schema:** 7 core tables
+  - `students` - Student roster with visitor support and status tracking
+  - `teachers` - 8 pre-populated teachers
+  - `service_times` - 09:00 and 11:00 pre-populated
+  - `lessons` - Curriculum lesson catalog
+  - `schedules` - Lesson schedule (dates, times, lessons)
+  - `schedule_assignments` - Teachers assigned to schedules
+  - `attendance_records` - Core attendance tracking
+- **API Layer:** Modular functions in `src/api/supabase/`
+  - `students.ts` - Student CRUD operations
+  - `lessons.ts` - Lesson operations
+  - `attendance.ts` - Bulk save, update, statistics
+  - `schedules.ts` - Schedule operations with lesson data
+  - `service-times.ts` - Service time operations
+- **Authentication:** None currently (RLS enabled but allows public access for MVP)
+  - Planned: Google OAuth restricted to teacher accounts
+- **Environment Variables Required:**
+  - `VITE_PUBLIC_SUPABASE_URL` - Supabase project URL
+  - `VITE_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+  - `SUPABASE_SERVICE_ROLE_KEY` - Service role key (database scripts only)
+- **Database Scripts:** TypeScript setup scripts in `database/` directory
+- **Note:** Bulk save function is **fully implemented** and working
 
 ### PWA & Deployment
+
 - **PWA Plugin:** vite-plugin-pwa 1.1.0
 - **Service Worker:** Workbox with auto-update strategy
 - **Manifest:** Portuguese, standalone mode, portrait-primary orientation
@@ -169,20 +210,51 @@ src/
 │   │   └── index.ts               # Clean exports
 │   ├── date-selection/            # Date picker feature
 │   ├── attendance-marking/        # Swipe-based marking
-│   └── search-marking/            # Search-based marking
+│   ├── search-marking/            # Search-based marking
+│   ├── student-management/        # Student CRUD (NEW)
+│   │   ├── StudentManagementPage.tsx
+│   │   ├── components/            # Feature components
+│   │   │   ├── StudentCard.tsx
+│   │   │   ├── StudentFormModal.tsx
+│   │   │   └── DeleteConfirmDialog.tsx
+│   │   └── hooks/
+│   │       └── useStudentManagement.ts
+│   └── attendance-history/        # History view (NEW)
+│       ├── AttendanceHistoryPage.tsx
+│       ├── components/
+│       │   ├── DateGroupCard.tsx
+│       │   ├── StudentAttendanceRow.tsx
+│       │   └── EditAttendanceDialog.tsx
+│       └── hooks/
+│           ├── useAttendanceHistory.ts
+│           └── useEditAttendance.ts
 ├── routes/                        # TanStack Router routes
 ├── components/                    # Shared UI components
 │   ├── ui/                        # Generic reusable components
 │   └── features/                  # Feature-specific shared components
-├── hooks/                         # Custom React hooks
+├── hooks/                         # Custom React hooks (8 total)
 ├── api/                           # API communication layer
+│   ├── supabase/                  # NEW: Supabase API modules
+│   │   ├── students.ts
+│   │   ├── lessons.ts
+│   │   ├── attendance.ts
+│   │   ├── schedules.ts
+│   │   └── service-times.ts
+│   └── attendance.ts              # DEPRECATED: Old Google Sheets API
 ├── schemas/                       # Zod validation schemas
-├── store/                         # Zustand stores
-├── lib/                           # Third-party configs (queryClient)
-└── utils/                         # Utility functions
+├── store/                         # Zustand stores (minimal usage)
+├── lib/                           # Third-party configs
+│   ├── queryClient.ts             # TanStack Query
+│   └── supabase.ts                # NEW: Supabase client
+├── types/                         # TypeScript types
+│   └── database.types.ts          # NEW: Database schema types
+├── utils/                         # Utility functions
+└── config/                        # Configuration
+    └── theme.ts                   # Centralized theme system
 ```
 
 **Key Principles:**
+
 - Each feature has its own directory under `/features/`
 - Business logic separated into `.logic.ts` files (presentational components)
 - Each feature has an `index.ts` for clean exports
@@ -191,11 +263,11 @@ src/
 
 ### Custom Hooks Architecture
 
-Four specialized hooks abstract complex behaviors:
+Eight specialized hooks abstract complex behaviors:
 
 1. **`useAttendanceData`** (`/hooks/useAttendanceData.ts`)
    - Wrapper around TanStack Query
-   - Fetches attendance data from Google Sheets
+   - Fetches attendance data from Supabase
    - Handles caching, refetching, error states
    - 60-minute cache, 10-second timeout
 
@@ -214,60 +286,249 @@ Four specialized hooks abstract complex behaviors:
    - Used for navigation and attendance marking
    - Configurable thresholds and callbacks
 
+5. **`useStudentManagement`** (`/hooks/useStudentManagement.ts`)
+   - CRUD operations for students
+   - Wraps Supabase API calls with TanStack Query
+   - Handles cache invalidation on mutations
+   - Exposes loading/error states
+
+6. **`useAttendanceHistory`** (`/hooks/useAttendanceHistory.ts`)
+   - Paginated attendance history loading
+   - Filters by service time
+   - 5-minute stale time, 10-minute cache
+   - Supports load more functionality
+
+7. **`useEditAttendance`** (`/hooks/useEditAttendance.ts`)
+   - Edit past attendance records
+   - Optimistic updates for instant UI feedback
+   - Cache invalidation on success
+   - Rollback on error
+
+8. **`usePWAInstall`** (`/hooks/usePWAInstall.ts`)
+   - PWA installation detection and management
+   - Returns: `canInstall`, `promptInstall`, `isInstalled`, `isRunningInPWA`, `openPWAApp`
+   - Handles `beforeinstallprompt` event
+   - Cross-platform support (iOS/Android)
+
 ---
 
 ## Complete Data Models
 
 ### Student
+
 ```typescript
 {
-  id: string | number;
-  name: string;  // Alphabetically sorted
+  id: number;
+  name: string;
+  date_of_birth: string | null; // YYYY-MM-DD format
+  status: 'active' | 'inactive' | 'aged_out' | 'moved';
+  is_visitor: boolean;
+  visitor_date: string | null; // Date first visited (ISO format)
+  notes: string | null;
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+}
+```
+
+### Service Time
+
+```typescript
+{
+  id: number;
+  time: string; // "09:00:00" or "11:00:00"
+  name: string; // "09h" or "11h"
+  is_active: boolean;
+  display_order: number;
+  created_at: string; // ISO timestamp
+}
+```
+
+### Lesson
+
+```typescript
+{
+  id: number;
+  name: string;
+  curriculum_link: string | null;
+  description: string | null;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### Schedule
+
+```typescript
+{
+  id: number;
+  date: string; // YYYY-MM-DD format
+  service_time_id: number;
+  lesson_id: number;
+  event_type: 'regular' | 'family_service' | 'cancelled' | 'retreat' | 'party';
+  notes: string | null;
+  is_cancelled: boolean;
+  created_at: string;
+  updated_at: string;
+  // Computed fields (from joins):
+  has_attendance?: boolean;
+  attendance_count?: number;
+  lesson_name?: string;
+  lesson_link?: string;
+  service_time_name?: string;
+}
+```
+
+### Teacher
+
+```typescript
+{
+  id: number;
+  name: string;
+  email: string | null;
+  is_active: boolean;
+  role: 'admin' | 'teacher';
+  created_at: string;
 }
 ```
 
 ### Attendance Record
+
 ```typescript
 {
-  studentId: string;
-  studentName: string;
-  status: "P" | "F";  // P = Presente (Present), F = Falta (Absent)
-  timestamp: Date;
-  // Future: notes?: string;  // Teacher observations
+  id: number;
+  student_id: number;
+  schedule_id: number;
+  status: 'present' | 'absent' | 'excused' | 'late'; // Expanded from P/F
+  service_time_id: number;
+  notes: string | null; // NEW: Teacher observations
+  marked_by: number | null; // Teacher ID (future)
+  marked_at: string; // ISO timestamp
+  created_at: string;
+  updated_at: string;
 }
 ```
 
-### Attendance Data (from API)
+### Schedule Assignment
+
 ```typescript
 {
-  success: boolean;
-  dates: string[];                           // All available Sundays (ISO format)
-  lessonNames: Record<string, string>;       // Date -> Lesson name mapping
-  lessonLinks: Record<string, string>;       // Date -> Curriculum URL mapping
-  students: Array<{ name: string; id?: number }>;
+  id: number;
+  schedule_id: number;
+  teacher_id: number;
+  created_at: string;
 }
 ```
 
-### Google Sheets Structure
-The backend uses separate sheets:
-- **Students Sheet:** Student list with IDs and names
-- **Attendance Sheet:** Date, StudentID, Status (P/F), Timestamp
-- **Lessons Sheet:** Date, Lesson Name, Curriculum Link
-- **Formulas:** Calculations for reports and analytics
+### Database Schema Documentation
 
-### Zod Schemas
-All API data validated at runtime (see `schemas/attendance.schema.ts`):
-- `studentSchema`
-- `attendanceDataSchema`
-- `studentWithIdSchema`
-- `attendanceRecordSchema`
-- `bulkUpdateRequestSchema`
+Complete schema documentation available in:
+- `database/schema.sql` - Full SQL schema with comments
+- `DATABASE_SCHEMA.md` - Detailed schema documentation
+- `database/README.md` - Setup and migration guide
+
+### TypeScript Types
+
+All database types defined in `src/types/database.types.ts`:
+- Insert/Update type variants for all tables
+- Relationship types for joined queries
+- Helper types for common query patterns
+
+---
+
+## Environment Setup
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Supabase account (free tier works)
+- Git (for version control)
+
+### Initial Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd pres_app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Create Supabase project:**
+   - Go to [supabase.com](https://supabase.com)
+   - Create a new project
+   - Note your project URL and anon key
+
+4. **Set up environment variables:**
+
+   Create a `.env` file in the project root:
+   ```env
+   VITE_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   VITE_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+   ```
+
+   See `.env.example` for a template.
+
+5. **Set up the database:**
+
+   Option A - Using setup script (recommended):
+   ```bash
+   npm run db:setup
+   ```
+
+   Option B - Manual setup:
+   - Open Supabase SQL Editor
+   - Copy contents of `database/schema.sql`
+   - Paste and execute in SQL Editor
+
+   See `database/README.md` for detailed instructions.
+
+6. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+7. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+### Environment Variables
+
+**Required for development:**
+- `VITE_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `VITE_PUBLIC_SUPABASE_ANON_KEY` - Public anonymous key (safe for client-side)
+
+**Required for database scripts only:**
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (never expose client-side)
+
+**Security Notes:**
+- Never commit `.env` file to version control
+- `VITE_PUBLIC_*` variables are exposed to the client (safe for public keys)
+- Service role key should only be used in server-side scripts
+- RLS policies protect data even with public anonymous key
+
+### Database Management Scripts
+
+Available npm scripts for database operations:
+
+```bash
+npm run db:setup                 # Initial database setup
+npm run db:fix-dates             # Fix date formatting issues
+npm run db:diagnose-dates        # Diagnose date problems
+npm run db:link-lessons          # Link lessons to schedules
+```
 
 ---
 
 ## Current Features (Implemented)
 
 ### 1. Home Page (`/`)
+
 **File:** `src/features/home/HomePage.tsx`
 
 - Welcome screen with large "Registar Presenças" (Record Attendance) button
@@ -279,23 +540,33 @@ All API data validated at runtime (see `schemas/attendance.schema.ts`):
 - Auto-navigation when data is ready
 
 ### 2. Date Selection Page (`/date-selection`)
+
 **File:** `src/features/date-selection/DateSelectionPage.tsx`
 
 - **Custom dropdown** with all available Sundays
   - Auto-scroll to selected date when opened
   - Shows lesson names associated with each date
   - Displays curriculum links (clickable URLs)
+  - **Attendance status badges** for both service times:
+    - Green badge + checkmark = attendance marked for that service
+    - Orange badge + warning = attendance missing for that service
+    - Shows service time (09:00 or 11:00) on each badge
 - **Filter future lessons:** Hides future dates by default
   - Toggle button: "Ver Lições Futuras" (Show Future Lessons)
 - **Date labels:**
   - "Hoje" (Today) for current date
   - "Domingo Passado" (Last Sunday) for most recent past date
+- **Service Time Selection:**
+  - Radio buttons to select 09:00 or 11:00 service
+  - Required before continuing
+  - Selection persists in URL params
 - **Method Selection Dialog:**
   - Choose between two marking methods before proceeding
   - **Search Method** (default): "Procurar por Nome" - mark by name/seating order
   - **Swipe Method:** "Método Tradicional" - alphabetical one-by-one
 
 ### 3. Attendance Marking - Search Method (`/search-marking`) **[DEFAULT]**
+
 **File:** `src/features/search-marking/SearchAttendanceMarkingPage.tsx`
 
 - **Fuzzy search bar** using Fuse.js
@@ -315,6 +586,7 @@ All API data validated at runtime (see `schemas/attendance.schema.ts`):
 - **Completion screen:** Shows Present/Absent counts, lesson name, auto-redirect message
 
 ### 4. Attendance Marking - Swipe Method (`/marking`)
+
 **File:** `src/features/attendance-marking/AttendanceMarkingPage.tsx`
 
 - **One-at-a-time cards:** Large card showing single student
@@ -336,6 +608,7 @@ All API data validated at runtime (see `schemas/attendance.schema.ts`):
 - **Alphabetical order:** Students presented in alphabetical order
 
 ### 5. Completion Screen (Shared Component)
+
 **File:** `src/components/features/CompletionScreen.tsx`
 
 - Displays attendance summary:
@@ -347,19 +620,23 @@ All API data validated at runtime (see `schemas/attendance.schema.ts`):
 - Used by both marking methods
 
 ### 6. Haptic Feedback System
+
 **File:** `src/utils/haptics.ts`
 
 Cross-platform haptic feedback for better UX:
 
 **iOS Support:**
+
 - Uses Web Audio API (silent audio tones trigger haptics)
 - Requires user gesture to initialize
 
 **Android Support:**
+
 - Uses Vibration API with custom patterns
 - Different patterns for different feedback types
 
 **Feedback Types:**
+
 - `lightTap()` - 10ms: General interactions
 - `mediumTap()` - 25ms: Important actions
 - `selectionTap()` - 15ms: Marking students
@@ -368,10 +645,91 @@ Cross-platform haptic feedback for better UX:
 
 **Graceful Degradation:** Falls back silently if haptics unavailable
 
-### 7. PWA Capabilities
+### 7. Student Management (`/manage-students`)
+
+**File:** `src/features/student-management/StudentManagementPage.tsx`
+
+#### Purpose
+Complete CRUD interface for managing the student roster, handling visitors, status changes, and student information.
+
+#### Features:
+- **View All Students:** Card-based responsive layout
+- **Search/Filter:** Fuzzy search by student name with clear button
+- **Add New Students:** Modal form with all student details
+- **Edit Students:** Update name, DOB, status, notes
+- **Soft Delete:** Mark students as inactive (preserves history)
+- **Status Management:**
+  - `active` - Current regular students
+  - `inactive` - No longer attending
+  - `aged_out` - Moved to next age group (13+)
+  - `moved` - Family relocated
+- **Visitor Tracking:**
+  - Mark students as visitors
+  - Track visitor date (first visit)
+  - Can convert visitors to regular students
+- **Personal Information:**
+  - Date of birth
+  - Notes field for observations
+- **Status Badges:** Color-coded visual indicators
+- **Haptic Feedback:** On all actions
+
+#### Components:
+- `StudentManagementPage.tsx` - Main page
+- `StudentFormModal.tsx` - Create/Edit dialog
+- `StudentCard.tsx` - Individual student card
+- `DeleteConfirmDialog.tsx` - Soft delete confirmation
+
+#### Hook:
+- **`useStudentManagement`** - Wraps all student operations with TanStack Query
+
+### 8. Attendance History (`/attendance-history`)
+
+**File:** `src/features/attendance-history/AttendanceHistoryPage.tsx`
+
+#### Purpose
+View and edit past attendance records, with filtering by service time and pagination for performance.
+
+#### Features:
+- **View Past Records:** Grouped by date with lesson info
+- **Service Time Filtering:**
+  - Animated tab slider to switch between 09:00 and 11:00 services
+  - Smooth 300ms transition animation
+- **Edit Past Attendance:**
+  - Change status (present/absent/late/excused)
+  - Add or edit notes
+  - Optimistic updates for instant feedback
+- **4 Attendance Statuses:**
+  - **Present (Presente)** - Student attended
+  - **Absent (Falta)** - Student did not attend
+  - **Late (Atrasado)** - Student arrived late
+  - **Excused (Justificada)** - Absence was justified/excused
+- **Pagination:** Load 5 records at a time
+  - "Carregar Mais" (Load More) button
+  - Performance optimization for large datasets
+  - Shows "Fim do histórico" when no more records
+- **Statistics Per Date:**
+  - Count of present/absent/late/excused students
+  - Displayed on each date card
+- **Refresh Button:** Manual data reload
+- **Swipe Navigation:** Back gesture to return home
+- **Haptic Feedback:** On all actions
+
+#### Components:
+- `AttendanceHistoryPage.tsx` - Main page with tabs
+- `DateGroupCard.tsx` - Groups attendance by date
+- `StudentAttendanceRow.tsx` - Individual student row
+- `EditAttendanceDialog.tsx` - Status selection grid with notes
+
+#### Hooks:
+- **`useAttendanceHistory`** - Paginated history loading (5-min stale, 10-min cache)
+- **`useEditAttendance`** - Edit with optimistic updates
+
+### 9. PWA Capabilities
+
 **File:** `vite.config.ts` + `public/manifest.json`
 
 - **Installable:** Add to home screen on mobile devices
+- **Install Prompt:** "Instalar Aplicação" button on home page (when not in PWA mode)
 - **Service Worker:** Caches assets for faster loading
 - **Offline Support:** Can load app with cached data (limited offline functionality)
 - **Auto-update:** Prompts user when new version available
@@ -384,6 +742,9 @@ Cross-platform haptic feedback for better UX:
   - Language: Portuguese (pt)
   - Icons: 192x192 and 512x512 PNG
 
+#### Hook:
+- **`usePWAInstall`** - Detects install capability and provides install function
+
 ---
 
 ## Navigation Structure
@@ -391,53 +752,79 @@ Cross-platform haptic feedback for better UX:
 ```
 / (Home)
   ├─ "Começar" button → /date-selection
+  ├─ "Histórico de Presenças" button → /attendance-history
+  ├─ "Gerir Prés" button → /manage-students
+  ├─ "Instalar Aplicação" button (if not in PWA mode)
   └─ Swipe Left gesture → /date-selection
 
-/date-selection (Select Date & Method)
-  ├─ Select date from dropdown
+/date-selection (Select Date, Service Time & Method)
+  ├─ Select date from dropdown (shows attendance status badges for both services)
+  ├─ Select service time (09:00 or 11:00) via radio buttons
   ├─ "Continuar" button → Method Selection Dialog
-  │   ├─ "Procurar por Nome" [DEFAULT] → /search-marking?date=ISO
-  │   └─ "Método Tradicional" → /marking?date=ISO
+  │   ├─ "Procurar por Nome" [DEFAULT] → /search-marking?date=ISO&serviceTime=ID
+  │   └─ "Método Tradicional" → /marking?date=ISO&serviceTime=ID
   └─ "Voltar" button → / (Home)
 
 /search-marking (Search-Based Marking)
-  ├─ Mark attendance
+  ├─ Mark attendance by search
   └─ Complete/Cancel → / (Home)
 
 /marking (Swipe-Based Marking)
-  ├─ Mark attendance
+  ├─ Mark attendance by swipe
   └─ Complete/Cancel → / (Home)
+
+/manage-students (Student Management)
+  ├─ View/search students
+  ├─ Add new student → Modal dialog
+  ├─ Edit student → Modal dialog
+  ├─ Delete student → Confirmation dialog (soft delete)
+  └─ "Voltar" button → / (Home)
+
+/attendance-history (Attendance History)
+  ├─ View past attendance (paginated, 5 per load)
+  ├─ Filter by service time (09:00 / 11:00 tabs)
+  ├─ Edit past record → Modal dialog
+  ├─ Load more records
+  └─ "Voltar" button → / (Home)
 ```
 
 **Navigation Protection:**
+
 - TanStack Router's `useBlocker` prevents accidental exits
 - Custom confirmation dialog: "Continuar a Marcar" vs "Sair Sem Guardar"
 - Only blocks if unsaved attendance records exist
+- Applies to both marking methods (/search-marking and /marking)
 
 ---
 
 ## Planned Future Features
 
+### ✅ Recently Implemented (Moved from Planned)
+
+The following features were previously planned and are now **fully implemented**:
+
+1. **✅ Multiple Service Times Support** - Radio button selector on date selection, separate tracking per service
+2. **✅ Edit Attendance After Submission** - Full edit capability in attendance history with notes
+3. **✅ Student Management** - Complete CRUD interface with visitor tracking and status management
+4. **✅ Attendance History** - View past records with service time filtering and pagination
+
+---
+
 ### High Priority (Short-Term)
 
-#### 1. Multiple Service Times Support
-**Design:** Add service time selector on date selection page
+#### 1. Student Notes/Comments During Marking
 
-- Dropdown or tabs for 9:00 AM and 11:00 AM services
-- Separate attendance records for each service
-- Future-proof for potential additional service times
-- Update API to support service time parameter
+**Status:** **Partially Implemented** - Notes can be added when editing past attendance, but not during initial marking
 
-#### 2. Student Notes/Comments During Marking
-**Design:** Add notes field during attendance marking
+**Remaining Work:** Add notes field during attendance marking
 
-- Optional notes field when marking each student
+- Optional notes field when marking each student in real-time
 - Examples: "Seemed tired", "Asked good questions", "Needs follow-up"
-- Store notes with attendance record
-- Show notes in attendance history
-- Useful for admins to review observations
+- Currently only available when editing past records
+- Would allow capturing observations at time of marking
 
-#### 3. Absence Alert System
+#### 2. Absence Alert System
+
 **Design:** Show alerts during attendance marking
 
 - When marking student who missed 2-3 recent lessons, show alert
@@ -446,27 +833,22 @@ Cross-platform haptic feedback for better UX:
 - Prompts teacher to check in with student
 - Configurable threshold (2-3 lessons, adjustable)
 
-#### 4. Quick Visitor Addition
-**Design:** Add visitor during attendance marking
+#### 3. Quick Visitor Addition
+
+**Status:** **Partially Implemented** - Visitors can be added via Student Management, but not during marking
+
+**Remaining Work:** Add visitor during attendance marking flow
 
 - "+ Adicionar Visitante" button in marking interface
-- Simple name input field
+- Simple name input field within marking page
 - Marks visitor as Present immediately
-- Visitors stored separately in database (flag: `isVisitor: true`)
-- Can later convert visitor to regular student
-
-#### 5. Edit Attendance After Submission
-**Design:** Edit button in attendance history
-
-- Handle rare late arrivals
-- Correction of mistakes
-- Admin and teacher access
-- Show edit history/audit trail
-- Requires backend update to support PATCH requests
+- Currently must go to Student Management to add visitors first
+- Would streamline workflow for unexpected visitors during class
 
 ### Medium Priority (Next 3-6 Months)
 
-#### 6. Carers List Widget
+#### 4. Carers List Widget
+
 **Design:** Show on home page (below "Começar" button)
 
 - "Meus Pré-adolescentes" section on home page
@@ -476,7 +858,8 @@ Cross-platform haptic feedback for better UX:
 - Admin interface to assign carers to students
 - Currently managed in separate Excel file (needs integration)
 
-#### 7. Lesson History & Resources
+#### 5. Lesson History & Resources
+
 **Design:** New section accessible from navigation menu
 
 - List view of all past lessons (date, name, link)
@@ -488,7 +871,8 @@ Cross-platform haptic feedback for better UX:
 - Rich text editor for lesson notes
 - File attachments support
 
-#### 8. Reports & Analytics Section
+#### 6. Reports & Analytics Section
+
 **Design:** Separate reports page (not cluttering home page)
 
 - **Attendance Reports:**
@@ -505,7 +889,8 @@ Cross-platform haptic feedback for better UX:
   - Export to Excel/CSV
   - Share reports via email
 
-#### 9. Google Authentication
+#### 7. Google Authentication
+
 **Design:** Google OAuth login with teacher-only access
 
 - Login required to access app
@@ -517,13 +902,20 @@ Cross-platform haptic feedback for better UX:
 
 ### Low Priority (Future Ideas)
 
-#### 10. Migrate to Real Database
-- Move from Google Sheets to PostgreSQL, MongoDB, or Firebase
-- Better performance and scalability
-- Enable more complex features (relationships, queries)
-- Maintain Google Sheets as export/backup option
+#### 8. Enhanced Database Features
 
-#### 11. Additional Ministry Features (Exploration Phase)
+**Status:** **Database migration complete** - Now using Supabase PostgreSQL
+
+**Remaining Work:** Take advantage of relational database capabilities
+
+- Implement complex queries and reports
+- Add foreign key relationships where missing
+- Optimize query performance with indexes
+- Add database-level validation and constraints
+- Implement audit trails for data changes
+
+#### 9. Additional Ministry Features (Exploration Phase)
+
 - Communication with parents (announcements, updates)
 - Event planning (camps, trips, special events)
 - Student progress/milestone tracking
@@ -536,6 +928,7 @@ Cross-platform haptic feedback for better UX:
 ## Important Implementation Details
 
 ### Date Handling
+
 - All lesson dates are Sundays (class schedule)
 - Dates stored in ISO format (YYYY-MM-DD)
 - Automatically defaults to closest Sunday
@@ -545,6 +938,7 @@ Cross-platform haptic feedback for better UX:
 - Date labels: "Hoje" (today), "Domingo Passado" (last Sunday)
 
 ### Dual Marking Methods Philosophy
+
 **Why Two Methods?**
 
 1. **Search Method (Default):**
@@ -560,46 +954,67 @@ Cross-platform haptic feedback for better UX:
    - More familiar to teachers used to paper roll call
 
 **Both methods:**
+
 - Auto-mark remaining students as Absent on completion
 - Same save logic and validation
 - Same navigation blocking
 - Same completion screen
 
 ### Search Method as Default
+
 - Based on teacher feedback, Search method is more commonly used
 - Method dialog defaults to Search option pre-selected
 - Swipe method still easily accessible for teachers who prefer it
 
 ### API Integration Notes
 
-**Current State:**
-- GET endpoint: Fetches all attendance data (students, dates, lessons)
-- POST endpoint: Bulk update attendance records (**currently commented out in frontend for testing**)
+**Current State (Supabase):**
+
+- **GET Operations:** Fetches students, schedules, attendance, lessons
+- **POST Operations:** Bulk create attendance records (fully implemented)
+- **PATCH Operations:** Update individual attendance records (for editing history)
+- **DELETE Operations:** Soft delete students (marks as inactive)
 - 10-second timeout protection
 - Network status checking (`navigator.onLine`)
 - Retry logic handled by TanStack Query
+- Optimistic updates for instant UI feedback
 
-**Backend (Google Apps Script):**
-- Deployed and working for GET requests
-- Ready to accept POST requests when frontend uncommented
-- Apps Script URL: `https://script.google.com/macros/s/AKfycbz-f51iHygWdwqBCJAentbbV-S50XZ8XvxE8JflZ9RiJpOCZPijit_u4-Iot6t59HYJpA/exec`
+**API Layer Structure (`src/api/supabase/`):**
 
-**Future Migration:**
-- When adding Google OAuth, will need more robust backend
-- Options: Node.js + Express, Firebase Functions, Next.js API routes
-- Google Sheets can remain as database or migrate to PostgreSQL/Firebase
+- **`students.ts`** - getAllStudents, createStudent, updateStudent, deleteStudent
+- **`lessons.ts`** - Lesson operations
+- **`attendance.ts`** - bulkSaveAttendance, updateAttendance, getAttendanceStats
+- **`schedules.ts`** - getSchedulesByDate, getScheduleWithDetails
+- **`service-times.ts`** - getServiceTimes
+
+**Legacy Code:**
+
+- Old `src/api/attendance.ts` still exists (Google Sheets integration)
+- Marked as deprecated but not removed yet
+- Should be cleaned up once Supabase migration fully validated
+
+**Authentication (Future):**
+
+- Currently uses Supabase anonymous key (public access via RLS)
+- When adding Google OAuth:
+  - Will use Supabase Auth with Google provider
+  - RLS policies will check authenticated user IDs
+  - Teacher table will restrict to whitelisted email addresses
+  - No need to migrate backend - Supabase handles auth natively
 
 ---
 
 ## User Experience Details
 
 ### Gesture Interactions
+
 - **Pull-to-refresh:** Swipe down on home page to reload data from Google Sheets
 - **Swipe navigation:** Swipe left on home page to navigate to date selection
 - **Swipe marking:** Swipe left (Absent) or right (Present) in swipe marking method
 - **Haptic feedback:** Light taps, selection feedback, success vibrations (iOS & Android)
 
 ### Mobile-First Design
+
 - **Target Device:** Personal phones (iOS and Android)
 - **Usage Context:** During class, teacher quickly marks attendance
 - **Large Touch Targets:** Buttons and cards designed for thumb accessibility
@@ -607,6 +1022,7 @@ Cross-platform haptic feedback for better UX:
 - **Minimal Friction:** Reduce number of taps/interactions required
 
 ### Performance Optimizations
+
 - React 19 automatic batching
 - Memoized context to prevent re-renders
 - TanStack Router lazy route loading
@@ -619,38 +1035,68 @@ Cross-platform haptic feedback for better UX:
 ## Known Limitations & Technical Debt
 
 ### Current Limitations
+
 1. **No Authentication:** App is currently public (anyone with URL can use)
+   - RLS policies enabled but allow public access for MVP
    - Intentional for development speed
-   - Google OAuth planned for future
+   - Google OAuth planned for future (will use Supabase Auth)
 
-2. **Bulk Save Commented Out:** Frontend save function disabled for testing
-   - Backend ready to receive data
-   - Uncomment when ready for production
+2. **No Backup Strategy Beyond Supabase:**
+   - Relies entirely on Supabase infrastructure
+   - No automated backups to external location
+   - No export/import functionality yet
+   - **Note:** Supabase provides daily backups on paid plans
 
-3. **Single Service Time:** Only supports one class time (11 AM)
-   - Expansion to 9 AM + 11 AM needed soon
-   - Will require service time selector and API updates
+3. **No Audit Trail:** Changes to attendance records not tracked
+   - Can't see who edited what and when
+   - No revision history
+   - Would require audit logging table
 
-4. **No Edit After Save:** Can't edit attendance once submitted
-   - Planned feature for handling late arrivals and corrections
+4. **Notes Only Available on Edit:** Can't add notes during initial marking
+   - Must edit attendance record after submission to add notes
+   - Interrupts workflow for immediate observations
 
-5. **Google Sheets as Database:** Works for MVP but has limitations
-   - May need real database for future features
-   - Sheets API has rate limits
-   - Complex queries difficult
-
-6. **No Backup Strategy:** Google Sheets is single source of truth
-   - No automated backups
-   - Relies on Google's infrastructure
+5. **No Visitor Quick-Add:** Visitors must be added before marking
+   - Must go to Student Management first
+   - Can't add visitors during attendance flow
+   - Interrupts workflow when unexpected visitor arrives
 
 ### Technical Debt
-1. **Unused Dependency:** `react-hook-form` (can be removed)
-2. **Dead Code:** `utils/cache.ts` appears unused (TanStack Query handles caching)
-3. **State Management:** Evaluate if Zustand is necessary (React Query + React state may be sufficient)
-4. **Hardcoded API URL:** Should be environment variable
-5. **No Error Boundaries:** React error handling not implemented
-6. **No Tests:** No testing setup (unit, integration, e2e)
-7. **No i18n System:** Portuguese hardcoded (not needed, but worth noting)
+
+1. **Legacy Google Sheets Code:** Old `src/api/attendance.ts` still exists
+   - Should be removed once Supabase fully validated
+   - Currently marked as deprecated
+   - Adds confusion for developers
+
+2. **Unused Dependency:** `react-hook-form` (can be removed)
+   - Installed but not used anywhere
+   - Adds 70KB to bundle size
+
+3. **Dead Code:** `utils/cache.ts` appears unused
+   - TanStack Query handles all caching
+   - Can be removed
+
+4. **State Management Evaluation:** Zustand usage is minimal
+   - Only stores `selectedDate` and `selectedMethod`
+   - Could use URL params or React Context instead
+   - Evaluate if Zustand adds value vs complexity
+
+5. **Supabase URL in Code:** Currently in environment variables ✅
+   - Now properly using `.env` file
+   - Good practice for security and deployment
+
+6. **No Error Boundaries:** React error handling not implemented
+   - App crashes bubble to browser console
+   - Should have fallback UI for errors
+
+7. **No Tests:** No testing setup (unit, integration, e2e)
+   - Manual testing only
+   - Risk of regressions
+   - Would benefit from Vitest + React Testing Library
+
+8. **No i18n System:** Portuguese hardcoded
+   - Not needed for current use case (Portuguese church)
+   - Worth noting if app is ever shared with other churches
 
 ---
 
@@ -659,6 +1105,7 @@ Cross-platform haptic feedback for better UX:
 ### When Working on This Project
 
 #### Always Consider:
+
 1. **Mobile-first:** Teachers use personal phones during class time
 2. **Speed matters:** Attendance marking must be FAST to not waste lesson time
 3. **Portuguese UI:** All user-facing text in Portuguese (PT)
@@ -668,6 +1115,7 @@ Cross-platform haptic feedback for better UX:
 7. **Future-proof for 2 services:** Keep in mind 9 AM + 11 AM expansion coming
 
 #### Feature-Sliced Architecture Patterns:
+
 - New features go in `/features/[feature-name]/`
 - Separate business logic into `.logic.ts` files
 - Keep components presentational (accept props, render UI)
@@ -676,12 +1124,14 @@ Cross-platform haptic feedback for better UX:
 - Reusable logic goes in `/hooks/`
 
 #### State Management Decisions:
+
 - **Server data (API):** Use TanStack Query (already set up)
 - **Session data (temporary UI state):** Evaluate if Zustand is needed or use React state
 - **Form state:** Use React state (react-hook-form not used)
 - **Avoid:** Multiple sources of truth, complex state trees
 
 #### Testing Considerations:
+
 - Test on mobile devices (primary use case)
 - Test haptic feedback on both iOS and Android
 - Verify gesture interactions work smoothly
@@ -692,6 +1142,7 @@ Cross-platform haptic feedback for better UX:
 #### Common Tasks:
 
 **Adding a New Feature:**
+
 1. Create directory in `/features/[feature-name]/`
 2. Create main component: `[FeatureName]Page.tsx`
 3. Separate business logic: `[FeatureName]Page.logic.ts` (if complex)
@@ -702,6 +1153,7 @@ Cross-platform haptic feedback for better UX:
 8. Test on mobile device
 
 **Modifying Attendance Flow:**
+
 1. Changes affect both marking methods (Search and Swipe)
 2. Update data models in `schemas/attendance.schema.ts`
 3. Update API calls in `api/attendance.ts`
@@ -710,6 +1162,7 @@ Cross-platform haptic feedback for better UX:
 6. Test navigation blocking still works
 
 **Changing Data Models:**
+
 1. Update Zod schema in `schemas/attendance.schema.ts`
 2. Update TypeScript types/interfaces
 3. Update API layer in `api/attendance.ts`
@@ -718,6 +1171,7 @@ Cross-platform haptic feedback for better UX:
 6. Test with both old and new data formats (migration)
 
 **UI Changes:**
+
 1. Follow existing design system (Emerald/Teal/Cyan gradient)
 2. Maintain gesture interactions (swipe, pull-to-refresh)
 3. Keep large touch targets for mobile
@@ -730,6 +1184,7 @@ Cross-platform haptic feedback for better UX:
 ## Glossary (Portuguese → English)
 
 ### Ministry Terms
+
 - **Prés / Pré-adolescentes:** Pre-teens
 - **Pré / Prés:** Shortened form of "pré-adolescente(s)" used throughout the UI instead of "aluno/alunos" (student/students) to reflect ministry-specific terminology
 - **Aula / Lição:** Lesson / Class
@@ -737,9 +1192,12 @@ Cross-platform haptic feedback for better UX:
 - **Currículo:** Curriculum
 
 ### App UI Terms
+
 - **Registar Presenças:** Record/Register attendance
 - **Presente (P):** Present
 - **Falta (F):** Absent (literally "absence" or "lack")
+- **Atrasado:** Late
+- **Justificada:** Excused (excused absence)
 - **Começar:** Start / Begin
 - **Continuar:** Continue
 - **Voltar:** Go back / Return
@@ -755,6 +1213,16 @@ Cross-platform haptic feedback for better UX:
 - **Adicionar Visitante:** Add Visitor
 - **Meus Pré-adolescentes:** My Pre-teens (Carers list)
 - **Lembra-te de falar com...:** Remember to talk with...
+- **Gerir Prés:** Manage Pre-teens (Student Management)
+- **Histórico de Presenças:** Attendance History
+- **Instalar Aplicação:** Install Application (PWA install)
+- **Carregar Mais:** Load More (pagination)
+- **Fim do histórico:** End of history (no more records)
+- **Visitante:** Visitor
+- **Ativo:** Active
+- **Inativo:** Inactive
+- **Saiu:** Aged out (moved to next age group)
+- **Mudou:** Moved (family relocated)
 
 ---
 
@@ -763,32 +1231,58 @@ Cross-platform haptic feedback for better UX:
 ### Key File Paths
 
 **Features:**
+
 - Home: `src/features/home/HomePage.tsx`
 - Date Selection: `src/features/date-selection/DateSelectionPage.tsx`
 - Swipe Marking: `src/features/attendance-marking/AttendanceMarkingPage.tsx`
 - Search Marking: `src/features/search-marking/SearchAttendanceMarkingPage.tsx`
+- Student Management: `src/features/student-management/StudentManagementPage.tsx`
+- Attendance History: `src/features/attendance-history/AttendanceHistoryPage.tsx`
 
 **Hooks:**
+
 - Data Fetching: `src/hooks/useAttendanceData.ts`
 - Navigation Block: `src/hooks/useNavigationBlock.ts`
 - Pull to Refresh: `src/hooks/usePullToRefresh.ts`
 - Swipe Gesture: `src/hooks/useSwipeGesture.ts`
+- Student Management: `src/hooks/useStudentManagement.ts`
+- Attendance History: `src/hooks/useAttendanceHistory.ts`
+- Edit Attendance: `src/hooks/useEditAttendance.ts`
+- PWA Install: `src/hooks/usePWAInstall.ts`
 
 **API & Data:**
-- API Layer: `src/api/attendance.ts`
+
+- Supabase Client: `src/lib/supabase.ts`
+- Supabase API:
+  - Students: `src/api/supabase/students.ts`
+  - Lessons: `src/api/supabase/lessons.ts`
+  - Attendance: `src/api/supabase/attendance.ts`
+  - Schedules: `src/api/supabase/schedules.ts`
+  - Service Times: `src/api/supabase/service-times.ts`
+- Legacy API (deprecated): `src/api/attendance.ts`
+- Database Types: `src/types/database.types.ts`
 - Schemas: `src/schemas/attendance.schema.ts`
 - Zustand Store: `src/store/attendanceStore.ts`
 
 **Utilities:**
+
 - Haptics: `src/utils/haptics.ts`
 - Helper Functions: `src/utils/helperFunctions.tsx`
 - Cache (unused): `src/utils/cache.ts`
 
 **Config:**
+
+- Theme System: `src/config/theme.ts`
 - Query Client: `src/lib/queryClient.ts`
 - Router: `src/router.tsx`
 - Root Route: `src/routes/__root.tsx`
 - Vite Config: `vite.config.ts`
+
+**Database:**
+
+- Schema: `database/schema.sql`
+- Setup Script: `database/setup.ts`
+- Documentation: `database/README.md`, `DATABASE_SCHEMA.md`
 
 ### Useful Commands
 
@@ -807,11 +1301,18 @@ npm run lint
 
 # Type check
 tsc -b
+
+# Database management
+npm run db:setup                 # Initial database setup
+npm run db:fix-dates             # Fix date formatting issues
+npm run db:diagnose-dates        # Diagnose date problems
+npm run db:link-lessons          # Link lessons to schedules
 ```
 
 ### Testing the Application
 
 **Important Note:** When AI assistants are testing or validating changes:
+
 - **DO NOT run `npm run dev`** - The development server is resource-intensive and not necessary for validation
 - **Instead, run `npm run build`** - This performs a full TypeScript type check and build verification
 - The build command will catch:
@@ -822,28 +1323,23 @@ tsc -b
   - Build-time configuration issues
 
 **Why this approach?**
+
 - The dev server runs continuously in the background and can accumulate multiple instances
 - Building is faster for validation purposes
 - Build errors are more comprehensive than dev server hot-reload errors
 - Matches the production deployment process
 
 **Testing workflow for AI assistants:**
+
 1. Make code changes
 2. Run `npm run build` to verify compilation
 3. If build succeeds → changes are valid
 4. If build fails → fix the reported errors and rebuild
 
 **Manual testing by users:**
+
 - Users should run `npm run dev` when they want to interact with the app
 - The app is deployed on Vercel, so manual testing can also be done there
-
-### Environment Variables (Future)
-When adding authentication and migrating backend:
-```
-VITE_API_URL=https://your-backend.com/api
-VITE_GOOGLE_CLIENT_ID=your-client-id
-VITE_GOOGLE_CLIENT_SECRET=your-client-secret
-```
 
 ---
 
@@ -861,11 +1357,20 @@ VITE_GOOGLE_CLIENT_SECRET=your-client-secret
 
 ## Version History
 
-- **Current Version:** MVP (0.1.0)
+- **Current Version:** MVP (0.2.0)
 - **Status:** Active development
-- **Last Updated:** 2025-10-30
+- **Last Updated:** 2025-11-03
 - **Deployment:** Vercel (production)
 - **Repository:** Git repository with recent commits showing active development
+
+### Recent Major Changes (0.2.0)
+
+- ✅ **Database Migration:** Migrated from Google Sheets to Supabase PostgreSQL
+- ✅ **Student Management:** Full CRUD interface for managing student roster
+- ✅ **Attendance History:** View and edit past attendance with pagination
+- ✅ **Multiple Service Times:** Support for 09:00 and 11:00 services
+- ✅ **Enhanced Attendance:** 4 status types (present/absent/late/excused) with notes
+- ✅ **PWA Install Prompt:** Install button on home page
 
 ---
 
@@ -880,6 +1385,7 @@ This app is a **ministry tool** built by a volunteer coordinator to help his chu
 5. **Portuguese:** All UI in Portuguese (PT)
 
 When suggesting changes:
+
 - Explain trade-offs clearly
 - Consider the volunteer/ministry context
 - Test suggestions on mobile devices
@@ -890,4 +1396,4 @@ When suggesting changes:
 
 ---
 
-*This documentation will be updated as the project evolves. AI assistants should refer to this file for context before making significant changes.*
+_This documentation will be updated as the project evolves. AI assistants should refer to this file for context before making significant changes._
