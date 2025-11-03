@@ -28,7 +28,7 @@ export function StudentFormModal({
 }: StudentFormModalProps) {
   const isEditMode = student !== null;
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: student?.name || '',
     is_visitor: student?.is_visitor || false,
     visitor_date: student?.visitor_date || null,
@@ -36,13 +36,15 @@ export function StudentFormModal({
     age_group: student?.age_group || null,
     status: student?.status || 'active' as Student['status'],
     notes: student?.notes || '',
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Reset form when modal opens with different student
   useEffect(() => {
-    setFormData({
+    const newFormData = {
       name: student?.name || '',
       is_visitor: student?.is_visitor || false,
       visitor_date: student?.visitor_date || null,
@@ -50,7 +52,9 @@ export function StudentFormModal({
       age_group: student?.age_group || null,
       status: student?.status || 'active',
       notes: student?.notes || '',
-    });
+    };
+
+    setFormData(newFormData);
     setErrors({});
   }, [student]);
 
@@ -86,8 +90,9 @@ export function StudentFormModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-fade-in overflow-y-auto">
+      <div className="flex items-start justify-center py-8 px-4 min-h-screen">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in">
         {/* Header */}
         <div className={`${theme.gradients.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
           <h2 className="text-2xl font-bold text-white">
@@ -235,6 +240,7 @@ export function StudentFormModal({
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

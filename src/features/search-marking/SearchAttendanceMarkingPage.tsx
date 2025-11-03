@@ -86,9 +86,9 @@ export const SearchAttendanceMarkingPage: React.FC<
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white flex flex-col">
+    <div className={`h-screen ${theme.gradients.background} text-white flex flex-col`}>
       {/* Header Section */}
-      <header className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-teal-600 shadow-lg">
+      <header className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}>
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           {/* Left: Back Button with "Voltar" text */}
           <button

@@ -166,4 +166,4 @@ export const buttonClasses = {
 /**
  * Helper function to get complete input class string
  */
-export const inputClasses = `border-2 ${theme.borders.primary} rounded-xl focus:outline-none focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} ${theme.gradients.cardNeutral} shadow-md`;
+export const inputClasses = `border-2 ${theme.borders.primary} rounded-xl focus:outline-none focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} ${theme.gradients.cardNeutral} shadow-md text-gray-900`;

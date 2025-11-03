@@ -91,9 +91,9 @@ export const AttendanceMarkingPage = ({
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white overflow-hidden">
+    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
       {/* Header Section - Sticky */}
-      <header className="flex-shrink-0 bg-gradient-to-r from-cyan-600 to-teal-600 shadow-lg">
+      <header className={`flex-shrink-0 ${theme.gradients.primaryButton} shadow-lg`}>
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           {/* Left: Back Button with "Voltar" text */}
           {onCancel && (

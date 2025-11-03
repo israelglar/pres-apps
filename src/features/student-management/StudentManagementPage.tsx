@@ -5,6 +5,7 @@ import { StudentCard } from './StudentCard';
 import { StudentFormModal } from './StudentFormModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import type { Student } from '../../types/database.types';
+import { theme } from '../../config/theme';
 
 interface StudentManagementPageProps {
   onBack: () => void;
@@ -87,9 +88,9 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white">
+    <div className={`h-screen overflow-y-auto ${theme.gradients.background} text-white`}>
       {/* Header Section */}
-      <header className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-teal-600 shadow-lg">
+      <header className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}>
         <div className="flex items-center justify-between p-5">
           {/* Left: Back Button with "Voltar" text */}
           <button
@@ -244,6 +245,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
       {/* Form Modal */}
       {showFormModal && (
         <StudentFormModal
+          key={editingStudent?.id || 'new'}
           student={editingStudent}
           onClose={handleFormClose}
           onSubmit={(data) => {
