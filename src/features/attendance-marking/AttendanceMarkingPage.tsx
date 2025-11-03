@@ -226,7 +226,7 @@ export const AttendanceMarkingPage = ({
 
         <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
           <div
-            className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8"
+            className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-5"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -305,7 +305,7 @@ export const AttendanceMarkingPage = ({
                   : "transform 0ms",
               }}
             >
-              <div className={`w-20 h-20 ${theme.gradients.activeItem} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+              <div className={`w-16 h-16 ${theme.gradients.activeItem} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
                 <span className="text-3xl font-bold text-white">
                   {currentStudent.name.charAt(0)}
                 </span>
@@ -368,7 +368,7 @@ export const AttendanceMarkingPage = ({
             >
               <div className="text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                  <XCircle className="w-10 h-10 text-white" />
+                  <XCircle className="w-8 h-8 text-white" />
                 </div>
                 <p className="text-white text-base font-bold">Falta</p>
               </div>
@@ -380,7 +380,7 @@ export const AttendanceMarkingPage = ({
             >
               <div className="text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                  <CheckCircle className="w-10 h-10 text-white" />
+                  <CheckCircle className="w-8 h-8 text-white" />
                 </div>
                 <p className="text-white text-base font-bold">Presente</p>
               </div>
@@ -397,7 +397,7 @@ export const AttendanceMarkingPage = ({
               <div className={`w-16 h-16 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-4`}>
                 <UserPlus className={`w-8 h-8 ${theme.text.primary}`} />
               </div>
-              <h3 className="text-base font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
                 {visitorManagement.selectedVisitor ? 'Marcar Visitante' : 'Adicionar Visitante'}
               </h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -410,7 +410,7 @@ export const AttendanceMarkingPage = ({
             <div className="space-y-4 mb-5">
               {/* Search Input */}
               <div className="relative">
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-xs font-bold text-gray-700 mb-2">
                   Nome do Visitante
                 </label>
                 <div className="relative">
@@ -478,7 +478,7 @@ export const AttendanceMarkingPage = ({
                 <>
                   {/* Question 1: First time at church? */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                    <label className="block text-xs font-bold text-gray-700 mb-2">
                       Primeira vez na igreja?
                     </label>
                     <div className="flex gap-3">
@@ -509,7 +509,7 @@ export const AttendanceMarkingPage = ({
 
                   {/* Question 2: Will come regularly? */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                    <label className="block text-xs font-bold text-gray-700 mb-2">
                       Vai vir regularmente?
                     </label>
                     <div className="flex gap-3">
@@ -585,7 +585,7 @@ export const AttendanceMarkingPage = ({
                   />
                 </svg>
               </div>
-              <h3 className="text-base font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Tem a certeza?
               </h3>
               <p className="text-gray-600 text-sm">

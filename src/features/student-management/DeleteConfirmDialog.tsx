@@ -28,7 +28,7 @@ export function DeleteConfirmDialog({
         {/* Warning Icon */}
         <div className="flex justify-center mb-4">
           <div className={`${theme.backgrounds.error} p-3 rounded-full`}>
-            <AlertTriangle className={`w-4 h-4 ${theme.text.error}`} />
+            <AlertTriangle className={`w-8 h-8 ${theme.text.error}`} />
           </div>
         </div>
 

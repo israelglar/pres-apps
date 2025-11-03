@@ -108,7 +108,7 @@ export function StudentFormModal({
           <div>
             <label
               htmlFor="name"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-sm`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
             >
               Nome <span className={theme.text.error}>*</span>
             </label>
@@ -117,7 +117,7 @@ export function StudentFormModal({
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-4 py-3 ${inputClasses} ${errors.name ? 'border-red-500' : ''}`}
+              className={`w-full px-4 py-3 text-sm ${inputClasses} ${errors.name ? 'border-red-500' : ''}`}
               placeholder="Nome completo do aluno"
               disabled={isSubmitting}
             />
@@ -140,7 +140,7 @@ export function StudentFormModal({
             />
             <label
               htmlFor="is_visitor"
-              className={`${theme.text.neutralDarker} font-bold text-sm cursor-pointer`}
+              className={`${theme.text.neutralDarker} font-bold text-xs cursor-pointer`}
             >
               Visitante
             </label>
@@ -150,7 +150,7 @@ export function StudentFormModal({
           <div>
             <label
               htmlFor="status"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-sm`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
             >
               Estado
             </label>
@@ -160,7 +160,7 @@ export function StudentFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value as Student['status'] })
               }
-              className={`w-full px-4 py-3 ${inputClasses}`}
+              className={`w-full px-4 py-3 text-sm ${inputClasses}`}
               disabled={isSubmitting}
             >
               <option value="active">Ativo</option>
@@ -174,7 +174,7 @@ export function StudentFormModal({
           <div>
             <label
               htmlFor="date_of_birth"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-sm`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
             >
               Data de Nascimento
             </label>
@@ -185,7 +185,7 @@ export function StudentFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, date_of_birth: e.target.value })
               }
-              className={`w-full px-4 py-3 ${inputClasses}`}
+              className={`w-full px-4 py-3 text-sm ${inputClasses}`}
               disabled={isSubmitting}
             />
           </div>
@@ -194,7 +194,7 @@ export function StudentFormModal({
           <div>
             <label
               htmlFor="notes"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-sm`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
             >
               Notas
             </label>
@@ -202,7 +202,7 @@ export function StudentFormModal({
               id="notes"
               value={formData.notes || ''}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className={`w-full px-4 py-3 ${inputClasses} resize-none`}
+              className={`w-full px-4 py-3 text-sm ${inputClasses} resize-none`}
               rows={4}
               placeholder="Observações sobre o aluno (opcional)"
               disabled={isSubmitting}

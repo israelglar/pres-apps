@@ -26,14 +26,14 @@ Every page MUST have this header pattern:
 <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 text-white">
   {/* Header Section */}
   <header className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-teal-600 shadow-lg">
-    <div className="flex items-center justify-between p-5">
+    <div className="flex items-center justify-between px-4 pt-4 pb-2">
       {/* Left: Back Button with "Voltar" text */}
       <button
         onClick={handleBack}
         className="flex items-center gap-2 text-white hover:text-white/80 transition-colors"
       >
-        <ArrowLeft className="w-6 h-6" />
-        <span className="text-lg font-medium">Voltar</span>
+        <ArrowLeft className="w-5 h-5" />
+        <span className="text-base font-medium">Voltar</span>
       </button>
 
       {/* Right: Optional Action Button (if needed) */}
@@ -45,11 +45,11 @@ Every page MUST have this header pattern:
     </div>
 
     {/* Title Section - NO ICON on left */}
-    <div className="px-5 pb-6">
-      <h1 className="text-3xl font-bold text-white mb-2">
+    <div className="px-4 pb-4">
+      <h1 className="text-2xl font-bold text-white mb-1">
         {pageTitle}
       </h1>
-      <p className="text-base font-medium text-white/90">
+      <p className="text-sm font-medium text-white/90">
         {pageSubtitle}
       </p>
     </div>
@@ -64,11 +64,12 @@ Every page MUST have this header pattern:
 ```
 
 **Key Requirements:**
-- ✅ Back button with "Voltar" text (not just icon)
-- ✅ Title is `text-3xl font-bold` with NO icon on the left
-- ✅ Subtitle is `text-base font-medium text-white/90`
+- ✅ Back button with "Voltar" text (not just icon) - `text-base font-medium`, icon `w-5 h-5`
+- ✅ Title is `text-2xl font-bold` with NO icon on the left (compact header)
+- ✅ Subtitle is `text-sm font-medium text-white/90` (compact)
 - ✅ Optional action button on the right (refresh, settings, etc.)
 - ✅ Header is sticky with `sticky top-0 z-10`
+- ✅ Compact padding: `px-4 pt-4 pb-2` for top bar, `px-4 pb-4` for title section
 - ❌ NO icon beside the page title
 
 ### 2. Background & Colors
@@ -97,9 +98,10 @@ className="bg-white rounded-2xl shadow-2xl p-5"
 
 Follow these exact text sizes from the design system:
 
-- **Page Title (h1):** `text-3xl font-bold`
-- **Page Subtitle:** `text-base font-medium`
-- **Section Headings (h2):** `text-2xl font-bold`
+- **Page Title (h1):** `text-2xl font-bold` (compact header)
+- **Page Subtitle:** `text-sm font-medium` (compact header)
+- **Back Button Text:** `text-base font-medium`
+- **Section Headings (h2):** `text-xl font-bold`
 - **Card Titles (h3):** `text-base font-bold`
 - **Body Text:** `text-sm`
 - **Labels/Secondary:** `text-xs`
@@ -110,7 +112,7 @@ Follow these exact text sizes from the design system:
 - Card padding: `p-5` (consistent across all cards)
 - Section margins: `mb-6` between major sections
 - Element gaps: `gap-3` between related items
-- Header padding: `p-5` for top bar, `px-5 pb-6` for title area
+- Header padding: `px-4 pt-4 pb-2` for top bar, `px-4 pb-4` for title area (compact)
 
 **Search/Filter Positioning:**
 - Always at the TOP of the body section
@@ -233,14 +235,14 @@ When this skill is invoked:
 </div>
 ```
 
-### ✅ Correct Header (No icon, proper sizing)
+### ✅ Correct Header (No icon, compact sizing)
 
 ```tsx
-<div className="px-5 pb-6">
-  <h1 className="text-3xl font-bold text-white mb-2">
+<div className="px-4 pb-4">
+  <h1 className="text-2xl font-bold text-white mb-1">
     Histórico de Presenças
   </h1>
-  <p className="text-base font-medium text-white/90">
+  <p className="text-sm font-medium text-white/90">
     Ver e editar registos anteriores
   </p>
 </div>
@@ -286,14 +288,14 @@ src/features/search-marking/SearchAttendanceMarkingPage.tsx
 
 After fixing, verify:
 
-- [ ] Header has back button with "Voltar" text
-- [ ] Page title is `text-3xl font-bold` with NO icon beside it
-- [ ] Subtitle is `text-base font-medium text-white/90`
+- [ ] Header has back button with "Voltar" text (`text-base font-medium`, icon `w-5 h-5`)
+- [ ] Page title is `text-2xl font-bold` with NO icon beside it (compact)
+- [ ] Subtitle is `text-sm font-medium text-white/90` (compact)
 - [ ] Background uses full gradient: `from-cyan-500 via-teal-500 to-emerald-500`
 - [ ] All text is white (`text-white` or variations)
 - [ ] Cards use `rounded-2xl shadow-2xl p-5`
 - [ ] Search/filter UI is at top of body section
-- [ ] Spacing is compact (p-5 for cards, mb-6 between sections)
+- [ ] Header spacing is compact: `px-4 pt-4 pb-2` for top bar, `px-4 pb-4` for title
 - [ ] Optional right button in header (if applicable)
 
 ## Portuguese UI Text

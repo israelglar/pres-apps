@@ -97,7 +97,7 @@ export function HomePage({
             className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`}
           />
           <h2 className="text-2xl font-bold mb-1">Registar Presenças</h2>
-          <p className={`${theme.text.neutral} text-sm`}>
+          <p className={`${theme.text.neutral} text-base font-medium`}>
             Marcar presenças para a lição de hoje
           </p>
           <div
@@ -111,7 +111,7 @@ export function HomePage({
         {/* History Button */}
         <button
           onClick={onViewHistory}
-          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 mt-3"
+          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
         >
           <History className="w-4 h-4" />
           <span className="font-semibold text-sm">Histórico de Presenças</span>
@@ -120,7 +120,7 @@ export function HomePage({
         {/* Manage Students Button */}
         <button
           onClick={onManageStudents}
-          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 mt-3"
+          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
         >
           <Users className="w-4 h-4" />
           <span className="font-semibold text-sm">Gerir Alunos</span>
@@ -133,7 +133,7 @@ export function HomePage({
               // Show install button if app can be installed
               <button
                 onClick={logic.promptInstall}
-                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-4 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-white/30"
+                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30"
               >
                 <Download className="w-4 h-4" />
                 <span className="font-semibold text-sm">
@@ -148,7 +148,7 @@ export function HomePage({
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}
       {logic.waitingForData && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 text-center">
             {logic.dataError ? (
               <>
                 <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -163,13 +163,13 @@ export function HomePage({
                 <div className="flex gap-3">
                   <button
                     onClick={logic.handleCancelWaiting}
-                    className={`flex-1 px-4 py-3 ${buttonClasses.secondary} text-sm`}
+                    className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm`}
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={logic.handleRetryLoad}
-                    className={`flex-1 px-4 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
+                    className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-3`}
                   >
                     <RefreshCw className="w-4 h-4" />
                     Tentar Novamente

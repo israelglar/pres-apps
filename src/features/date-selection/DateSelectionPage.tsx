@@ -97,7 +97,7 @@ export function DateSelectionPage({
 
         <div className="bg-white rounded-2xl shadow-2xl p-5 mb-6">
           <div className="mb-5">
-            <label className="block text-gray-800 font-bold mb-3 text-sm">
+            <label className="block text-gray-800 font-bold mb-3 text-xs">
               Data da Lição
             </label>
 
@@ -312,7 +312,7 @@ export function DateSelectionPage({
       {logic.showMethodDialog && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-scale-in">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Escolher Método
             </h2>
             <p className="text-gray-600 text-sm mb-6">
@@ -369,7 +369,7 @@ export function DateSelectionPage({
 
             <button
               onClick={() => logic.setShowMethodDialog(false)}
-              className="w-full mt-4 px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+              className="w-full mt-4 px-5 py-3 text-gray-600 hover:text-gray-800 font-medium text-sm"
             >
               Cancelar
             </button>

@@ -66,7 +66,7 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
 
   return (
     <div
-      className={`${theme.gradients.cardNeutral} border-2 ${theme.borders.primary} rounded-xl p-4 hover:shadow-lg transition-all`}
+      className={`${theme.gradients.cardNeutral} border-2 ${theme.borders.primary} rounded-xl p-5 hover:shadow-lg transition-all`}
     >
       <div className="flex items-start justify-between gap-3">
         {/* Student Info */}
