@@ -86,9 +86,9 @@ export const SearchAttendanceMarkingPage: React.FC<
   }
 
   return (
-    <div className={`h-screen ${theme.gradients.background} text-white flex flex-col`}>
-      {/* Header Section */}
-      <header className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}>
+    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
+      {/* Header Section - Fixed */}
+      <header className={`flex-shrink-0 ${theme.gradients.primaryButton} shadow-lg`}>
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           {/* Left: Back Button with "Voltar" text */}
           <button
@@ -110,14 +110,6 @@ export const SearchAttendanceMarkingPage: React.FC<
             </svg>
             <span className="text-base font-medium">Voltar</span>
           </button>
-
-          {/* Right: Complete Button */}
-          <button
-            onClick={handleComplete}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
-          >
-            <CheckCircle className="w-6 h-6" />
-          </button>
         </div>
 
         {/* Title Section */}
@@ -131,10 +123,10 @@ export const SearchAttendanceMarkingPage: React.FC<
         </div>
       </header>
 
-      {/* Body Section */}
-      <main className="p-5 flex-1 overflow-y-auto">
-        {/* Search Bar at top */}
-        <div className="mb-5">
+      {/* Main Content Area - Fixed at top with scrollable list below */}
+      <div className="flex flex-col h-full overflow-hidden">
+        {/* Search Bar and Visitor Button - Fixed at top */}
+        <div className="flex-shrink-0 p-5 pb-3">
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white w-4 h-4" />
             <input
@@ -151,88 +143,99 @@ export const SearchAttendanceMarkingPage: React.FC<
             </span>
           </div>
 
-          {/* Add Visitor Button */}
-          <button
-            onClick={visitorManagement.openVisitorDialog}
-            className="w-full px-5 py-3 bg-white text-cyan-600 rounded-xl text-sm font-medium hover:bg-white/90 transition-all shadow-lg flex items-center justify-center gap-2"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Adicionar Visitante</span>
-          </button>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={visitorManagement.openVisitorDialog}
+              className="flex-1 px-5 py-3 bg-white text-cyan-600 rounded-xl text-sm font-medium hover:bg-white/90 transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>Adicionar Visitante</span>
+            </button>
+            <button
+              onClick={handleComplete}
+              className="px-5 py-3 bg-white/20 text-white rounded-xl text-sm font-medium hover:bg-white/30 transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-sm"
+            >
+              <CheckCircle className="w-4 h-4" />
+              <span>Concluir</span>
+            </button>
+          </div>
         </div>
 
-        {/* Student List */}
-        <div className="space-y-2">
-          {displayedStudents.length === 0 && searchQuery.trim() !== "" ? (
-            <div className="text-center py-8 text-white/80">
-              Nenhum pré encontrado
-            </div>
-          ) : (
-            displayedStudents.map((student) => {
-              const isMarked = !!attendanceRecords[student.id];
+        {/* Scrollable Student List - Takes remaining space */}
+        <div className="flex-1 overflow-y-auto px-5 pb-5">
+          <div className="space-y-2">
+            {displayedStudents.length === 0 && searchQuery.trim() !== "" ? (
+              <div className="text-center py-8 text-white/80">
+                Nenhum pré encontrado
+              </div>
+            ) : (
+              displayedStudents.map((student) => {
+                const isMarked = !!attendanceRecords[student.id];
 
-              return (
-                <button
-                  key={student.id}
-                  onClick={() => {
-                    if (isMarked) {
-                      handleUnmark(student.id);
-                    } else {
-                      handleMarkPresent(student);
-                    }
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
-                    isMarked
-                      ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
-                      : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
+                return (
+                  <button
+                    key={student.id}
+                    onClick={() => {
+                      if (isMarked) {
+                        handleUnmark(student.id);
+                      } else {
+                        handleMarkPresent(student);
+                      }
+                    }}
+                    className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
+                      isMarked
+                        ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
+                        : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {isMarked && (
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}
+                        >
+                          <span className="text-white font-bold text-xs">
+                            {student.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-semibold ${
+                              isMarked
+                                ? theme.text.primaryDarker
+                                : theme.text.neutralDarker
+                            }`}
+                          >
+                            {student.name}
+                          </span>
+                          {student.isVisitor && (
+                            <span
+                              className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
+                            >
+                              Visitante
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                     {isMarked && (
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}
+                        className={`${theme.backgrounds.primaryLight} rounded-full p-0.5`}
                       >
-                        <span className="text-white font-bold text-xs">
-                          {student.name.charAt(0)}
-                        </span>
+                        <CheckCircle
+                          className={`w-4 h-4 ${theme.text.primary}`}
+                        />
                       </div>
                     )}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-sm font-semibold ${
-                            isMarked
-                              ? theme.text.primaryDarker
-                              : theme.text.neutralDarker
-                          }`}
-                        >
-                          {student.name}
-                        </span>
-                        {student.isVisitor && (
-                          <span
-                            className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
-                          >
-                            Visitante
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {isMarked && (
-                    <div
-                      className={`${theme.backgrounds.primaryLight} rounded-full p-0.5`}
-                    >
-                      <CheckCircle
-                        className={`w-4 h-4 ${theme.text.primary}`}
-                      />
-                    </div>
-                  )}
-                </button>
-              );
-            })
-          )}
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Visitor Dialog */}
       {visitorManagement.isVisitorDialogOpen && (
