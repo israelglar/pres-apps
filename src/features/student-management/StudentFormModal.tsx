@@ -96,7 +96,7 @@ export function StudentFormModal({
         {/* Header */}
         <div className={`${theme.gradients.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
           <h2 className="text-2xl font-bold text-white">
-            {isEditMode ? 'Editar Aluno' : 'Adicionar Aluno'}
+            {isEditMode ? 'Editar Pré' : 'Adicionar Pré'}
           </h2>
           <button
             onClick={onClose}
@@ -123,7 +123,7 @@ export function StudentFormModal({
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className={`w-full px-4 py-3 text-sm ${inputClasses} ${errors.name ? 'border-red-500' : ''}`}
-              placeholder="Nome completo do aluno"
+              placeholder="Nome completo do pré"
               disabled={isSubmitting}
             />
             {errors.name && (
@@ -209,7 +209,7 @@ export function StudentFormModal({
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className={`w-full px-4 py-3 text-sm ${inputClasses} resize-none`}
               rows={4}
-              placeholder="Observações sobre o aluno (opcional)"
+              placeholder="Observações sobre o pré (opcional)"
               disabled={isSubmitting}
             />
           </div>

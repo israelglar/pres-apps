@@ -115,10 +115,10 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
         {/* Title Section - NO ICON on left */}
         <div className="px-5 pb-6">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Gerir Alunos
+            Gerir Prés
           </h1>
           <p className="text-base font-medium text-white/90">
-            Adicionar, editar ou remover alunos
+            Adicionar, editar ou remover prés
           </p>
         </div>
       </header>
@@ -131,7 +131,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
             <p className="text-base text-white/90 font-medium">
-              A carregar alunos...
+              A carregar prés...
             </p>
           </div>
         )}
@@ -140,7 +140,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
         {isError && (
           <div className="bg-red-500/20 border-2 border-red-400 rounded-xl p-6 mb-5">
             <p className="text-white font-bold mb-2">
-              Erro ao carregar alunos
+              Erro ao carregar prés
             </p>
             <p className="text-white/90 text-sm mb-4">
               {error instanceof Error ? error.message : 'Erro desconhecido'}
@@ -163,7 +163,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Procurar aluno por nome..."
+                placeholder="Procurar pré por nome..."
                 className="w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
               />
               {searchQuery && (
@@ -184,21 +184,21 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
             {students.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-base text-white/90 font-medium mb-4">
-                  Nenhum aluno encontrado
+                  Nenhum pré encontrado
                 </p>
                 <button
                   onClick={handleAddStudent}
                   className="px-5 py-3 bg-white text-cyan-600 hover:bg-white/90 rounded-xl text-sm font-medium inline-flex items-center transition-colors"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Adicionar Primeiro Aluno
+                  Adicionar Primeiro Pré
                 </button>
               </div>
             ) : filteredStudents.length === 0 ? (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-white/60 mx-auto mb-4" />
                 <p className="text-base text-white/90 font-medium mb-2">
-                  Nenhum aluno encontrado
+                  Nenhum pré encontrado
                 </p>
                 <p className="text-sm text-white/80">
                   Tenta procurar com outro nome
@@ -216,11 +216,11 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                   <p className="text-sm text-white/90 font-medium">
                     {searchQuery ? (
                       <>
-                        A mostrar {filteredStudents.length} de {students.length} {students.length === 1 ? 'aluno' : 'alunos'}
+                        A mostrar {filteredStudents.length} de {students.length} {students.length === 1 ? 'pré' : 'prés'}
                       </>
                     ) : (
                       <>
-                        Total: {students.length} {students.length === 1 ? 'aluno' : 'alunos'}
+                        Total: {students.length} {students.length === 1 ? 'pré' : 'prés'}
                       </>
                     )}
                   </p>

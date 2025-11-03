@@ -338,7 +338,7 @@ export function DateSelectionPage({
                       Procurar por Nome
                     </h3>
                     <p className={`text-sm ${theme.text.neutral}`}>
-                      Procura e seleciona cada aluno presente. Ideal para
+                      Procura e seleciona cada pré presente. Ideal para
                       registar pela ordem em que estão sentados.
                     </p>
                   </div>

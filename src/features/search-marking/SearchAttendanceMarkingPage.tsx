@@ -165,7 +165,7 @@ export const SearchAttendanceMarkingPage: React.FC<
         <div className="space-y-2">
           {displayedStudents.length === 0 && searchQuery.trim() !== "" ? (
             <div className="text-center py-8 text-white/80">
-              Nenhum aluno encontrado
+              Nenhum pré encontrado
             </div>
           ) : (
             displayedStudents.map((student) => {

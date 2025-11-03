@@ -731,6 +731,7 @@ Cross-platform haptic feedback for better UX:
 
 ### Ministry Terms
 - **Prés / Pré-adolescentes:** Pre-teens
+- **Pré / Prés:** Shortened form of "pré-adolescente(s)" used throughout the UI instead of "aluno/alunos" (student/students) to reflect ministry-specific terminology
 - **Aula / Lição:** Lesson / Class
 - **Cuidadores / Carers:** Teachers assigned to care for specific students (shepherding/mentoring role)
 - **Currículo:** Curriculum

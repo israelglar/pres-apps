@@ -34,18 +34,18 @@ export function DeleteConfirmDialog({
 
         {/* Header */}
         <h2 className={`text-2xl font-bold ${theme.text.neutralDarker} mb-2 text-center`}>
-          Eliminar Aluno?
+          Eliminar Pré?
         </h2>
 
         {/* Message */}
         <p className={`${theme.text.neutral} text-sm text-center mb-2`}>
-          Tens a certeza que queres eliminar o aluno:
+          Tens a certeza que queres eliminar o pré:
         </p>
         <p className={`text-base font-bold ${theme.text.primaryDarker} text-center mb-4`}>
           {studentName}
         </p>
         <p className={`text-sm ${theme.text.neutral} text-center mb-6`}>
-          Esta ação não pode ser revertida. O aluno será marcado como inativo.
+          Esta ação não pode ser revertida. O pré será marcado como inativo.
         </p>
 
         {/* Action Buttons */}

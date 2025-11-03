@@ -112,14 +112,14 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
           <button
             onClick={() => onEdit(student)}
             className="p-1.5 bg-cyan-100 text-cyan-600 rounded-lg hover:bg-cyan-200 transition-colors"
-            title="Editar aluno"
+            title="Editar pré"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(student)}
             className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-            title="Eliminar aluno"
+            title="Eliminar pré"
           >
             <Trash2 className="w-4 h-4" />
           </button>

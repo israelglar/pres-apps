@@ -123,7 +123,7 @@ export function HomePage({
           className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
         >
           <Users className="w-4 h-4" />
-          <span className="font-semibold text-sm">Gerir Alunos</span>
+          <span className="font-semibold text-sm">Gerir Prés</span>
         </button>
 
         {/* PWA Button - Only show if NOT running in PWA mode */}

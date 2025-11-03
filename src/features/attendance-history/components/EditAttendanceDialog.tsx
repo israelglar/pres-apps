@@ -99,7 +99,7 @@ export function EditAttendanceDialog({
         <form onSubmit={handleSubmit} className="p-5 space-y-5">
           {/* Student Info */}
           <div className={`p-4 rounded-xl ${theme.gradients.cardHighlight} border ${theme.borders.primary}`}>
-            <p className={`text-sm font-semibold ${theme.text.neutralDark} mb-1`}>Aluno</p>
+            <p className={`text-sm font-semibold ${theme.text.neutralDark} mb-1`}>Pré</p>
             <p className="text-lg font-bold text-gray-800">{record.student?.name || 'Unknown'}</p>
             <p className="text-sm text-gray-600 mt-1">{formattedDate}</p>
             {record.schedule?.lesson?.name && (
@@ -162,7 +162,7 @@ export function EditAttendanceDialog({
               disabled={isSubmitting}
             />
             <p className="text-xs text-gray-500 mt-1">
-              Adiciona contexto sobre a presença do aluno
+              Adiciona contexto sobre a presença do pré
             </p>
           </div>
 
