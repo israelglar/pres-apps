@@ -1,5 +1,4 @@
 import { Edit2, Trash2, User } from 'lucide-react';
-import { theme } from '../../config/theme';
 import type { Student } from '../../types/database.types';
 
 interface StudentCardProps {
@@ -42,7 +41,7 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
 
     return (
       <span
-        className={`px-2 py-1 text-xs font-bold rounded-full border ${config.className}`}
+        className={`px-1.5 py-0.5 text-xs font-bold rounded-full border ${config.className}`}
       >
         {config.label}
       </span>
@@ -65,27 +64,25 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
   };
 
   return (
-    <div
-      className={`${theme.gradients.cardNeutral} border-2 ${theme.borders.primary} rounded-xl p-5 hover:shadow-lg transition-all`}
-    >
-      <div className="flex items-start justify-between gap-3">
+    <div className="bg-white rounded-xl shadow-lg p-3 hover:shadow-xl transition-all">
+      <div className="flex items-center justify-between gap-2">
         {/* Student Info */}
-        <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {/* Avatar */}
-          <div className={`${theme.backgrounds.primaryLight} p-2 rounded-xl flex-shrink-0`}>
-            <User className={`w-4 h-4 ${theme.text.primary}`} />
+          <div className="bg-cyan-100 p-1.5 rounded-lg flex-shrink-0">
+            <User className="w-4 h-4 text-cyan-600" />
           </div>
 
           {/* Details */}
           <div className="flex-1 min-w-0">
-            <h3 className={`text-base font-bold ${theme.text.neutralDarker} mb-2 break-words`}>
+            <h3 className="text-sm font-bold text-gray-900 break-words">
               {student.name}
             </h3>
 
-            <div className="flex flex-wrap items-center gap-2 mb-2">
+            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
               {getStatusBadge(student.status)}
               {student.is_visitor && (
-                <span className="px-2 py-1 text-xs font-bold rounded-full border bg-purple-100 text-purple-700 border-purple-300">
+                <span className="px-1.5 py-0.5 text-xs font-bold rounded-full border bg-purple-100 text-purple-700 border-purple-300">
                   Visitante
                 </span>
               )}
@@ -93,15 +90,15 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
 
             {/* Additional Info */}
             {(student.date_of_birth || student.notes) && (
-              <div className="space-y-1 mt-2">
+              <div className="space-y-0.5 mt-1">
                 {student.date_of_birth && (
-                  <p className={`text-sm ${theme.text.neutral}`}>
-                    <span className="font-semibold">Data de Nascimento:</span>{' '}
+                  <p className="text-xs text-gray-600">
+                    <span className="font-semibold">Nascimento:</span>{' '}
                     {formatDateOfBirth(student.date_of_birth)}
                   </p>
                 )}
                 {student.notes && (
-                  <p className={`text-sm ${theme.text.neutral}`}>
+                  <p className="text-xs text-gray-600">
                     <span className="font-semibold">Notas:</span> {student.notes}
                   </p>
                 )}
@@ -111,17 +108,17 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-2 flex-shrink-0">
+        <div className="flex gap-1.5 flex-shrink-0">
           <button
             onClick={() => onEdit(student)}
-            className={`p-2 ${theme.backgrounds.primaryLight} ${theme.text.primary} rounded-lg hover:bg-cyan-200 transition-colors`}
+            className="p-1.5 bg-cyan-100 text-cyan-600 rounded-lg hover:bg-cyan-200 transition-colors"
             title="Editar aluno"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(student)}
-            className={`p-2 ${theme.backgrounds.error} ${theme.text.error} rounded-lg hover:bg-red-200 transition-colors`}
+            className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
             title="Eliminar aluno"
           >
             <Trash2 className="w-4 h-4" />
