@@ -1,6 +1,7 @@
-import { ArrowLeft, Plus, Loader2, Search, X } from 'lucide-react';
+import { Plus, Loader2, Search, X } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useStudentManagement } from '../../hooks/useStudentManagement';
+import { PageHeader } from '../../components/ui/PageHeader';
 import { StudentCard } from './StudentCard';
 import { StudentFormModal } from './StudentFormModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
@@ -90,38 +91,18 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
   return (
     <div className={`h-screen overflow-y-auto ${theme.gradients.background} text-white`}>
       {/* Header Section */}
-      <header className={`sticky top-0 z-10 ${theme.gradients.primaryButton} shadow-lg`}>
-        <div className="flex items-center justify-between p-5">
-          {/* Left: Back Button with "Voltar" text */}
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-white hover:text-white/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-base font-medium">Voltar</span>
-          </button>
-
-          {/* Right: Add Student Button */}
-          <button
-            onClick={handleAddStudent}
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
-            disabled={isCreating}
-          >
-            <Plus className="w-5 h-5" />
-            <span className="text-sm font-medium">Adicionar</span>
-          </button>
-        </div>
-
-        {/* Title Section - NO ICON on left */}
-        <div className="px-5 pb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Gerir Prés
-          </h1>
-          <p className="text-base font-medium text-white/90">
-            Adicionar, editar ou remover prés
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        onBack={onBack}
+        title="Gerir Prés"
+        subtitle="Adicionar, editar ou remover prés"
+        rightAction={{
+          icon: <Plus className="w-5 h-5" />,
+          label: "Adicionar",
+          onClick: handleAddStudent,
+          disabled: isCreating,
+        }}
+        sticky={true}
+      />
 
       {/* Body Section */}
       <main className="p-5">

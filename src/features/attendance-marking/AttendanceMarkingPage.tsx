@@ -1,5 +1,6 @@
 import { CheckCircle, Search, UserPlus, XCircle } from "lucide-react";
 import { buttonClasses, inputClasses, theme } from "../../config/theme";
+import { PageHeader } from "../../components/ui/PageHeader";
 import {
   formatDate,
   getLessonName,
@@ -92,43 +93,14 @@ export const AttendanceMarkingPage = ({
 
   return (
     <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
-      {/* Header Section - Sticky */}
-      <header className={`flex-shrink-0 ${theme.gradients.primaryButton} shadow-lg`}>
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          {/* Left: Back Button with "Voltar" text */}
-          {onCancel && (
-            <button
-              onClick={onCancel}
-              className="flex items-center gap-2 text-white hover:text-white/80 transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              <span className="text-base font-medium">Voltar</span>
-            </button>
-          )}
-        </div>
-
-        {/* Title Section */}
-        <div className="px-4 pb-4">
-          <h1 className="text-2xl font-bold text-white mb-1">
-            {formatDate(selectedDate)}
-          </h1>
-          <p className="text-sm font-medium text-white/90">
-            {getLessonName(selectedDate, lessonNames)}
-          </p>
-        </div>
-      </header>
+      {/* Header Section */}
+      <PageHeader
+        onBack={onCancel || (() => {})}
+        title={formatDate(selectedDate)}
+        subtitle={getLessonName(selectedDate, lessonNames)}
+        sticky={false}
+        className="flex-shrink-0"
+      />
 
       {/* Main Content Area - Takes remaining height */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">

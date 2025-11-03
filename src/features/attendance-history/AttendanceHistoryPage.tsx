@@ -1,10 +1,9 @@
 import {
-  ArrowLeft,
   History as HistoryIcon,
   Loader2,
-  RefreshCw,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { useAttendanceHistoryLogic } from "./AttendanceHistoryPage.logic";
 import { DateGroupCard } from "./components/DateGroupCard";
 import { EditAttendanceDialog } from "./components/EditAttendanceDialog";
@@ -43,41 +42,15 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
       onTouchMove={swipeGesture.handleTouchMove}
       onTouchEnd={swipeGesture.handleTouchEnd}
     >
+      {/* Header */}
+      <PageHeader
+        onBack={onBack}
+        title="Histórico de Presenças"
+        subtitle="Ver e editar registos anteriores"
+        sticky={false}
+      />
+
       <div className="max-w-4xl mx-auto p-3 pb-20">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="font-semibold text-sm">Voltar</span>
-            </button>
-
-            {/* Refresh Button */}
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading}
-              className="p-2 bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all active:scale-95 disabled:opacity-50"
-            >
-              <RefreshCw
-                className={`w-4 h-4 text-white ${isLoading ? "animate-spin" : ""}`}
-              />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div>
-              <h1 className="text-3xl font-bold text-white">
-                Histórico de Presenças
-              </h1>
-              <p className="text-white/80 text-base mt-0.5 font-medium">
-                Ver e editar registos anteriores
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* Service Time Tabs */}
         <div className="mb-5">
