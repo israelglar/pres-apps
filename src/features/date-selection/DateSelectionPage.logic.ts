@@ -6,19 +6,10 @@ export interface UseDateSelectionLogicProps {
 }
 
 /**
- * Get default service time ID based on current device time
- * Between 9:00-11:00 → default to 9h service (ID: 1)
- * All other times → default to 11h service (ID: 2)
+ * Get default service time ID
+ * Always defaults to 11h service (ID: 2)
  */
 function getDefaultServiceTimeId(): number {
-  const now = new Date();
-  const currentHour = now.getHours();
-
-  // Between 9h and 11h (9:00-10:59)
-  if (currentHour >= 9 && currentHour < 11) {
-    return 1; // 9h service
-  }
-
   return 2; // 11h service (default)
 }
 
@@ -54,8 +45,9 @@ function getMostRecentLessonDate(availableDates: Date[]): Date {
 export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLogicProps) {
   const [selectedServiceTimeId, setSelectedServiceTimeId] = useState(getDefaultServiceTimeId());
   const [isOpen, setIsOpen] = useState(false);
-  const [showMethodDialog, setShowMethodDialog] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<'search' | 'swipe'>('search');
   const [showFutureLessons, setShowFutureLessons] = useState(false);
+  const [showMethodInfo, setShowMethodInfo] = useState<'search' | 'swipe' | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownListRef = useRef<HTMLDivElement>(null);
@@ -197,8 +189,9 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     selectedDate,
     selectedServiceTimeId,
     isOpen,
-    showMethodDialog,
+    selectedMethod,
     showFutureLessons,
+    showMethodInfo,
     filteredSundays,
 
     // Refs
@@ -210,8 +203,9 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     setSelectedDate,
     setSelectedServiceTimeId,
     setIsOpen,
-    setShowMethodDialog,
+    setSelectedMethod,
     setShowFutureLessons,
+    setShowMethodInfo,
 
     // Helpers
     isToday,

@@ -5,13 +5,14 @@ import {
   Check,
   ChevronDown,
   ExternalLink,
-  Hand,
   Search,
   Eye,
   Clock,
   AlertCircle,
   CheckCircle2,
   AlertTriangle,
+  Info,
+  Hand,
 } from 'lucide-react';
 import { useDateSelectionLogic } from './DateSelectionPage.logic';
 import { formatDate } from '../../utils/helperFunctions';
@@ -258,11 +259,11 @@ export function DateSelectionPage({
                 <Clock className="w-4 h-4" />
                 Horário do Culto
               </label>
-              <div className="space-y-2">
+              <div className="flex gap-2">
                 {serviceTimes.map((serviceTime) => (
                   <label
                     key={serviceTime.id}
-                    className={`flex items-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                    className={`flex-1 flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                       logic.selectedServiceTimeId === serviceTime.id
                         ? `${theme.borders.primary} bg-white shadow-md`
                         : 'border-cyan-200 bg-white/50 hover:bg-white hover:border-cyan-300'
@@ -281,10 +282,122 @@ export function DateSelectionPage({
                         ? theme.text.primaryDarker
                         : theme.text.neutralDarker
                     }`}>
-                      {serviceTime.time.substring(0, 5)} ({serviceTime.name})
+                      {serviceTime.time.substring(0, 5)}
                     </span>
                   </label>
                 ))}
+              </div>
+            </div>
+
+            {/* Method Selector */}
+            <div className="border-t border-cyan-200 pt-4 mt-4">
+              <label className={`block ${theme.text.primaryDark} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}>
+                <Search className="w-4 h-4" />
+                Método de Registo
+              </label>
+              <div className="space-y-2">
+                {/* Search Method - DEFAULT */}
+                <div
+                  className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
+                    logic.selectedMethod === 'search'
+                      ? `${theme.borders.secondary} bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md`
+                      : 'border-cyan-200 bg-white/50'
+                  }`}
+                >
+                  <label className="flex items-center flex-1 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="method"
+                      value="search"
+                      checked={logic.selectedMethod === 'search'}
+                      onChange={() => logic.setSelectedMethod('search')}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                    />
+                    <div className="ml-3 flex items-center gap-1.5 flex-1">
+                      <Search className="w-4 h-4 text-blue-600" />
+                      <span className={`font-bold text-sm ${theme.text.neutralDarker}`}>
+                        Procurar por Nome
+                      </span>
+                      {logic.selectedMethod === 'search' && (
+                        <span className={`${theme.gradients.badge} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm whitespace-nowrap`}>
+                          Recomendado
+                        </span>
+                      )}
+                    </div>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      logic.setShowMethodInfo(logic.showMethodInfo === 'search' ? null : 'search');
+                    }}
+                    className="ml-2 p-1 hover:bg-blue-100 rounded-full transition-colors relative"
+                  >
+                    <Info className="w-4 h-4 text-blue-600" />
+                  </button>
+                  {logic.showMethodInfo === 'search' && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => logic.setShowMethodInfo(null)}
+                      />
+                      <div className="absolute right-0 top-full mt-2 w-72 p-4 bg-white rounded-xl border-2 border-blue-200 shadow-2xl z-50 animate-fade-in">
+                        <p className={`text-sm ${theme.text.neutral}`}>
+                          Procura e seleciona cada pré presente. Ideal para registar pela ordem em que estão sentados.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Swipe Method */}
+                <div
+                  className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
+                    logic.selectedMethod === 'swipe'
+                      ? `${theme.borders.primary} bg-gradient-to-r from-cyan-50 to-blue-50 shadow-md`
+                      : 'border-cyan-200 bg-white/50'
+                  }`}
+                >
+                  <label className="flex items-center flex-1 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="method"
+                      value="swipe"
+                      checked={logic.selectedMethod === 'swipe'}
+                      onChange={() => logic.setSelectedMethod('swipe')}
+                      className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
+                    />
+                    <div className="ml-3 flex items-center gap-2">
+                      <Hand className="w-4 h-4 text-emerald-600" />
+                      <span className={`font-bold text-sm ${theme.text.neutralDarker}`}>
+                        Método Tradicional
+                      </span>
+                    </div>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      logic.setShowMethodInfo(logic.showMethodInfo === 'swipe' ? null : 'swipe');
+                    }}
+                    className="ml-2 p-1 hover:bg-cyan-100 rounded-full transition-colors relative"
+                  >
+                    <Info className="w-4 h-4 text-emerald-600" />
+                  </button>
+                  {logic.showMethodInfo === 'swipe' && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => logic.setShowMethodInfo(null)}
+                      />
+                      <div className="absolute right-0 top-full mt-2 w-72 p-4 bg-white rounded-xl border-2 border-cyan-200 shadow-2xl z-50 animate-fade-in">
+                        <p className={`text-sm ${theme.text.neutral}`}>
+                          Percorre todos por ordem alfabética e desliza para marcar presente ou falta.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -298,7 +411,7 @@ export function DateSelectionPage({
               Voltar
             </button>
             <button
-              onClick={() => logic.setShowMethodDialog(true)}
+              onClick={() => onDateSelected(logic.selectedDate, logic.selectedMethod, logic.selectedServiceTimeId)}
               className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
             >
               Continuar
@@ -307,75 +420,6 @@ export function DateSelectionPage({
           </div>
         </div>
       </div>
-
-      {/* Method Selection Dialog */}
-      {logic.showMethodDialog && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-scale-in">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Escolher Método
-            </h2>
-            <p className="text-gray-600 text-sm mb-6">
-              Como preferes registar as presenças?
-            </p>
-
-            <div className="space-y-3">
-              {/* Search Method - DEFAULT */}
-              <button
-                onClick={() => onDateSelected(logic.selectedDate, 'search', logic.selectedServiceTimeId)}
-                className={`w-full p-4 bg-gradient-to-r from-blue-100 to-indigo-100 border-2 ${theme.borders.secondary} rounded-xl hover:from-blue-100 hover:to-indigo-100 hover:border-blue-500 hover:shadow-lg transition-all text-left group relative shadow-md`}
-              >
-                {/* Recommended Badge */}
-                <div className={`absolute -top-2 -right-2 ${theme.gradients.badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg`}>
-                  Recomendado
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className={`${theme.backgrounds.secondary} p-2 rounded-lg group-hover:scale-110 transition-transform`}>
-                    <Search className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className={`font-bold ${theme.text.neutralDarker} text-base mb-1`}>
-                      Procurar por Nome
-                    </h3>
-                    <p className={`text-sm ${theme.text.neutral}`}>
-                      Procura e seleciona cada pré presente. Ideal para
-                      registar pela ordem em que estão sentados.
-                    </p>
-                  </div>
-                </div>
-              </button>
-
-              {/* Swipe Method */}
-              <button
-                onClick={() => onDateSelected(logic.selectedDate, 'swipe', logic.selectedServiceTimeId)}
-                className={`w-full p-4 ${theme.gradients.cardHighlight} border-2 ${theme.borders.primary} rounded-xl hover:from-cyan-100 hover:to-blue-100 ${theme.borders.primaryHover} hover:shadow-lg transition-all text-left group`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`${theme.backgrounds.primary} p-2 rounded-lg group-hover:scale-110 transition-transform`}>
-                    <Hand className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className={`font-bold ${theme.text.neutralDarker} text-base mb-1`}>
-                      Método Tradicional
-                    </h3>
-                    <p className={`text-sm ${theme.text.neutral}`}>
-                      Percorre todos por ordem alfabética e desliza para marcar
-                      presente ou falta.
-                    </p>
-                  </div>
-                </div>
-              </button>
-            </div>
-
-            <button
-              onClick={() => logic.setShowMethodDialog(false)}
-              className="w-full mt-4 px-5 py-3 text-gray-600 hover:text-gray-800 font-medium text-sm"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
