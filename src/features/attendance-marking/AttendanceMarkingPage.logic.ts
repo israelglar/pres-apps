@@ -126,9 +126,6 @@ export const useAttendanceMarkingLogic = ({
       // Success vibration when completing all students
       successVibration();
       setIsComplete(true);
-      setTimeout(() => {
-        onComplete(Object.values(newRecords));
-      }, 2000);
     } else {
       setTimeout(() => {
         findNextUnmarked(newRecords);
@@ -250,6 +247,15 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
+  const handleComplete = () => {
+    onComplete(Object.values(attendanceRecords));
+  };
+
+  const handleGoBack = () => {
+    // For swipe marking, all records are manually marked, so just go back
+    setIsComplete(false);
+  };
+
   return {
     // State
     currentIndex,
@@ -272,6 +278,8 @@ export const useAttendanceMarkingLogic = ({
     handleConfirmLeave,
     handleCancelLeave,
     handleAddVisitor,
+    handleComplete,
+    handleGoBack,
     onTouchStart,
     onTouchMove,
     onTouchEnd,

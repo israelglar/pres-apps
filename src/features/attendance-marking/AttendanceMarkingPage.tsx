@@ -1,6 +1,7 @@
 import { CheckCircle, Search, UserPlus, XCircle } from "lucide-react";
 import { buttonClasses, inputClasses, theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
+import { CompletionScreen } from "../../components/features/CompletionScreen";
 import {
   formatDate,
   getLessonName,
@@ -34,6 +35,8 @@ export const AttendanceMarkingPage = ({
     handleConfirmLeave,
     handleCancelLeave,
     handleAddVisitor,
+    handleComplete,
+    handleGoBack,
     onTouchStart,
     onTouchMove,
     onTouchEnd,
@@ -48,46 +51,13 @@ export const AttendanceMarkingPage = ({
     ).length;
 
     return (
-      <div
-        className={`min-h-screen ${theme.gradients.background} text-white flex items-center justify-center p-4`}
-      >
-        <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-2xl shadow-2xl p-5">
-            <div
-              className={`w-20 h-20 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}
-            >
-              <CheckCircle className={`w-12 h-12 ${theme.text.primary}`} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Presenças Registadas!
-            </h2>
-            <p className="text-gray-600 mb-6 text-sm">
-              {getLessonName(selectedDate, lessonNames)}
-            </p>
-            <div className="flex justify-center gap-6 mb-6">
-              <div className="text-center">
-                <div
-                  className={`text-3xl font-bold ${theme.text.primary} mb-1`}
-                >
-                  {presentCount}
-                </div>
-                <div className={`text-xs ${theme.text.neutral} font-medium`}>
-                  Presentes
-                </div>
-              </div>
-              <div className="text-center">
-                <div className={`text-3xl font-bold ${theme.text.error} mb-1`}>
-                  {absentCount}
-                </div>
-                <div className={`text-xs ${theme.text.neutral} font-medium`}>
-                  Faltas
-                </div>
-              </div>
-            </div>
-            <p className="text-gray-500 text-xs">A regressar ao início...</p>
-          </div>
-        </div>
-      </div>
+      <CompletionScreen
+        lessonName={getLessonName(selectedDate, lessonNames)}
+        presentCount={presentCount}
+        absentCount={absentCount}
+        onConfirm={handleComplete}
+        onGoBack={handleGoBack}
+      />
     );
   }
 

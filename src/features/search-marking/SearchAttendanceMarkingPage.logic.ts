@@ -192,12 +192,28 @@ export const useSearchAttendanceMarkingLogic = ({
       }
     });
 
+    setAttendanceRecords(finalRecords);
     setIsComplete(true);
+  };
 
-    // Show completion screen briefly before calling onComplete
-    setTimeout(() => {
-      onComplete(Object.values(finalRecords));
-    }, 1500);
+  const handleConfirmComplete = () => {
+    onComplete(Object.values(attendanceRecords));
+  };
+
+  const handleGoBack = () => {
+    // Remove all auto-marked absent records (only keep manually marked present)
+    const manualRecords: Record<string, AttendanceRecord> = {};
+
+    Object.entries(attendanceRecords).forEach(([studentId, record]) => {
+      // Only keep records that were manually marked as present
+      // Records marked as absent were auto-generated in handleComplete
+      if (record.status === "P") {
+        manualRecords[studentId] = record;
+      }
+    });
+
+    setAttendanceRecords(manualRecords);
+    setIsComplete(false);
   };
 
   // Derived values
@@ -225,6 +241,8 @@ export const useSearchAttendanceMarkingLogic = ({
     handleMarkPresent,
     handleUnmark,
     handleComplete,
+    handleConfirmComplete,
+    handleGoBack,
     handleAddVisitor,
     handleConfirmLeave,
     handleCancelLeave,
