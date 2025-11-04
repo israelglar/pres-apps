@@ -5,11 +5,13 @@ import {
   Download,
   History,
   Loader2,
+  LogOut,
   RefreshCw,
   Users,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 import { useHomePageLogic } from "./HomePage.logic";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface HomePageProps {
   onNavigate: () => void;
@@ -32,6 +34,15 @@ export function HomePage({
   onViewHistory,
 }: HomePageProps) {
   const logic = useHomePageLogic({ onNavigate });
+  const { teacher, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <div
@@ -40,6 +51,18 @@ export function HomePage({
       onTouchMove={logic.handleTouchMove}
       onTouchEnd={logic.handleTouchEnd}
     >
+      {/* Sign Out Button - Fixed top right - Only show when authenticated */}
+      {teacher && (
+        <button
+          onClick={handleSignOut}
+          className="fixed top-4 right-4 p-2 text-white hover:bg-white/10 rounded-lg transition-colors z-50"
+          aria-label="Sair"
+          title="Sair"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
+      )}
+
       {/* Pull-to-refresh indicator */}
       {(logic.pullDistance > 0 || logic.isRefreshing) && (
         <div
@@ -75,6 +98,11 @@ export function HomePage({
       >
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-white">Pré-adolescentes</h1>
+          {teacher && (
+            <p className="text-sm text-white/80 mt-2">
+              Olá, {teacher.name.split(' ')[0]}!
+            </p>
+          )}
         </div>
 
         <button

@@ -4,16 +4,18 @@ import { queryClient } from './lib/queryClient';
 import { router } from './router';
 import { useAttendanceSubmit } from './hooks/useAttendanceData';
 import { SavingOverlay } from './components/ui/SavingOverlay';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 /**
  * Main App Component
  *
- * Simplified to only handle:
- * - TanStack Query provider setup
- * - Router provider setup
+ * Provides application-wide contexts:
+ * - Authentication (AuthProvider)
+ * - TanStack Query (QueryClientProvider)
+ * - Router with auth context
  * - Global saving overlay
  *
- * All data fetching and state management moved to:
+ * All data fetching and state management:
  * - TanStack Query (server state)
  * - Zustand stores (client state)
  * - Custom hooks (business logic)
@@ -21,13 +23,16 @@ import { SavingOverlay } from './components/ui/SavingOverlay';
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
 
 function AppContent() {
   const { isSaving, saveError } = useAttendanceSubmit();
+  const auth = useAuth();
 
   return (
     <>
@@ -41,7 +46,7 @@ function AppContent() {
         />
       )}
 
-      <RouterProvider router={router} />
+      <RouterProvider router={router} context={{ auth }} />
     </>
   );
 }

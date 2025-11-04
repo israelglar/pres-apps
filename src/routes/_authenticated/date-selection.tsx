@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DateSelectionPage } from '../features/date-selection'
-import { useAttendanceData } from '../hooks/useAttendanceData'
+import { DateSelectionPage } from '../../features/date-selection'
+import { useAttendanceData } from '../../hooks/useAttendanceData'
 
-export const Route = createFileRoute('/date-selection')({
+export const Route = createFileRoute('/_authenticated/date-selection')({
   component: DateSelectionRoute,
 })
 

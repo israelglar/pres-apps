@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { StudentManagementPage } from '../features/student-management'
+import { StudentManagementPage } from '../../features/student-management'
 
-export const Route = createFileRoute('/manage-students')({
+export const Route = createFileRoute('/_authenticated/manage-students')({
   component: ManageStudentsRoute,
 })
 

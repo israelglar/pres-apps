@@ -176,8 +176,12 @@ All pages should follow these standards. Reference: `src/features/home/HomePage.
   - `attendance.ts` - Bulk save, update, statistics
   - `schedules.ts` - Schedule operations with lesson data
   - `service-times.ts` - Service time operations
-- **Authentication:** None currently (RLS enabled but allows public access for MVP)
-  - Planned: Google OAuth restricted to teacher accounts
+- **Authentication:** ✅ **Google OAuth Implemented** (restricted to teacher emails)
+  - Login required to access all features
+  - Email whitelist validated via auth hook (`check_teacher_whitelist`)
+  - Only 8 registered teachers in `teachers` table can log in
+  - Session persistence via localStorage
+  - Protected routes under `_authenticated/` layout
 - **Environment Variables Required:**
   - `VITE_PUBLIC_SUPABASE_URL` - Supabase project URL
   - `VITE_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
@@ -745,12 +749,89 @@ View and edit past attendance records, with filtering by service time and pagina
 #### Hook:
 - **`usePWAInstall`** - Detects install capability and provides install function
 
+### 10. Google OAuth Authentication
+
+**Files:**
+- `src/contexts/AuthContext.tsx` - Authentication context and hook
+- `src/features/auth/LoginPage.tsx` - Login UI
+- `src/routes/login.tsx` - Public login route
+- `src/routes/_authenticated.tsx` - Protected route layout
+- `database/auth-setup.sql` - Database setup script
+- `AUTH_SETUP.md` - Complete setup guide
+
+#### Purpose
+Secure the app with Google OAuth login, restricting access to only the 8 registered teachers in the `teachers` table.
+
+#### Features:
+- **Google OAuth Integration:** One-click login with Google account
+- **Email Whitelist:** Only emails in `teachers` table (with `is_active = true`) can log in
+- **Auth Hook Validation:** Server-side validation before user creation (`check_teacher_whitelist()`)
+- **Auto-Linking:** Automatically links `teachers.auth_user_id` to `auth.users.id` on first login
+- **Protected Routes:** All routes under `_authenticated/` require valid authentication
+- **Session Persistence:** Uses localStorage, survives page refreshes
+- **Auto-Redirect:** Accessing protected routes when not logged in redirects to `/login`
+- **Sign Out:** Logout button in top-right corner of home page
+- **Teacher Greeting:** "Olá, [Nome]!" displays teacher's first name
+
+#### Authentication Flow:
+1. User opens app → redirected to `/login` if not authenticated
+2. Click "Entrar com Google" → redirected to Google OAuth consent screen
+3. Select Google account → redirected back to app
+4. **Auth hook validates email** → checks if email exists in `teachers` table
+5. If valid → creates user in `auth.users` → trigger links to `teachers.auth_user_id`
+6. If invalid → rejects signup with error message
+7. Application loads teacher profile → stores in AuthContext
+8. All protected routes now accessible
+
+#### Three Layers of Security:
+1. **Auth Hook (Server):** `check_teacher_whitelist()` validates email before user creation
+2. **RLS Policies (Database):** All tables require `auth.uid() IS NOT NULL`
+3. **Application Check (React):** AuthContext validates teacher profile after login
+
+#### Components:
+- `AuthContext.tsx` - Provides auth state and methods (`signInWithGoogle`, `signOut`)
+- `LoginPage.tsx` - Login UI with Google button
+- `_authenticated.tsx` - Layout that protects all child routes
+
+#### Hooks:
+- **`useAuth`** - Access auth state: `{ session, user, teacher, loading, signInWithGoogle, signOut }`
+
+#### Setup Requirements:
+See `AUTH_SETUP.md` for complete configuration guide:
+1. Configure Google Cloud Console OAuth client
+2. Enable Google provider in Supabase Dashboard
+3. Run `database/auth-setup.sql` script
+4. Activate auth hook "Before User Created" in Supabase Dashboard
+
+#### Database Changes:
+- Added `teachers.auth_user_id` column (links to `auth.users.id`)
+- Created `check_teacher_whitelist()` function (auth hook)
+- Created `link_teacher_on_signup()` trigger (auto-linking)
+- Updated all RLS policies to require authentication
+
+#### User Experience:
+- ✅ **Simple:** One-click Google login, no passwords
+- ✅ **Secure:** Multiple layers of validation
+- ✅ **Clear Errors:** Portuguese error messages for unauthorized access
+- ✅ **Persistent:** Session survives refresh, auto-refreshes tokens
+- ✅ **Seamless:** Protected routes redirect to login automatically
+
 ---
 
 ## Navigation Structure
 
 ```
-/ (Home)
+/login (Login Page - Public)
+  ├─ "Entrar com Google" button → Google OAuth consent
+  └─ After successful login → / (Home)
+  └─ If already authenticated → Auto-redirect to / (Home)
+
+/_authenticated (Protected Routes - Requires Login)
+  └─ All routes below require valid authentication
+  └─ If not authenticated → Auto-redirect to /login
+
+/ (Home - Protected)
+  ├─ Logout button (top-right corner) → Sign out and redirect to /login
   ├─ "Começar" button → /date-selection
   ├─ "Histórico de Presenças" button → /attendance-history
   ├─ "Gerir Prés" button → /manage-students
@@ -889,16 +970,22 @@ The following features were previously planned and are now **fully implemented**
   - Export to Excel/CSV
   - Share reports via email
 
-#### 7. Google Authentication
+#### 7. Role-Based Permissions (Future Enhancement)
 
-**Design:** Google OAuth login with teacher-only access
+**Status:** Authentication implemented, but all teachers have equal access
 
-- Login required to access app
-- Restrict to specific Google accounts (teacher email whitelist)
-- Role-based access control:
-  - **Admin:** Israel + wife (full access to all features)
-  - **Teacher:** Regular teachers (attendance, lesson notes, reports)
-- **Important:** Will likely require migrating from Apps Script to proper backend (Node.js/Firebase/etc.)
+**Future:** Differentiate admin vs teacher permissions
+
+- **Admin permissions** (Israel + wife):
+  - Manage teachers (add/remove/deactivate)
+  - Manage students (already implemented for all)
+  - Access to all reports and data
+  - System configuration
+- **Teacher permissions:**
+  - Mark attendance (already implemented)
+  - View attendance history (already implemented)
+  - Manage students (consider restricting to admins only)
+- Implementation: Use `teachers.role` column (already exists: 'admin' or 'teacher')
 
 ### Low Priority (Future Ideas)
 
@@ -1036,10 +1123,10 @@ The following features were previously planned and are now **fully implemented**
 
 ### Current Limitations
 
-1. **No Authentication:** App is currently public (anyone with URL can use)
-   - RLS policies enabled but allow public access for MVP
-   - Intentional for development speed
-   - Google OAuth planned for future (will use Supabase Auth)
+1. **No Role-Based Permissions:** All authenticated teachers have equal access
+   - Everyone can manage students, view all history, mark attendance
+   - Admin vs teacher roles exist in database but not enforced
+   - Future: Restrict student management to admins only
 
 2. **No Backup Strategy Beyond Supabase:**
    - Relies entirely on Supabase infrastructure

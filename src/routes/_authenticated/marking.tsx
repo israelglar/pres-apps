@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { SearchAttendanceMarkingPage } from '../features/search-marking'
-import { useAttendanceData, useAttendanceSubmit } from '../hooks/useAttendanceData'
+import { AttendanceMarkingPage } from '../../features/attendance-marking'
+import { useAttendanceData, useAttendanceSubmit } from '../../hooks/useAttendanceData'
 
 type MarkingSearch = {
   date: string
@@ -15,23 +15,21 @@ interface AttendanceRecord {
   notes?: string;
 }
 
-export const Route = createFileRoute('/search-marking')({
+export const Route = createFileRoute('/_authenticated/marking')({
   validateSearch: (search: Record<string, unknown>): MarkingSearch => {
     return {
       date: (search.date as string) || new Date().toISOString(),
       serviceTimeId: (search.serviceTimeId as number) || 2, // Default to 11h service
     }
   },
-  component: SearchMarkingRoute,
+  component: MarkingRoute,
 })
 
-function SearchMarkingRoute() {
+function MarkingRoute() {
   const navigate = useNavigate()
   const { date, serviceTimeId } = Route.useSearch()
   const { students, visitorStudents, lessonNames } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
-
-  const selectedDate = new Date(date)
 
   const onComplete = async (records: AttendanceRecord[]) => {
     // Transform records from component format to API format
@@ -48,19 +46,23 @@ function SearchMarkingRoute() {
     navigate({ to: '/date-selection' })
   }
 
+  // Convert students to have string IDs and parse date string to Date
+  const studentsWithStringIds = students.map(s => ({
+    id: String(s.id),
+    name: s.name,
+    isVisitor: s.is_visitor
+  }))
+  const selectedDate = new Date(date)
+
   return (
-    <SearchAttendanceMarkingPage
-      students={students.map(s => ({
-        id: String(s.id),
-        name: s.name,
-        isVisitor: s.is_visitor
-      }))}
+    <AttendanceMarkingPage
+      students={studentsWithStringIds}
       visitorStudents={visitorStudents.map(s => ({
         id: String(s.id),
         name: s.name,
         isVisitor: true
       }))}
-      date={selectedDate}
+      selectedDate={selectedDate}
       lessonNames={lessonNames}
       onComplete={onComplete}
       onCancel={onCancel}

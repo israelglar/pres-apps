@@ -9,159 +9,210 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SearchMarkingRouteImport } from './routes/search-marking'
-import { Route as MarkingRouteImport } from './routes/marking'
-import { Route as ManageStudentsRouteImport } from './routes/manage-students'
-import { Route as DateSelectionRouteImport } from './routes/date-selection'
-import { Route as AttendanceHistoryRouteImport } from './routes/attendance-history'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedSearchMarkingRouteImport } from './routes/_authenticated/search-marking'
+import { Route as AuthenticatedMarkingRouteImport } from './routes/_authenticated/marking'
+import { Route as AuthenticatedManageStudentsRouteImport } from './routes/_authenticated/manage-students'
+import { Route as AuthenticatedDateSelectionRouteImport } from './routes/_authenticated/date-selection'
+import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance-history'
 
-const SearchMarkingRoute = SearchMarkingRouteImport.update({
-  id: '/search-marking',
-  path: '/search-marking',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarkingRoute = MarkingRouteImport.update({
-  id: '/marking',
-  path: '/marking',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ManageStudentsRoute = ManageStudentsRouteImport.update({
-  id: '/manage-students',
-  path: '/manage-students',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DateSelectionRoute = DateSelectionRouteImport.update({
-  id: '/date-selection',
-  path: '/date-selection',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AttendanceHistoryRoute = AttendanceHistoryRouteImport.update({
-  id: '/attendance-history',
-  path: '/attendance-history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSearchMarkingRoute =
+  AuthenticatedSearchMarkingRouteImport.update({
+    id: '/search-marking',
+    path: '/search-marking',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMarkingRoute = AuthenticatedMarkingRouteImport.update({
+  id: '/marking',
+  path: '/marking',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedManageStudentsRoute =
+  AuthenticatedManageStudentsRouteImport.update({
+    id: '/manage-students',
+    path: '/manage-students',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDateSelectionRoute =
+  AuthenticatedDateSelectionRouteImport.update({
+    id: '/date-selection',
+    path: '/date-selection',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAttendanceHistoryRoute =
+  AuthenticatedAttendanceHistoryRouteImport.update({
+    id: '/attendance-history',
+    path: '/attendance-history',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/attendance-history': typeof AttendanceHistoryRoute
-  '/date-selection': typeof DateSelectionRoute
-  '/manage-students': typeof ManageStudentsRoute
-  '/marking': typeof MarkingRoute
-  '/search-marking': typeof SearchMarkingRoute
+  '/login': typeof LoginRoute
+  '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
+  '/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/manage-students': typeof AuthenticatedManageStudentsRoute
+  '/marking': typeof AuthenticatedMarkingRoute
+  '/search-marking': typeof AuthenticatedSearchMarkingRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/attendance-history': typeof AttendanceHistoryRoute
-  '/date-selection': typeof DateSelectionRoute
-  '/manage-students': typeof ManageStudentsRoute
-  '/marking': typeof MarkingRoute
-  '/search-marking': typeof SearchMarkingRoute
+  '/login': typeof LoginRoute
+  '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
+  '/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/manage-students': typeof AuthenticatedManageStudentsRoute
+  '/marking': typeof AuthenticatedMarkingRoute
+  '/search-marking': typeof AuthenticatedSearchMarkingRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/attendance-history': typeof AttendanceHistoryRoute
-  '/date-selection': typeof DateSelectionRoute
-  '/manage-students': typeof ManageStudentsRoute
-  '/marking': typeof MarkingRoute
-  '/search-marking': typeof SearchMarkingRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
+  '/_authenticated/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/_authenticated/manage-students': typeof AuthenticatedManageStudentsRoute
+  '/_authenticated/marking': typeof AuthenticatedMarkingRoute
+  '/_authenticated/search-marking': typeof AuthenticatedSearchMarkingRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
+    | '/login'
     | '/attendance-history'
     | '/date-selection'
     | '/manage-students'
     | '/marking'
     | '/search-marking'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/login'
     | '/attendance-history'
     | '/date-selection'
     | '/manage-students'
     | '/marking'
     | '/search-marking'
+    | '/'
   id:
     | '__root__'
-    | '/'
-    | '/attendance-history'
-    | '/date-selection'
-    | '/manage-students'
-    | '/marking'
-    | '/search-marking'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/attendance-history'
+    | '/_authenticated/date-selection'
+    | '/_authenticated/manage-students'
+    | '/_authenticated/marking'
+    | '/_authenticated/search-marking'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AttendanceHistoryRoute: typeof AttendanceHistoryRoute
-  DateSelectionRoute: typeof DateSelectionRoute
-  ManageStudentsRoute: typeof ManageStudentsRoute
-  MarkingRoute: typeof MarkingRoute
-  SearchMarkingRoute: typeof SearchMarkingRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/search-marking': {
-      id: '/search-marking'
-      path: '/search-marking'
-      fullPath: '/search-marking'
-      preLoaderRoute: typeof SearchMarkingRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/marking': {
-      id: '/marking'
-      path: '/marking'
-      fullPath: '/marking'
-      preLoaderRoute: typeof MarkingRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/manage-students': {
-      id: '/manage-students'
-      path: '/manage-students'
-      fullPath: '/manage-students'
-      preLoaderRoute: typeof ManageStudentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/date-selection': {
-      id: '/date-selection'
-      path: '/date-selection'
-      fullPath: '/date-selection'
-      preLoaderRoute: typeof DateSelectionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/attendance-history': {
-      id: '/attendance-history'
-      path: '/attendance-history'
-      fullPath: '/attendance-history'
-      preLoaderRoute: typeof AttendanceHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/search-marking': {
+      id: '/_authenticated/search-marking'
+      path: '/search-marking'
+      fullPath: '/search-marking'
+      preLoaderRoute: typeof AuthenticatedSearchMarkingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marking': {
+      id: '/_authenticated/marking'
+      path: '/marking'
+      fullPath: '/marking'
+      preLoaderRoute: typeof AuthenticatedMarkingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage-students': {
+      id: '/_authenticated/manage-students'
+      path: '/manage-students'
+      fullPath: '/manage-students'
+      preLoaderRoute: typeof AuthenticatedManageStudentsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/date-selection': {
+      id: '/_authenticated/date-selection'
+      path: '/date-selection'
+      fullPath: '/date-selection'
+      preLoaderRoute: typeof AuthenticatedDateSelectionRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/attendance-history': {
+      id: '/_authenticated/attendance-history'
+      path: '/attendance-history'
+      fullPath: '/attendance-history'
+      preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAttendanceHistoryRoute: typeof AuthenticatedAttendanceHistoryRoute
+  AuthenticatedDateSelectionRoute: typeof AuthenticatedDateSelectionRoute
+  AuthenticatedManageStudentsRoute: typeof AuthenticatedManageStudentsRoute
+  AuthenticatedMarkingRoute: typeof AuthenticatedMarkingRoute
+  AuthenticatedSearchMarkingRoute: typeof AuthenticatedSearchMarkingRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAttendanceHistoryRoute: AuthenticatedAttendanceHistoryRoute,
+  AuthenticatedDateSelectionRoute: AuthenticatedDateSelectionRoute,
+  AuthenticatedManageStudentsRoute: AuthenticatedManageStudentsRoute,
+  AuthenticatedMarkingRoute: AuthenticatedMarkingRoute,
+  AuthenticatedSearchMarkingRoute: AuthenticatedSearchMarkingRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AttendanceHistoryRoute: AttendanceHistoryRoute,
-  DateSelectionRoute: DateSelectionRoute,
-  ManageStudentsRoute: ManageStudentsRoute,
-  MarkingRoute: MarkingRoute,
-  SearchMarkingRoute: SearchMarkingRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

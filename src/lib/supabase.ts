@@ -22,7 +22,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false, // We're not using authentication yet
+    detectSessionInUrl: true, // Enable OAuth redirect detection
+    storage: localStorage, // Use localStorage for session persistence
   },
 });
 

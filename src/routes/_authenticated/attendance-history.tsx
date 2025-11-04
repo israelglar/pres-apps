@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { AttendanceHistoryPage } from '../features/attendance-history';
+import { AttendanceHistoryPage } from '../../features/attendance-history';
 
-export const Route = createFileRoute('/attendance-history')({
+export const Route = createFileRoute('/_authenticated/attendance-history')({
   component: AttendanceHistoryRoute,
 });
 
