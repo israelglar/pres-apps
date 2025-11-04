@@ -1,10 +1,20 @@
-import { Calendar, ExternalLink, Users, UserX, Clock, FileText, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
-import { theme } from '../../../config/theme';
-import { StudentAttendanceRow } from './StudentAttendanceRow';
-import type { AttendanceHistoryGroup } from '../hooks/useAttendanceHistory';
-import type { AttendanceRecordWithRelations } from '../../../types/database.types';
-import { lightTap } from '../../../utils/haptics';
+import {
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  ExternalLink,
+  FileText,
+  UserPlus,
+  Users,
+  UserX,
+} from "lucide-react";
+import { useState } from "react";
+import { theme } from "../../../config/theme";
+import type { AttendanceRecordWithRelations } from "../../../types/database.types";
+import { lightTap } from "../../../utils/haptics";
+import type { AttendanceHistoryGroup } from "../hooks/useAttendanceHistory";
+import { StudentAttendanceRow } from "./StudentAttendanceRow";
 
 interface DateGroupCardProps {
   group: AttendanceHistoryGroup;
@@ -26,20 +36,20 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
   };
 
   // Format date for display
-  const formattedDate = new Date(schedule.date).toLocaleDateString('pt-PT', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+  const formattedDate = new Date(schedule.date).toLocaleDateString("pt-PT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 
   // Check if it's today
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   const isToday = schedule.date === today;
 
   // Sort students alphabetically
   const sortedRecords = [...records].sort((a, b) => {
-    const nameA = a.student?.name || '';
-    const nameB = b.student?.name || '';
+    const nameA = a.student?.name || "";
+    const nameB = b.student?.name || "";
     return nameA.localeCompare(nameB);
   });
 
@@ -57,7 +67,9 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
               <h3 className={`text-base font-bold ${theme.text.neutralDarker}`}>
                 {formattedDate}
                 {isToday && (
-                  <span className={`ml-1.5 text-xs font-semibold ${theme.backgrounds.primary} text-white px-1.5 py-0.5 rounded-full`}>
+                  <span
+                    className={`ml-1.5 text-xs font-semibold ${theme.backgrounds.primary} text-white px-1.5 py-0.5 rounded-full`}
+                  >
                     Hoje
                   </span>
                 )}
@@ -66,12 +78,16 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
 
             {/* Lesson Name */}
             {schedule.lesson?.name && (
-              <p className={`${theme.text.neutral} text-sm mt-0.5`}>{schedule.lesson.name}</p>
+              <p className={`${theme.text.neutral} text-sm mt-0.5`}>
+                {schedule.lesson.name}
+              </p>
             )}
 
             {/* Summary Stats - Show when collapsed */}
             {!isExpanded && records.length > 0 && (
-              <div className={`flex items-center gap-3 mt-1.5 ${theme.text.neutral} text-xs`}>
+              <div
+                className={`flex items-center gap-3 mt-1.5 ${theme.text.neutral} text-xs`}
+              >
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                   {stats.present}
@@ -90,6 +106,12 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                   <span className="flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                     {stats.excused}
+                  </span>
+                )}
+                {stats.visitors > 0 && (
+                  <span className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                    {stats.visitors} visitantes
                   </span>
                 )}
               </div>
@@ -126,6 +148,85 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
               </a>
             </div>
           )}
+          {/* Summary Stats - Detailed view when expanded */}
+          {records.length > 0 && (
+            <div
+              className={`${theme.gradients.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {/* Present */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Presenças</p>
+                    <p className="text-base font-bold text-green-600">
+                      {stats.present}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Absent */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                    <UserX className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Faltas</p>
+                    <p className="text-base font-bold text-red-600">
+                      {stats.absent}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Late */}
+                {stats.late > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Atrasados</p>
+                      <p className="text-base font-bold text-amber-600">
+                        {stats.late}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Excused */}
+                {stats.excused > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Justificadas</p>
+                      <p className="text-base font-bold text-blue-600">
+                        {stats.excused}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Visitors */}
+                {stats.visitors > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center">
+                      <UserPlus className="w-4 h-4 text-cyan-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Visitantes</p>
+                      <p className="text-base font-bold text-cyan-600">
+                        {stats.visitors}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Student List */}
           {records.length > 0 ? (
@@ -140,62 +241,9 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
             </div>
           ) : (
             <div className="p-5 text-center">
-              <p className="text-gray-500 text-sm">Nenhuma presença registada</p>
-            </div>
-          )}
-
-          {/* Summary Stats - Detailed view when expanded */}
-          {records.length > 0 && (
-            <div className={`${theme.gradients.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {/* Present */}
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Presenças</p>
-                    <p className="text-base font-bold text-green-600">{stats.present}</p>
-                  </div>
-                </div>
-
-                {/* Absent */}
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-                    <UserX className="w-4 h-4 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Faltas</p>
-                    <p className="text-base font-bold text-red-600">{stats.absent}</p>
-                  </div>
-                </div>
-
-                {/* Late */}
-                {stats.late > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Atrasados</p>
-                      <p className="text-base font-bold text-amber-600">{stats.late}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Excused */}
-                {stats.excused > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Justificadas</p>
-                      <p className="text-base font-bold text-blue-600">{stats.excused}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <p className="text-gray-500 text-sm">
+                Nenhuma presença registada
+              </p>
             </div>
           )}
         </>

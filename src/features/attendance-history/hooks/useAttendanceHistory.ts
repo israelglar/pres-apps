@@ -19,6 +19,7 @@ export interface AttendanceHistoryGroup {
     absent: number;
     late: number;
     excused: number;
+    visitors: number;
     total: number;
   };
 }
@@ -31,12 +32,14 @@ function calculateStats(records: AttendanceRecordWithRelations[]) {
   const absent = records.filter(r => r.status === 'absent').length;
   const late = records.filter(r => r.status === 'late').length;
   const excused = records.filter(r => r.status === 'excused').length;
+  const visitors = records.filter(r => r.student?.is_visitor === true).length;
 
   return {
     present,
     absent,
     late,
     excused,
+    visitors,
     total: records.length,
   };
 }

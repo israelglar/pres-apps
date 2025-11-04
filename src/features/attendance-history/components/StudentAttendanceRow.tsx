@@ -53,7 +53,16 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
 
         {/* Student Name */}
         <div className="flex-1">
-          <p className="font-medium text-gray-800 text-sm">{record.student?.name || 'Unknown'}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium text-gray-800 text-sm">{record.student?.name || 'Unknown'}</p>
+            {/* Visitor Indicator */}
+            {record.student?.is_visitor && (
+              <div
+                className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+                title="Visitante"
+              />
+            )}
+          </div>
           {record.notes && (
             <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
               {record.notes}
