@@ -63,38 +63,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    console.log('[AuthContext] Initializing auth...');
+    console.log('[AuthContext] Current URL:', window.location.href);
+    console.log('[AuthContext] Has hash fragment:', !!window.location.hash);
+    console.log('[AuthContext] Has search params:', !!window.location.search);
+
+    // Check for OAuth errors in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const error = urlParams.get('error') || hashParams.get('error');
+    const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+    if (error) {
+      console.error('[AuthContext] OAuth error in URL:', {
+        error,
+        description: errorDescription,
+      });
+    }
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('[AuthContext] Initial session check:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        error: error?.message,
+        accessToken: session?.access_token ? 'present' : 'missing',
+      });
+
+      // Check localStorage for session data
+      const storedSession = localStorage.getItem('sb-vidjivsvfdcokonkjwvh-auth-token');
+      console.log('[AuthContext] LocalStorage session:', {
+        exists: !!storedSession,
+        length: storedSession?.length || 0,
+      });
+
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        console.log('[AuthContext] Session found, loading teacher profile for:', session.user.email);
         loadTeacherProfile(session.user.email!);
       } else {
+        console.log('[AuthContext] No session found, setting loading to false');
         setLoading(false);
       }
     });
 
     // Listen for auth changes (skip if in bypass mode)
     if (!isDevelopmentBypass) {
+      console.log('[AuthContext] Setting up auth state change listener...');
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log('[AuthContext] Auth state changed:', {
+          event,
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+        });
+
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
+          console.log('[AuthContext] Loading teacher profile for:', session.user.email);
           loadTeacherProfile(session.user.email!);
         } else {
+          console.log('[AuthContext] No session, clearing teacher');
           setTeacher(null);
           setLoading(false);
         }
       });
 
-      return () => subscription.unsubscribe();
+      return () => {
+        console.log('[AuthContext] Unsubscribing from auth state changes');
+        subscription.unsubscribe();
+      };
     }
   }, []);
 
   const loadTeacherProfile = async (email: string) => {
+    console.log('[AuthContext] loadTeacherProfile called for:', email);
     try {
+      console.log('[AuthContext] Querying teachers table...');
       const { data, error } = await supabase
         .from('teachers')
         .select('*')
@@ -102,29 +149,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('is_active', true)
         .single();
 
-      if (error) throw error;
+      console.log('[AuthContext] Teacher query result:', {
+        hasData: !!data,
+        teacherName: data?.name,
+        error: error?.message,
+        errorCode: error?.code,
+      });
+
+      if (error) {
+        console.error('[AuthContext] Error from Supabase:', error);
+        throw error;
+      }
 
       if (!data) {
+        console.warn('[AuthContext] No teacher found for email:', email);
         // User authenticated but not a teacher - sign them out
+        console.log('[AuthContext] Signing out unauthorized user...');
         await supabase.auth.signOut();
         throw new Error('Acesso não autorizado. Apenas professores podem usar esta aplicação.');
       }
 
+      console.log('[AuthContext] Teacher profile loaded successfully:', data.name);
       setTeacher(data);
     } catch (error) {
-      console.error('Error loading teacher profile:', error);
+      console.error('[AuthContext] Error loading teacher profile:', error);
       setTeacher(null);
     } finally {
+      console.log('[AuthContext] Setting loading to false');
       setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
+    console.log('[AuthContext] signInWithGoogle called');
     try {
+      const redirectTo = `${window.location.origin}/`;
+      console.log('[AuthContext] OAuth redirect URL:', redirectTo);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -132,39 +197,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[AuthContext] OAuth error:', error);
+        throw error;
+      }
+
+      console.log('[AuthContext] OAuth initiated successfully');
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Google sign in error:', authError);
+      console.error('[AuthContext] Google sign in error:', authError);
       throw new Error(authError.message || 'Erro ao fazer login com Google');
     }
   };
 
   const signInWithPassword = async (email: string, password: string) => {
+    console.log('[AuthContext] signInWithPassword called for:', email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[AuthContext] Password sign in error:', error);
+        throw error;
+      }
 
       // Session will be set by onAuthStateChange listener
-      console.log('Successfully signed in with password:', data.user.email);
+      console.log('[AuthContext] Successfully signed in with password:', {
+        userEmail: data.user.email,
+        sessionExists: !!data.session,
+      });
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Password sign in error:', authError);
+      console.error('[AuthContext] Password sign in error:', authError);
       throw new Error(authError.message || 'Erro ao fazer login');
     }
   };
 
   const signOut = async () => {
+    console.log('[AuthContext] signOut called');
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error('[AuthContext] Sign out error:', error);
+        throw error;
+      }
+      console.log('[AuthContext] Successfully signed out');
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Sign out error:', authError);
+      console.error('[AuthContext] Sign out error:', authError);
       throw new Error(authError.message || 'Erro ao fazer logout');
     }
   };
