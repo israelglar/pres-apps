@@ -47,15 +47,7 @@ function DevLoginPage() {
 
   // Navigate to home once teacher profile is loaded after login
   useEffect(() => {
-    console.log('[dev-login] Navigation effect:', {
-      shouldNavigate,
-      hasSession: !!session,
-      hasTeacher: !!teacher,
-      teacherName: teacher?.name,
-    });
-
     if (shouldNavigate && session && teacher) {
-      console.log('[dev-login] Navigating to home page...');
       navigate({ to: '/' });
     }
   }, [shouldNavigate, session, teacher, navigate]);
@@ -77,19 +69,15 @@ function DevLoginPage() {
   }
 
   const handleQuickLogin = async (email: string, password: string) => {
-    console.log('[dev-login] handleQuickLogin called for:', email);
     try {
       setLoading(email);
       setError(null);
 
-      console.log('[dev-login] Calling signInWithPassword...');
       await signInWithPassword(email, password);
 
-      console.log('[dev-login] Sign in successful, setting shouldNavigate=true');
       // Flag that we should navigate once teacher profile loads
       setShouldNavigate(true);
     } catch (err) {
-      console.error('[dev-login] Login error:', err);
       setError(err instanceof Error ? err.message : 'Erro ao fazer login');
       setLoading(null);
     }

@@ -14,7 +14,6 @@ import type {
  * Get all schedules with related data (lessons, service times, teachers, attendance records)
  */
 export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
-  console.log('[Schedules API] getAllSchedules called');
   try {
     const { data, error } = await supabase
       .from('schedules')
@@ -30,17 +29,9 @@ export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
       `)
       .order('date', { ascending: false });
 
-    console.log('[Schedules API] getAllSchedules result:', {
-      count: data?.length || 0,
-      hasError: !!error,
-      errorCode: error?.code,
-      errorMessage: error?.message,
-    });
-
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('[Schedules API] getAllSchedules error:', error);
     handleSupabaseError(error);
   }
 }
@@ -52,7 +43,6 @@ export async function getScheduleByDateAndService(
   date: string,
   serviceTimeId: number
 ): Promise<ScheduleWithRelations | null> {
-  console.log('[Schedules API] getScheduleByDateAndService called:', { date, serviceTimeId });
   try {
     const { data, error } = await supabase
       .from('schedules')
@@ -69,18 +59,9 @@ export async function getScheduleByDateAndService(
       .eq('service_time_id', serviceTimeId)
       .single();
 
-    console.log('[Schedules API] getScheduleByDateAndService result:', {
-      hasData: !!data,
-      scheduleId: data?.id,
-      lessonTitle: data?.lesson?.title,
-      hasError: !!error,
-      errorCode: error?.code,
-    });
-
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
     return data;
   } catch (error) {
-    console.error('[Schedules API] getScheduleByDateAndService error:', error);
     handleSupabaseError(error);
   }
 }
@@ -89,7 +70,6 @@ export async function getScheduleByDateAndService(
  * Get schedule by date (any service time)
  */
 export async function getScheduleByDate(date: string): Promise<ScheduleWithRelations[]> {
-  console.log('[Schedules API] getScheduleByDate called:', { date });
   try {
     const { data, error } = await supabase
       .from('schedules')
@@ -105,16 +85,9 @@ export async function getScheduleByDate(date: string): Promise<ScheduleWithRelat
       .eq('date', date)
       .order('service_time_id', { ascending: true });
 
-    console.log('[Schedules API] getScheduleByDate result:', {
-      count: data?.length || 0,
-      hasError: !!error,
-      errorCode: error?.code,
-    });
-
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('[Schedules API] getScheduleByDate error:', error);
     handleSupabaseError(error);
   }
 }

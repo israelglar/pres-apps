@@ -65,7 +65,6 @@ function transformSchedule(schedule: ScheduleWithRelations): Schedule {
  * This is the main function used by the frontend to load all necessary data
  */
 export async function getAttendance(): Promise<AttendanceData> {
-  console.log("Fetching attendance data from Supabase...");
   try {
     // Fetch all necessary data in parallel
     const [students, schedules, dates, serviceTimes] = await Promise.all([
@@ -97,7 +96,6 @@ export async function getAttendance(): Promise<AttendanceData> {
     // Validate response with Zod
     const validatedData = attendanceDataSchema.parse(response);
 
-    console.log("✅ Attendance data fetched successfully from Supabase");
     return validatedData;
   } catch (error) {
     console.error("❌ Error fetching attendance data:", error);
@@ -126,15 +124,12 @@ export async function bulkUpdateAttendance(
   }>
 ) {
   try {
-    console.log(`Saving attendance for ${date}, service time ${serviceTimeId}...`);
-
     // First, find or create the schedule for this date/service time
     // Use the dedicated function to check for existing schedule
     let schedule = await getScheduleByDateAndService(date, serviceTimeId);
 
     // If schedule doesn't exist, create it
     if (!schedule) {
-      console.log("Schedule not found, creating new schedule...");
       try {
         schedule = await createSchedule({
           date,
@@ -148,7 +143,6 @@ export async function bulkUpdateAttendance(
         // Handle race condition: another request may have just created the schedule
         if (createError?.message?.includes('duplicate key') ||
             createError?.code === '23505') {
-          console.log("Schedule was created by another request, fetching it...");
           schedule = await getScheduleByDateAndService(date, serviceTimeId);
           if (!schedule) {
             throw new Error("Failed to retrieve schedule after duplicate error");
@@ -167,7 +161,6 @@ export async function bulkUpdateAttendance(
 
     const savedRecords = await supabaseBulkSave(schedule.id, recordsWithServiceTime);
 
-    console.log(`✅ Saved ${savedRecords.length} attendance records`);
     return { success: true, count: savedRecords.length };
   } catch (error) {
     console.error("❌ Error saving attendance:", error);

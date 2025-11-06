@@ -63,11 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    console.log('[AuthContext] Initializing auth...');
-    console.log('[AuthContext] Current URL:', window.location.href);
-    console.log('[AuthContext] Has hash fragment:', !!window.location.hash);
-    console.log('[AuthContext] Has search params:', !!window.location.search);
-
     // Check for OAuth errors in URL
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -85,23 +80,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // so it can catch the SIGNED_IN event from OAuth callback
     let unsubscribe: (() => void) | undefined;
     if (!isDevelopmentBypass) {
-      console.log('[AuthContext] Setting up auth state change listener...');
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('[AuthContext] Auth state changed:', {
-          event,
-          hasSession: !!session,
-          userEmail: session?.user?.email,
-        });
-
+      } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          console.log('[AuthContext] Loading teacher profile for:', session.user.email);
           loadTeacherProfile(session.user.email!);
         } else {
-          console.log('[AuthContext] No session, clearing teacher');
           setTeacher(null);
           setLoading(false);
         }
@@ -109,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Store unsubscribe function for cleanup
       unsubscribe = () => {
-        console.log('[AuthContext] Unsubscribing from auth state changes');
         subscription.unsubscribe();
       };
     }
@@ -119,18 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const hasHashFragment = window.location.hash.includes('access_token');
     const hasAuthCode = urlParams.has('code');
 
-    if (hasHashFragment) {
-      console.log('[AuthContext] OAuth tokens in URL detected, waiting for Supabase to process...');
-    }
-    if (hasAuthCode) {
-      console.log('[AuthContext] OAuth code in URL detected (PKCE flow)');
-    }
-
     const initializeSession = async () => {
       // Handle PKCE flow: exchange authorization code for session
       if (hasAuthCode) {
         const code = urlParams.get('code')!;
-        console.log('[AuthContext] Exchanging authorization code for session...');
 
         try {
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -138,10 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (error) {
             console.error('[AuthContext] Error exchanging code for session:', error);
           } else if (data.session) {
-            console.log('[AuthContext] Code exchange successful:', {
-              userEmail: data.session.user.email,
-            });
-
             // Clear the code from URL
             window.history.replaceState(null, '', window.location.pathname);
 
@@ -154,15 +127,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // If there's an OAuth callback in the URL, manually exchange the code/token
       if (hasHashFragment) {
-        console.log('[AuthContext] Manually exchanging OAuth tokens...');
-
         // Parse hash parameters
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
 
         if (accessToken) {
-          console.log('[AuthContext] Access token found in URL, setting session...');
           try {
             // Set the session using the tokens from the URL
             const { data, error } = await supabase.auth.setSession({
@@ -173,10 +143,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (error) {
               console.error('[AuthContext] Error setting session:', error);
             } else if (data.session) {
-              console.log('[AuthContext] Session set successfully:', {
-                userEmail: data.session.user.email,
-              });
-
               // Clear the hash from URL
               window.history.replaceState(null, '', window.location.pathname);
 
@@ -191,29 +157,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await new Promise(resolve => setTimeout(resolve, 300));
       }
 
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      console.log('[AuthContext] Initial session check:', {
-        hasSession: !!session,
-        userEmail: session?.user?.email,
-        error: error?.message,
-        accessToken: session?.access_token ? 'present' : 'missing',
-      });
-
-      // Check localStorage for session data
-      const storedSession = localStorage.getItem('sb-vidjivsvfdcokonkjwvh-auth-token');
-      console.log('[AuthContext] LocalStorage session:', {
-        exists: !!storedSession,
-        length: storedSession?.length || 0,
-      });
+      const { data: { session } } = await supabase.auth.getSession();
 
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        console.log('[AuthContext] Session found, loading teacher profile for:', session.user.email);
         loadTeacherProfile(session.user.email!);
       } else {
-        console.log('[AuthContext] No session found, setting loading to false');
         // Only set loading to false if no OAuth callback in progress (otherwise listener will handle it)
         if (!hasHashFragment && !hasAuthCode) {
           setLoading(false);
@@ -228,9 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loadTeacherProfile = async (email: string) => {
-    console.log('[AuthContext] loadTeacherProfile called for:', email);
     try {
-      console.log('[AuthContext] Querying teachers table...');
       const { data, error } = await supabase
         .from('teachers')
         .select('*')
@@ -238,42 +186,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('is_active', true)
         .single();
 
-      console.log('[AuthContext] Teacher query result:', {
-        hasData: !!data,
-        teacherName: data?.name,
-        error: error?.message,
-        errorCode: error?.code,
-      });
-
       if (error) {
         console.error('[AuthContext] Error from Supabase:', error);
         throw error;
       }
 
       if (!data) {
-        console.warn('[AuthContext] No teacher found for email:', email);
         // User authenticated but not a teacher - sign them out
-        console.log('[AuthContext] Signing out unauthorized user...');
         await supabase.auth.signOut();
         throw new Error('Acesso não autorizado. Apenas professores podem usar esta aplicação.');
       }
 
-      console.log('[AuthContext] Teacher profile loaded successfully:', data.name);
       setTeacher(data);
     } catch (error) {
       console.error('[AuthContext] Error loading teacher profile:', error);
       setTeacher(null);
     } finally {
-      console.log('[AuthContext] Setting loading to false');
       setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
-    console.log('[AuthContext] signInWithGoogle called');
     try {
       const redirectTo = `${window.location.origin}/`;
-      console.log('[AuthContext] OAuth redirect URL:', redirectTo);
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -290,8 +225,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('[AuthContext] OAuth error:', error);
         throw error;
       }
-
-      console.log('[AuthContext] OAuth initiated successfully');
     } catch (error) {
       const authError = error as AuthError;
       console.error('[AuthContext] Google sign in error:', authError);
@@ -300,9 +233,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithPassword = async (email: string, password: string) => {
-    console.log('[AuthContext] signInWithPassword called for:', email);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -313,10 +245,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Session will be set by onAuthStateChange listener
-      console.log('[AuthContext] Successfully signed in with password:', {
-        userEmail: data.user.email,
-        sessionExists: !!data.session,
-      });
     } catch (error) {
       const authError = error as AuthError;
       console.error('[AuthContext] Password sign in error:', authError);
@@ -325,14 +253,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    console.log('[AuthContext] signOut called');
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('[AuthContext] Sign out error:', error);
         throw error;
       }
-      console.log('[AuthContext] Successfully signed out');
     } catch (error) {
       const authError = error as AuthError;
       console.error('[AuthContext] Sign out error:', authError);

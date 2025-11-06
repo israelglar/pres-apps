@@ -41,7 +41,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true, // Enable OAuth redirect detection
     storage: localStorage, // Use localStorage for session persistence
     flowType: 'pkce', // Explicitly use PKCE flow
-    debug: true, // Enable debug logging
+    debug: false,
   },
 });
 
