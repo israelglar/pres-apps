@@ -21,7 +21,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     isRefreshing: isRefetchingData,
   } = useAttendanceData();
 
-  const { canInstall, promptInstall, isInstalled, isRunningInPWA, openPWAApp } = usePWAInstall();
+  const { canInstall, promptInstall, isInstalled, isRunningInPWA, openPWAApp, isIOS } = usePWAInstall();
 
   const [waitingForData, setWaitingForData] = useState(false);
 
@@ -107,6 +107,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     isInstalled,
     isRunningInPWA,
     openPWAApp,
+    isIOS,
 
     // Handlers
     handleStartClick,

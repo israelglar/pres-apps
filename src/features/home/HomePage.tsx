@@ -154,22 +154,17 @@ export function HomePage({
           <span className="font-semibold text-sm">Gerir Prés</span>
         </button>
 
-        {/* PWA Button - Only show if NOT running in PWA mode */}
-        {!logic.isRunningInPWA && (
-          <div className="mt-4">
-            {logic.canInstall && (
-              // Show install button if app can be installed
-              <button
-                onClick={logic.promptInstall}
-                className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30"
-              >
-                <Download className="w-4 h-4" />
-                <span className="font-semibold text-sm">
-                  Instalar Aplicação
-                </span>
-              </button>
-            )}
-          </div>
+        {/* PWA Button - Show if app can be installed and not already running in PWA mode */}
+        {!logic.isRunningInPWA && logic.canInstall && (
+          <button
+            onClick={logic.promptInstall}
+            className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
+          >
+            <Download className="w-4 h-4" />
+            <span className="font-semibold text-sm">
+              Instalar Aplicação
+            </span>
+          </button>
         )}
 
         {/* Dev Login Button - Only show in development mode */}
