@@ -9,9 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "db:setup": "tsx database/setup.ts",
-    "db:fix-dates": "tsx database/fix-dates-and-duplicate-schedules.ts",
-    "db:diagnose-dates": "tsx database/diagnose-and-fix-dates.ts",
-    "db:link-lessons": "tsx database/link-lessons-to-schedules.ts"
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop",
+    "db:reset": "npx supabase db reset",
+    "db:status": "npx supabase status",
+    "db:studio": "npx supabase studio",
+    "db:types": "npx supabase gen types typescript --local > src/types/database.types.ts",
+    "dev:local": "npm run db:start && npm run dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.78.0",

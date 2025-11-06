@@ -32,7 +32,7 @@ export const SavingOverlay = ({ error, onRetry }: SavingOverlayProps) => {
               A Guardar...
             </h2>
             <p className="text-gray-600">
-              A enviar presenças para Google Sheets
+              A guardar presenças
             </p>
           </>
         )}

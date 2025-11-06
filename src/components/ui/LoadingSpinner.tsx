@@ -10,7 +10,7 @@ export const LoadingSpinner = () => {
             A carregar...
           </h2>
           <p className="text-gray-600">
-            A obter dados do Google Sheets
+            A obter dados
           </p>
         </div>
       </div>

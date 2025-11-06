@@ -171,6 +171,17 @@ export function HomePage({
             )}
           </div>
         )}
+
+        {/* Dev Login Button - Only show in development mode */}
+        {import.meta.env.DEV && (
+          <button
+            onClick={() => window.location.href = '/dev-login'}
+            className="w-full bg-yellow-500/20 backdrop-blur-sm text-yellow-200 rounded-lg shadow-lg px-5 py-3 hover:bg-yellow-500/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-yellow-400/30 mt-3"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="font-semibold text-sm">Dev Login</span>
+          </button>
+        )}
       </div>
 
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}

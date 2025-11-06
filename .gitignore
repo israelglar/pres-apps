@@ -27,4 +27,11 @@ dist-ssr
 .tanstack
 dev-dist
 
+# Environment files
 .env
+.env.local
+
+# Supabase
+supabase/.branches
+supabase/.temp
+supabase/.env

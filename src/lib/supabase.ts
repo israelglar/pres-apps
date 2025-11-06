@@ -1,7 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get Supabase URL and anon key from environment variables
-const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+// In development, replace localhost with current hostname to support network access
+const getSupabaseUrl = () => {
+  const envUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+
+  // In development, if we're not on localhost, replace localhost in Supabase URL
+  // This allows the app to work from both localhost and network IP
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return envUrl.replace('localhost', hostname);
+    }
+  }
+
+  return envUrl;
+};
+
+const supabaseUrl = getSupabaseUrl();
 const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {

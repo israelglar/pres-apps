@@ -28,8 +28,9 @@ export interface Teacher {
   role: 'admin' | 'teacher';
   is_active: boolean;
   phone: string | null;
+  auth_user_id: string | null; // Links to auth.users.id after first login
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface ServiceTime {

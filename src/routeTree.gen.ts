@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DevLoginRouteImport } from './routes/dev-login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSearchMarkingRouteImport } from './routes/_authenticated/search-marking'
@@ -21,6 +22,11 @@ import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_au
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevLoginRoute = DevLoginRouteImport.update({
+  id: '/dev-login',
+  path: '/dev-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -63,6 +69,7 @@ const AuthenticatedAttendanceHistoryRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesByTo {
+  '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/_authenticated/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/date-selection': typeof AuthenticatedDateSelectionRoute
@@ -94,6 +103,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/dev-login'
     | '/login'
     | '/attendance-history'
     | '/date-selection'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/dev-login'
     | '/login'
     | '/attendance-history'
     | '/date-selection'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/dev-login'
     | '/login'
     | '/_authenticated/attendance-history'
     | '/_authenticated/date-selection'
@@ -124,6 +136,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  DevLoginRoute: typeof DevLoginRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -134,6 +147,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev-login': {
+      id: '/dev-login'
+      path: '/dev-login'
+      fullPath: '/dev-login'
+      preLoaderRoute: typeof DevLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -212,6 +232,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  DevLoginRoute: DevLoginRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

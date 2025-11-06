@@ -9,10 +9,26 @@ interface AuthContextType {
   teacher: Teacher | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Check if we should bypass auth in development
+const isDevelopmentBypass = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true';
+
+// Mock teacher for development bypass
+const mockDevTeacher: Teacher = {
+  id: 1,
+  name: 'Dev Teacher',
+  email: 'dev@local',
+  is_active: true,
+  role: 'admin',
+  phone: null,
+  auth_user_id: null,
+  created_at: new Date().toISOString(),
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -21,6 +37,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Development bypass - skip authentication entirely
+    if (isDevelopmentBypass) {
+      console.warn('⚠️ DEVELOPMENT MODE: Authentication bypassed');
+      // Create a mock session for dev mode
+      const mockSession = {
+        access_token: 'dev-token',
+        refresh_token: 'dev-refresh',
+        expires_in: 3600,
+        token_type: 'bearer',
+        user: {
+          id: 'dev-user-id',
+          email: 'dev@local',
+          app_metadata: {},
+          user_metadata: {},
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+        },
+      } as Session;
+
+      setSession(mockSession);
+      setUser(mockSession.user);
+      setTeacher(mockDevTeacher);
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -32,21 +74,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadTeacherProfile(session.user.email!);
-      } else {
-        setTeacher(null);
-        setLoading(false);
-      }
-    });
+    // Listen for auth changes (skip if in bypass mode)
+    if (!isDevelopmentBypass) {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          loadTeacherProfile(session.user.email!);
+        } else {
+          setTeacher(null);
+          setLoading(false);
+        }
+      });
 
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    }
   }, []);
 
   const loadTeacherProfile = async (email: string) => {
@@ -96,6 +140,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithPassword = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Session will be set by onAuthStateChange listener
+      console.log('Successfully signed in with password:', data.user.email);
+    } catch (error) {
+      const authError = error as AuthError;
+      console.error('Password sign in error:', authError);
+      throw new Error(authError.message || 'Erro ao fazer login');
+    }
+  };
+
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -109,7 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, teacher, loading, signInWithGoogle, signOut }}
+      value={{ session, user, teacher, loading, signInWithGoogle, signInWithPassword, signOut }}
     >
       {children}
     </AuthContext.Provider>
