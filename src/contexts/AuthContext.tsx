@@ -80,34 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('[AuthContext] Initial session check:', {
-        hasSession: !!session,
-        userEmail: session?.user?.email,
-        error: error?.message,
-        accessToken: session?.access_token ? 'present' : 'missing',
-      });
-
-      // Check localStorage for session data
-      const storedSession = localStorage.getItem('sb-vidjivsvfdcokonkjwvh-auth-token');
-      console.log('[AuthContext] LocalStorage session:', {
-        exists: !!storedSession,
-        length: storedSession?.length || 0,
-      });
-
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        console.log('[AuthContext] Session found, loading teacher profile for:', session.user.email);
-        loadTeacherProfile(session.user.email!);
-      } else {
-        console.log('[AuthContext] No session found, setting loading to false');
-        setLoading(false);
-      }
-    });
-
-    // Listen for auth changes (skip if in bypass mode)
+    // Listen for auth changes FIRST (skip if in bypass mode)
+    // This is critical - the listener needs to be set up BEFORE getSession()
+    // so it can catch the SIGNED_IN event from OAuth callback
+    let unsubscribe: (() => void) | undefined;
     if (!isDevelopmentBypass) {
       console.log('[AuthContext] Setting up auth state change listener...');
       const {
@@ -131,11 +107,124 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       });
 
-      return () => {
+      // Store unsubscribe function for cleanup
+      unsubscribe = () => {
         console.log('[AuthContext] Unsubscribing from auth state changes');
         subscription.unsubscribe();
       };
     }
+
+    // Get initial session AFTER setting up the listener
+    // Important: Add a small delay to allow Supabase to process URL hash
+    const hasHashFragment = window.location.hash.includes('access_token');
+    const hasAuthCode = urlParams.has('code');
+
+    if (hasHashFragment) {
+      console.log('[AuthContext] OAuth tokens in URL detected, waiting for Supabase to process...');
+    }
+    if (hasAuthCode) {
+      console.log('[AuthContext] OAuth code in URL detected (PKCE flow)');
+    }
+
+    const initializeSession = async () => {
+      // Handle PKCE flow: exchange authorization code for session
+      if (hasAuthCode) {
+        const code = urlParams.get('code')!;
+        console.log('[AuthContext] Exchanging authorization code for session...');
+
+        try {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+          if (error) {
+            console.error('[AuthContext] Error exchanging code for session:', error);
+          } else if (data.session) {
+            console.log('[AuthContext] Code exchange successful:', {
+              userEmail: data.session.user.email,
+            });
+
+            // Clear the code from URL
+            window.history.replaceState(null, '', window.location.pathname);
+
+            return; // Let the auth state change listener handle the rest
+          }
+        } catch (err) {
+          console.error('[AuthContext] Exception exchanging code:', err);
+        }
+      }
+
+      // If there's an OAuth callback in the URL, manually exchange the code/token
+      if (hasHashFragment) {
+        console.log('[AuthContext] Manually exchanging OAuth tokens...');
+
+        // Parse hash parameters
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+
+        if (accessToken) {
+          console.log('[AuthContext] Access token found in URL, setting session...');
+          try {
+            // Set the session using the tokens from the URL
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+            });
+
+            if (error) {
+              console.error('[AuthContext] Error setting session:', error);
+            } else if (data.session) {
+              console.log('[AuthContext] Session set successfully:', {
+                userEmail: data.session.user.email,
+              });
+
+              // Clear the hash from URL
+              window.history.replaceState(null, '', window.location.pathname);
+
+              return; // Let the auth state change listener handle the rest
+            }
+          } catch (err) {
+            console.error('[AuthContext] Exception setting session:', err);
+          }
+        }
+
+        // Give Supabase one more chance to process it automatically
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      console.log('[AuthContext] Initial session check:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        error: error?.message,
+        accessToken: session?.access_token ? 'present' : 'missing',
+      });
+
+      // Check localStorage for session data
+      const storedSession = localStorage.getItem('sb-vidjivsvfdcokonkjwvh-auth-token');
+      console.log('[AuthContext] LocalStorage session:', {
+        exists: !!storedSession,
+        length: storedSession?.length || 0,
+      });
+
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        console.log('[AuthContext] Session found, loading teacher profile for:', session.user.email);
+        loadTeacherProfile(session.user.email!);
+      } else {
+        console.log('[AuthContext] No session found, setting loading to false');
+        // Only set loading to false if no OAuth callback in progress (otherwise listener will handle it)
+        if (!hasHashFragment && !hasAuthCode) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeSession();
+
+    // Return cleanup function
+    return unsubscribe;
   }, []);
 
   const loadTeacherProfile = async (email: string) => {
