@@ -1,18 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useBlocker } from "@tanstack/react-router";
-import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
-import { useVisitorManagement, type Student } from "../../hooks/useVisitorManagement";
-
-// Type definitions
-export type { Student };
-
-export interface AttendanceRecord {
-  studentId: string;
-  studentName: string;
-  status: "P" | "F";
-  timestamp: Date;
-  notes?: string;
-}
+import { selectionTap, successVibration } from "../../utils/haptics";
+import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import type { Student, AttendanceRecord } from "../../types/attendance.types";
 
 export interface AttendanceMarkingPageProps {
   students: Student[];
@@ -32,16 +21,9 @@ export const useAttendanceMarkingLogic = ({
   visitorStudents: Student[];
   onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
+  // Swipe/sequential-specific state
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [attendanceRecords, setAttendanceRecords] = useState<
-    Record<string, AttendanceRecord>
-  >({});
-  const [isComplete, setIsComplete] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const studentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-
-  // Visitor management with existing visitors
-  const visitorManagement = useVisitorManagement(visitorStudents);
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -52,23 +34,27 @@ export const useAttendanceMarkingLogic = ({
   // Minimum swipe distance (in px) to trigger action
   const minSwipeDistance = 50;
 
-  // Use TanStack Router's navigation blocker with custom UI
-  const hasUnsavedData =
-    Object.keys(attendanceRecords).length > 0 && !isComplete;
-  const { proceed, reset, status } = useBlocker({
-    shouldBlockFn: () => hasUnsavedData,
-    withResolver: true,
+  // Use shared attendance core logic
+  const {
+    attendanceRecords,
+    setAttendanceRecords,
+    isComplete,
+    setIsComplete,
+    isLoading,
+    setIsLoading,
+    blockerStatus,
+    visitorManagement,
+    handleAddVisitor: coreHandleAddVisitor,
+    handleConfirmLeave,
+    handleCancelLeave,
+  } = useAttendanceCore({
+    visitorStudents,
   });
 
   // Derived values
   const currentStudent = students[currentIndex];
   const completedCount = Object.keys(attendanceRecords).length;
   const progress = (completedCount / students.length) * 100;
-
-  // Initialize haptics on component mount (requires user interaction context)
-  useEffect(() => {
-    initHaptics();
-  }, []);
 
   // Auto-scroll to current student in side panel
   useEffect(() => {
@@ -81,16 +67,6 @@ export const useAttendanceMarkingLogic = ({
       });
     }
   }, [currentIndex, currentStudent.id]);
-
-  const handleConfirmLeave = () => {
-    // Allow navigation to proceed
-    proceed?.();
-  };
-
-  const handleCancelLeave = () => {
-    // Cancel navigation and stay on page
-    reset?.();
-  };
 
   const findNextUnmarked = (records: Record<string, AttendanceRecord>) => {
     for (let i = currentIndex + 1; i < students.length; i++) {
@@ -213,40 +189,8 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
-  const handleAddVisitor = async () => {
-    let result;
-
-    // Case 1: Existing visitor selected - mark them present
-    if (visitorManagement.selectedVisitor) {
-      result = visitorManagement.markExistingVisitor();
-    } else {
-      // Case 2: New visitor - create and mark present
-      result = await visitorManagement.addNewVisitor();
-    }
-
-    if (result) {
-      // Immediately mark visitor as present with notes
-      const tempStudent: Student = {
-        id: String(result.student.id),
-        name: result.student.name,
-        isVisitor: true,
-      };
-
-      // Add visitor to attendance records with notes
-      const newRecords = {
-        ...attendanceRecords,
-        [tempStudent.id]: {
-          studentId: tempStudent.id,
-          studentName: tempStudent.name,
-          status: "P" as const,
-          timestamp: new Date(),
-          notes: result.notes,
-        },
-      };
-
-      setAttendanceRecords(newRecords);
-    }
-  };
+  // Use core visitor handler directly (no additional logic needed for swipe marking)
+  const handleAddVisitor = coreHandleAddVisitor;
 
   const handleComplete = async () => {
     setIsLoading(true);
@@ -274,7 +218,7 @@ export const useAttendanceMarkingLogic = ({
     currentStudent,
     completedCount,
     progress,
-    blockerStatus: status,
+    blockerStatus,
 
     // Visitor management
     visitorManagement,

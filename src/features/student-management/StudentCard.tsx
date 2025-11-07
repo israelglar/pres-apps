@@ -48,21 +48,6 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
     );
   };
 
-  const formatDateOfBirth = (dateOfBirth: string | null) => {
-    if (!dateOfBirth) return null;
-
-    try {
-      const date = new Date(dateOfBirth);
-      return date.toLocaleDateString('pt-PT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-    } catch {
-      return null;
-    }
-  };
-
   return (
     <div className="bg-white rounded-xl shadow-lg p-3 hover:shadow-xl transition-all">
       <div className="flex items-center justify-between gap-2">
@@ -75,11 +60,11 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
 
           {/* Details */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-gray-900 break-words">
-              {student.name}
-            </h3>
-
-            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+            {/* Name, Status, and Visitor Badge */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h3 className="text-sm font-bold text-gray-900">
+                {student.name}
+              </h3>
               {getStatusBadge(student.status)}
               {student.is_visitor && (
                 <span className="px-1.5 py-0.5 text-xs font-bold rounded-full border bg-purple-100 text-purple-700 border-purple-300">
@@ -88,21 +73,11 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
               )}
             </div>
 
-            {/* Additional Info */}
-            {(student.date_of_birth || student.notes) && (
-              <div className="space-y-0.5 mt-1">
-                {student.date_of_birth && (
-                  <p className="text-xs text-gray-600">
-                    <span className="font-semibold">Nascimento:</span>{' '}
-                    {formatDateOfBirth(student.date_of_birth)}
-                  </p>
-                )}
-                {student.notes && (
-                  <p className="text-xs text-gray-600">
-                    <span className="font-semibold">Notas:</span> {student.notes}
-                  </p>
-                )}
-              </div>
+            {/* Notes */}
+            {student.notes && (
+              <p className="text-xs text-gray-600 mt-1">
+                <span className="font-semibold">Notas:</span> {student.notes}
+              </p>
             )}
           </div>
         </div>

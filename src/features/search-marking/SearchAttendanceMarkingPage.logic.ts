@@ -1,19 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useBlocker } from "@tanstack/react-router";
 import Fuse from "fuse.js";
-import { initHaptics, selectionTap, successVibration } from "../../utils/haptics";
-import { useVisitorManagement, type Student } from "../../hooks/useVisitorManagement";
-
-// Type definitions
-export type { Student };
-
-export interface AttendanceRecord {
-  studentId: string;
-  studentName: string;
-  status: "P" | "F";
-  timestamp: Date;
-  notes?: string;
-}
+import { selectionTap, successVibration } from "../../utils/haptics";
+import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import type { Student, AttendanceRecord } from "../../types/attendance.types";
 
 export interface SearchAttendanceMarkingPageProps {
   students: Student[];
@@ -33,29 +22,26 @@ export const useSearchAttendanceMarkingLogic = ({
   visitorStudents: Student[];
   onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
+  // Search-specific state
   const [searchQuery, setSearchQuery] = useState("");
-  const [attendanceRecords, setAttendanceRecords] = useState<
-    Record<string, AttendanceRecord>
-  >({});
-  const [isComplete, setIsComplete] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Visitor management with existing visitors
-  const visitorManagement = useVisitorManagement(visitorStudents);
-
-  // Use TanStack Router's navigation blocker with custom UI
-  const hasUnsavedData =
-    Object.keys(attendanceRecords).length > 0 && !isComplete;
-  const { proceed, reset, status } = useBlocker({
-    shouldBlockFn: () => hasUnsavedData,
-    withResolver: true,
+  // Use shared attendance core logic
+  const {
+    attendanceRecords,
+    setAttendanceRecords,
+    isComplete,
+    setIsComplete,
+    isLoading,
+    setIsLoading,
+    blockerStatus,
+    visitorManagement,
+    handleAddVisitor: coreHandleAddVisitor,
+    handleConfirmLeave,
+    handleCancelLeave,
+  } = useAttendanceCore({
+    visitorStudents,
   });
-
-  // Initialize haptics on component mount
-  useEffect(() => {
-    initHaptics();
-  }, []);
 
   // Auto-focus search input on mount
   useEffect(() => {
@@ -100,15 +86,6 @@ export const useSearchAttendanceMarkingLogic = ({
     return [...filteredUnmarked, ...markedStudents];
   }, [searchQuery, unmarkedStudents, markedStudents, fuse]);
 
-  const handleConfirmLeave = () => {
-    // Allow navigation to proceed
-    proceed?.();
-  };
-
-  const handleCancelLeave = () => {
-    // Cancel navigation and stay on page
-    reset?.();
-  };
 
   const handleMarkPresent = (student: Student) => {
     selectionTap();
@@ -136,41 +113,12 @@ export const useSearchAttendanceMarkingLogic = ({
   };
 
   const handleAddVisitor = async () => {
-    let result;
-
-    // Case 1: Existing visitor selected - mark them present
-    if (visitorManagement.selectedVisitor) {
-      result = visitorManagement.markExistingVisitor();
-    } else {
-      // Case 2: New visitor - create and mark present
-      result = await visitorManagement.addNewVisitor();
-    }
+    const result = await coreHandleAddVisitor();
 
     if (result) {
-      // Immediately mark visitor as present with notes
-      const tempStudent: Student = {
-        id: String(result.student.id),
-        name: result.student.name,
-        isVisitor: true,
-      };
-
-      // Mark as present and store notes in the record
-      selectionTap();
-
-      const newRecords = {
-        ...attendanceRecords,
-        [tempStudent.id]: {
-          studentId: tempStudent.id,
-          studentName: tempStudent.name,
-          status: "P" as const,
-          timestamp: new Date(),
-          notes: result.notes,
-        },
-      };
-
-      setAttendanceRecords(newRecords);
-      setSearchQuery(""); // Clear search after marking
-      searchInputRef.current?.focus(); // Refocus search input
+      // Search-specific: clear search and refocus
+      setSearchQuery("");
+      searchInputRef.current?.focus();
     }
   };
 
@@ -239,7 +187,7 @@ export const useSearchAttendanceMarkingLogic = ({
     displayedStudents,
     presentCount,
     totalCount,
-    blockerStatus: status,
+    blockerStatus,
 
     // Visitor management
     visitorManagement,

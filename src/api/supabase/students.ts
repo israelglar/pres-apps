@@ -7,6 +7,23 @@ import { supabase, handleSupabaseError } from '../../lib/supabase';
 import type { Student, StudentInsert, StudentUpdate } from '../../types/database.types';
 
 /**
+ * Get all students (regardless of status)
+ */
+export async function getAllStudents(): Promise<Student[]> {
+  try {
+    const { data, error } = await supabase
+      .from('students')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
  * Get all active students
  */
 export async function getActiveStudents(): Promise<Student[]> {

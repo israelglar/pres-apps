@@ -1,6 +1,3 @@
 export { SearchAttendanceMarkingPage } from './SearchAttendanceMarkingPage';
-export type {
-  Student,
-  AttendanceRecord,
-  SearchAttendanceMarkingPageProps
-} from './SearchAttendanceMarkingPage.logic';
+export type { SearchAttendanceMarkingPageProps } from './SearchAttendanceMarkingPage.logic';
+export type { Student, AttendanceRecord } from '../../types/attendance.types';

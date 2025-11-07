@@ -5,7 +5,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  getActiveStudents,
+  getAllStudents,
   createStudent,
   updateStudent,
   deleteStudent,
@@ -15,12 +15,12 @@ import type { StudentInsert, StudentUpdate } from '../types/database.types';
 const STUDENTS_QUERY_KEY = ['students'];
 
 /**
- * Fetch all active students
+ * Fetch all students (regardless of status)
  */
 export function useStudents() {
   return useQuery({
     queryKey: STUDENTS_QUERY_KEY,
-    queryFn: getActiveStudents,
+    queryFn: getAllStudents,
   });
 }
 

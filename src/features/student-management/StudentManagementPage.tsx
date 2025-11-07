@@ -1,4 +1,4 @@
-import { Plus, Loader2, Search, X } from 'lucide-react';
+import { Plus, Loader2, Search, X, Filter } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useStudentManagement } from '../../hooks/useStudentManagement';
 import { PageHeader } from '../../components/ui/PageHeader';
@@ -7,6 +7,9 @@ import { StudentFormModal } from './StudentFormModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import type { Student } from '../../types/database.types';
 import { theme } from '../../config/theme';
+
+type StatusFilter = 'all' | 'active' | 'inactive' | 'aged-out' | 'moved';
+type VisitorFilter = 'all' | 'visitors';
 
 interface StudentManagementPageProps {
   onBack: () => void;
@@ -42,18 +45,49 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [visitorFilter, setVisitorFilter] = useState<VisitorFilter>('all');
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Filter students based on search query
+  // Filter students based on search query, status, and visitor status
   const filteredStudents = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return students;
+    let filtered = students;
+
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter((student) => student.status === statusFilter);
     }
 
-    const query = searchQuery.toLowerCase().trim();
-    return students.filter((student) =>
-      student.name.toLowerCase().includes(query)
-    );
-  }, [students, searchQuery]);
+    // Apply visitor filter
+    if (visitorFilter === 'visitors') {
+      filtered = filtered.filter((student) => student.is_visitor === true);
+    }
+
+    // Apply search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((student) =>
+        student.name.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort by status (active first) then by name
+    return filtered.sort((a, b) => {
+      // Status priority: active = 0, others = 1
+      const statusPriority = (status: Student['status']) => {
+        return status === 'active' ? 0 : 1;
+      };
+
+      const statusDiff = statusPriority(a.status) - statusPriority(b.status);
+
+      // If same status priority, sort by name
+      if (statusDiff === 0) {
+        return a.name.localeCompare(b.name, 'pt-PT');
+      }
+
+      return statusDiff;
+    });
+  }, [students, searchQuery, statusFilter, visitorFilter]);
 
   const handleAddStudent = () => {
     setEditingStudent(null);
@@ -135,9 +169,10 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           </div>
         )}
 
-        {/* Search Bar */}
+        {/* Search Bar and Filters */}
         {!isLoading && !isError && students.length > 0 && (
-          <div className="mb-5">
+          <div className="mb-5 space-y-3">
+            {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
               <input
@@ -156,6 +191,95 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                 </button>
               )}
             </div>
+
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-colors ${
+                showFilters || statusFilter !== 'all' || visitorFilter !== 'all'
+                  ? 'bg-white text-cyan-600'
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              Filtros
+              {(statusFilter !== 'all' || visitorFilter !== 'all') && (
+                <span className="ml-1 px-2 py-0.5 bg-cyan-600 text-white text-xs rounded-full">
+                  Ativo
+                </span>
+              )}
+            </button>
+
+            {/* Filter Options */}
+            {showFilters && (
+              <div className="bg-white/10 rounded-xl p-4 space-y-4 border border-white/20">
+                {/* Status Filter */}
+                <div>
+                  <label className="block text-xs font-bold text-white mb-2">
+                    Estado
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: 'all', label: 'Todos' },
+                      { value: 'active', label: 'Ativo' },
+                      { value: 'inactive', label: 'Inativo' },
+                      { value: 'aged-out', label: 'Saiu' },
+                      { value: 'moved', label: 'Mudou' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setStatusFilter(option.value as StatusFilter)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          statusFilter === option.value
+                            ? 'bg-white text-cyan-600'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Visitor Filter */}
+                <div>
+                  <label className="block text-xs font-bold text-white mb-2">
+                    Visitantes
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: 'all', label: 'Todos' },
+                      { value: 'visitors', label: 'Apenas Visitantes' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setVisitorFilter(option.value as VisitorFilter)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          visitorFilter === option.value
+                            ? 'bg-white text-cyan-600'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Clear Filters */}
+                {(statusFilter !== 'all' || visitorFilter !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setVisitorFilter('all');
+                    }}
+                    className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium transition-colors"
+                  >
+                    Limpar Filtros
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
 
