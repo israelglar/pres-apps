@@ -1,4 +1,4 @@
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 
 interface CompletionScreenProps {
@@ -7,6 +7,7 @@ interface CompletionScreenProps {
   absentCount: number;
   onConfirm: () => void;
   onGoBack: () => void;
+  isLoading?: boolean;
 }
 
 /**
@@ -19,6 +20,7 @@ export function CompletionScreen({
   absentCount,
   onConfirm,
   onGoBack,
+  isLoading = false,
 }: CompletionScreenProps) {
   return (
     <div
@@ -68,14 +70,17 @@ export function CompletionScreen({
           <div className="flex gap-3 justify-center">
             <button
               onClick={onGoBack}
-              className={`${buttonClasses.secondary} px-5 py-3 text-sm`}
+              disabled={isLoading}
+              className={`${buttonClasses.secondary} px-5 py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               Voltar
             </button>
             <button
               onClick={onConfirm}
-              className={`${buttonClasses.primary} px-5 py-3 text-sm`}
+              disabled={isLoading}
+              className={`${buttonClasses.primary} px-5 py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center`}
             >
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               Guardar
             </button>
           </div>

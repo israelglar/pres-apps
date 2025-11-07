@@ -20,7 +20,7 @@ export interface SearchAttendanceMarkingPageProps {
   visitorStudents: Student[];
   date: Date;
   lessonNames: Record<string, string>;
-  onComplete: (records: AttendanceRecord[]) => void;
+  onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -31,13 +31,14 @@ export const useSearchAttendanceMarkingLogic = ({
 }: {
   students: Student[];
   visitorStudents: Student[];
-  onComplete: (records: AttendanceRecord[]) => void;
+  onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [attendanceRecords, setAttendanceRecords] = useState<
     Record<string, AttendanceRecord>
   >({});
   const [isComplete, setIsComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Visitor management with existing visitors
@@ -196,8 +197,13 @@ export const useSearchAttendanceMarkingLogic = ({
     setIsComplete(true);
   };
 
-  const handleConfirmComplete = () => {
-    onComplete(Object.values(attendanceRecords));
+  const handleConfirmComplete = async () => {
+    setIsLoading(true);
+    try {
+      await onComplete(Object.values(attendanceRecords));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoBack = () => {
@@ -228,6 +234,7 @@ export const useSearchAttendanceMarkingLogic = ({
     setSearchQuery,
     attendanceRecords,
     isComplete,
+    isLoading,
     searchInputRef,
     displayedStudents,
     presentCount,

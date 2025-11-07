@@ -19,7 +19,7 @@ export interface AttendanceMarkingPageProps {
   visitorStudents: Student[];
   selectedDate: Date;
   lessonNames: Record<string, string>;
-  onComplete: (records: AttendanceRecord[]) => void;
+  onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
   onCancel?: () => void;
 }
 
@@ -30,13 +30,14 @@ export const useAttendanceMarkingLogic = ({
 }: {
   students: Student[];
   visitorStudents: Student[];
-  onComplete: (records: AttendanceRecord[]) => void;
+  onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [attendanceRecords, setAttendanceRecords] = useState<
     Record<string, AttendanceRecord>
   >({});
   const [isComplete, setIsComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const studentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   // Visitor management with existing visitors
@@ -247,8 +248,13 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
-  const handleComplete = () => {
-    onComplete(Object.values(attendanceRecords));
+  const handleComplete = async () => {
+    setIsLoading(true);
+    try {
+      await onComplete(Object.values(attendanceRecords));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoBack = () => {
@@ -261,6 +267,7 @@ export const useAttendanceMarkingLogic = ({
     currentIndex,
     attendanceRecords,
     isComplete,
+    isLoading,
     studentRefs,
     swipeOffset,
     isAnimatingSwipe,

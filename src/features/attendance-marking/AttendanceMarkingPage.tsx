@@ -22,6 +22,7 @@ export const AttendanceMarkingPage = ({
     currentIndex,
     attendanceRecords,
     isComplete,
+    isLoading,
     studentRefs,
     swipeOffset,
     isAnimatingSwipe,
@@ -57,6 +58,7 @@ export const AttendanceMarkingPage = ({
         absentCount={absentCount}
         onConfirm={handleComplete}
         onGoBack={handleGoBack}
+        isLoading={isLoading}
       />
     );
   }

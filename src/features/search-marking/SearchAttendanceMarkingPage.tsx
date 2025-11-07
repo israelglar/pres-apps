@@ -22,6 +22,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     setSearchQuery,
     attendanceRecords,
     isComplete,
+    isLoading,
     searchInputRef,
     displayedStudents,
     presentCount,
@@ -52,6 +53,7 @@ export const SearchAttendanceMarkingPage: React.FC<
         absentCount={absentCount}
         onConfirm={handleConfirmComplete}
         onGoBack={handleGoBack}
+        isLoading={isLoading}
       />
     );
   }
