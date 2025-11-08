@@ -16,10 +16,12 @@ export interface AttendanceMarkingPageProps {
 export const useAttendanceMarkingLogic = ({
   students,
   visitorStudents,
+  selectedDate,
   onComplete,
 }: {
   students: Student[];
   visitorStudents: Student[];
+  selectedDate: Date;
   onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
   // Swipe/sequential-specific state
@@ -55,6 +57,7 @@ export const useAttendanceMarkingLogic = ({
   // Fetch absence alerts for students
   const { alerts, dismissAlert } = useAbsenceAlerts({
     threshold: 3,
+    currentDate: selectedDate.toISOString().split('T')[0], // Exclude current date from absence count
   });
 
   // Derived values

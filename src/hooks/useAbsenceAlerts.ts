@@ -14,6 +14,9 @@ interface UseAbsenceAlertsOptions {
 
   /** Whether to enable the query (default: true) */
   enabled?: boolean;
+
+  /** Current date being marked (ISO format) to exclude from absence count */
+  currentDate?: string;
 }
 
 interface UseAbsenceAlertsReturn {
@@ -48,7 +51,8 @@ interface UseAbsenceAlertsReturn {
  * @example
  * ```tsx
  * const { alerts, dismissAlert, isLoading } = useAbsenceAlerts({
- *   threshold: 3
+ *   threshold: 3,
+ *   currentDate: '2025-11-10' // Exclude current date from absence count
  * });
  *
  * // Check if student has an alert
@@ -61,9 +65,8 @@ interface UseAbsenceAlertsReturn {
 export function useAbsenceAlerts({
   threshold = 3,
   enabled = true,
+  currentDate,
 }: UseAbsenceAlertsOptions): UseAbsenceAlertsReturn {
-  console.log('🎣 [useAbsenceAlerts Hook] Called with:', { threshold, enabled });
-
   // Track dismissed alerts in memory (resets on page reload)
   const [dismissedStudentIds, setDismissedStudentIds] = useState<Set<number>>(new Set());
 
@@ -74,14 +77,14 @@ export function useAbsenceAlerts({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['absence-alerts', threshold],
+    queryKey: ['absence-alerts', threshold, currentDate],
     queryFn: async () => {
-      return await getAbsenceAlertsForSchedule(threshold);
+      return await getAbsenceAlertsForSchedule(threshold, currentDate);
     },
     enabled: enabled,
-    staleTime: 55 * 60 * 1000, // 55 minutes (same as attendance data)
-    gcTime: 60 * 60 * 1000, // 60 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 0, // Always consider data stale - recalculate on every mount
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchOnMount: 'always', // Always refetch on mount, even if data exists
   });
 
   // Convert array to map for easy lookup
@@ -90,7 +93,6 @@ export function useAbsenceAlerts({
     alertsArray?.forEach((alert) => {
       map.set(alert.studentId, alert);
     });
-    console.log('🗺️ [useAbsenceAlerts Hook] All alerts map:', map.size, 'alerts');
     return map;
   }, [alertsArray]);
 
@@ -102,8 +104,6 @@ export function useAbsenceAlerts({
         map.set(alert.studentId, alert);
       }
     });
-    console.log('✨ [useAbsenceAlerts Hook] Active alerts (after dismiss):', map.size, 'alerts');
-    console.log('  Dismissed students:', Array.from(dismissedStudentIds));
     return map;
   }, [alertsArray, dismissedStudentIds]);
 

@@ -46,7 +46,7 @@ export const AttendanceMarkingPage = ({
     onTouchStart,
     onTouchMove,
     onTouchEnd,
-  } = useAttendanceMarkingLogic({ students, visitorStudents, onComplete });
+  } = useAttendanceMarkingLogic({ students, visitorStudents, selectedDate, onComplete });
 
   if (isComplete) {
     const presentCount = Object.values(attendanceRecords).filter(
@@ -269,9 +269,6 @@ export const AttendanceMarkingPage = ({
                   {(() => {
                     const currentStudentIdNumber = parseInt(currentStudent.id);
                     const alert = absenceAlerts.get(currentStudentIdNumber);
-                    console.log('🎨 [Swipe Marking Card] Current student:', currentStudent.name);
-                    console.log('  absenceAlerts map size:', absenceAlerts.size);
-                    console.log('  alert for this student:', alert);
                     return alert ? (
                       <div className="pointer-events-auto inline-block mt-2">
                         <AbsenceAlertBanner

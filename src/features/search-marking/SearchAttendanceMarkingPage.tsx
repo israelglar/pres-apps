@@ -44,6 +44,7 @@ export const SearchAttendanceMarkingPage: React.FC<
   } = useSearchAttendanceMarkingLogic({
     students,
     visitorStudents,
+    date,
     onComplete,
   });
 
@@ -124,13 +125,6 @@ export const SearchAttendanceMarkingPage: React.FC<
                 const isMarked = !!attendanceRecords[student.id];
                 const studentIdNumber = parseInt(student.id);
                 const alert = absenceAlerts.get(studentIdNumber);
-
-                // Debug log for first student only
-                if (student === displayedStudents[0]) {
-                  console.log('🎨 [Search Marking Render] First student:', student.name);
-                  console.log('  absenceAlerts map size:', absenceAlerts.size);
-                  console.log('  alert for this student:', alert);
-                }
 
                 return (
                   <div key={student.id}>

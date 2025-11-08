@@ -17,10 +17,12 @@ export interface SearchAttendanceMarkingPageProps {
 export const useSearchAttendanceMarkingLogic = ({
   students,
   visitorStudents,
+  date,
   onComplete,
 }: {
   students: Student[];
   visitorStudents: Student[];
+  date: Date;
   onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
 }) => {
   // Search-specific state
@@ -47,6 +49,7 @@ export const useSearchAttendanceMarkingLogic = ({
   // Fetch absence alerts for students
   const { alerts, dismissAlert } = useAbsenceAlerts({
     threshold: 3,
+    currentDate: date.toISOString().split('T')[0], // Exclude current date from absence count
   });
 
   // Auto-focus search input on mount

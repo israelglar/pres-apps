@@ -22,18 +22,17 @@ import type { AbsenceAlert } from '../../types/absence-alerts.types';
  * @param studentIds - Array of student IDs to check
  * @param threshold - Number of consecutive Sundays absent to trigger alert (default: 3)
  * @param lookbackSundays - Number of recent Sundays to analyze (default: 15)
+ * @param currentDateToExclude - Current date being marked (ISO format) to exclude from count
  * @returns Array of absence alerts
  */
 export async function getStudentsWithRecentAbsences(
   studentIds: number[],
   threshold: number = 3,
-  lookbackSundays: number = 15
+  lookbackSundays: number = 15,
+  currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
   try {
-    console.log('🔍 [Absence Alerts API] Checking alerts for', studentIds.length, 'students');
-
     if (studentIds.length === 0) {
-      console.log('⚠️ [Absence Alerts API] No student IDs provided');
       return [];
     }
 
@@ -46,18 +45,21 @@ export async function getStudentsWithRecentAbsences(
 
     if (schedulesError) throw schedulesError;
     if (!schedules || schedules.length === 0) {
-      console.log('⚠️ [Absence Alerts API] No schedules found');
       return [];
     }
 
     // Deduplicate dates (one Sunday can have 9h + 11h schedules)
     const allDates = schedules.map(s => s.date);
-    const uniqueDates = [...new Set(allDates)].slice(0, lookbackSundays);
+    let uniqueDates = [...new Set(allDates)];
 
-    console.log('📅 [Absence Alerts API] Found', uniqueDates.length, 'unique Sundays');
+    // Exclude current date and future dates (to only count PAST absences)
+    if (currentDateToExclude) {
+      uniqueDates = uniqueDates.filter(date => date < currentDateToExclude);
+    }
+
+    uniqueDates = uniqueDates.slice(0, lookbackSundays);
 
     if (uniqueDates.length === 0) {
-      console.log('⚠️ [Absence Alerts API] No unique dates found');
       return [];
     }
 
@@ -77,8 +79,6 @@ export async function getStudentsWithRecentAbsences(
       .lte('schedules.date', newestDate);
 
     if (attendanceError) throw attendanceError;
-
-    console.log('📊 [Absence Alerts API] Found', attendanceRecords?.length || 0, 'attendance records');
 
     // 3. Build a map of presence by student and date
     // If student came to ANY service on that date → Add to Set
@@ -100,7 +100,6 @@ export async function getStudentsWithRecentAbsences(
 
     // 4. Calculate consecutive absences by Sunday for each student
     const alerts: AbsenceAlert[] = [];
-    console.log('🔢 [Absence Alerts API] Starting calculation for', studentIds.length, 'students');
 
     for (const studentId of studentIds) {
       const studentPresenceDates = presenceByStudentAndDate.get(studentId) || new Set();
@@ -129,14 +128,8 @@ export async function getStudentsWithRecentAbsences(
         }
       }
 
-      // Log if student has absences
-      if (consecutiveAbsences > 0) {
-        console.log(`  👤 Student ${studentId}: ${consecutiveAbsences} consecutive Sundays absent`);
-      }
-
       // If threshold met, create alert
       if (consecutiveAbsences >= threshold && firstAbsenceDate && lastAbsenceDate) {
-        console.log(`  ⚠️ ALERT for Student ${studentId}: ${consecutiveAbsences} Sundays absent >= threshold ${threshold}`);
         alerts.push({
           studentId,
           absenceCount: consecutiveAbsences,
@@ -147,7 +140,6 @@ export async function getStudentsWithRecentAbsences(
       }
     }
 
-    console.log('✅ [Absence Alerts API] Returning', alerts.length, 'alerts');
     return alerts;
   } catch (error) {
     handleSupabaseError(error);
@@ -159,10 +151,12 @@ export async function getStudentsWithRecentAbsences(
  * This is a convenience function that fetches all active students and calculates alerts
  *
  * @param threshold - Number of consecutive absences to trigger alert (default: 3)
+ * @param currentDateToExclude - Current date being marked (ISO format) to exclude from count
  * @returns Array of absence alerts
  */
 export async function getAbsenceAlertsForSchedule(
-  threshold: number = 3
+  threshold: number = 3,
+  currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
   try {
     // Get all active students (we'll check all of them)
@@ -178,7 +172,7 @@ export async function getAbsenceAlertsForSchedule(
     const studentIds = students.map((s) => s.id);
 
     // Calculate alerts for these students
-    return await getStudentsWithRecentAbsences(studentIds, threshold);
+    return await getStudentsWithRecentAbsences(studentIds, threshold, 15, currentDateToExclude);
   } catch (error) {
     handleSupabaseError(error);
   }
