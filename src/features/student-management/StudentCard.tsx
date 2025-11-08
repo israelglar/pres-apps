@@ -1,10 +1,9 @@
-import { Edit2, Trash2, User } from 'lucide-react';
+import { User, ChevronRight } from 'lucide-react';
 import type { Student } from '../../types/database.types';
 
 interface StudentCardProps {
   student: Student;
-  onEdit: (student: Student) => void;
-  onDelete: (student: Student) => void;
+  onClick: (student: Student) => void;
 }
 
 /**
@@ -14,9 +13,9 @@ interface StudentCardProps {
  * - Student name
  * - Status badge (active, inactive, aged-out, moved)
  * - Visitor badge (if applicable)
- * - Edit and Delete action buttons
+ * - Clickable to navigate to student detail page
  */
-export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
+export function StudentCard({ student, onClick }: StudentCardProps) {
   const getStatusBadge = (status: Student['status']) => {
     const statusConfig = {
       active: {
@@ -49,7 +48,10 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-3 hover:shadow-xl transition-all">
+    <button
+      onClick={() => onClick(student)}
+      className="w-full bg-white rounded-xl shadow-lg p-3 hover:shadow-xl hover:bg-gray-50 active:scale-[0.99] transition-all cursor-pointer text-left"
+    >
       <div className="flex items-center justify-between gap-2">
         {/* Student Info */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -65,7 +67,7 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
               <h3 className="text-sm font-bold text-gray-900">
                 {student.name}
               </h3>
-              {getStatusBadge(student.status)}
+              {student.status !== 'active' && getStatusBadge(student.status)}
               {student.is_visitor && (
                 <span className="px-1.5 py-0.5 text-xs font-bold rounded-full border bg-purple-100 text-purple-700 border-purple-300">
                   Visitante
@@ -75,31 +77,18 @@ export function StudentCard({ student, onEdit, onDelete }: StudentCardProps) {
 
             {/* Notes */}
             {student.notes && (
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-600 mt-1 line-clamp-1">
                 <span className="font-semibold">Notas:</span> {student.notes}
               </p>
             )}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-1.5 flex-shrink-0">
-          <button
-            onClick={() => onEdit(student)}
-            className="p-1.5 bg-cyan-100 text-cyan-600 rounded-lg hover:bg-cyan-200 transition-colors"
-            title="Editar pré"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => onDelete(student)}
-            className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-            title="Eliminar pré"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+        {/* Right Arrow Icon */}
+        <div className="flex-shrink-0">
+          <ChevronRight className="w-5 h-5 text-gray-400" />
         </div>
       </div>
-    </div>
+    </button>
   );
 }

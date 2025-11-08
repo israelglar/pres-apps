@@ -12,5 +12,14 @@ function ManageStudentsRoute() {
     navigate({ to: '/' })
   }
 
-  return <StudentManagementPage onBack={handleBack} />
+  const handleStudentClick = (student: { id: number }) => {
+    navigate({ to: '/students/$studentId', params: { studentId: student.id.toString() } })
+  }
+
+  return (
+    <StudentManagementPage
+      onBack={handleBack}
+      onStudentClick={handleStudentClick}
+    />
+  )
 }

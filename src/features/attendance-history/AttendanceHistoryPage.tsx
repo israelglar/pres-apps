@@ -47,7 +47,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         onBack={onBack}
         title="Histórico de Presenças"
         subtitle="Ver e editar registos anteriores"
-        sticky={false}
+        sticky={true}
       />
 
       <div className="max-w-4xl mx-auto p-3 pb-20">

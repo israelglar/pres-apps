@@ -13,6 +13,7 @@ type VisitorFilter = 'all' | 'visitors';
 
 interface StudentManagementPageProps {
   onBack: () => void;
+  onStudentClick?: (student: Student) => void;
 }
 
 /**
@@ -25,7 +26,7 @@ interface StudentManagementPageProps {
  * - Delete student (soft delete)
  * - Card-based responsive layout
  */
-export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
+export function StudentManagementPage({ onBack, onStudentClick }: StudentManagementPageProps) {
   const {
     students,
     isLoading,
@@ -94,16 +95,6 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
     setShowFormModal(true);
   };
 
-  const handleEditStudent = (student: Student) => {
-    setEditingStudent(student);
-    setShowFormModal(true);
-  };
-
-  const handleDeleteClick = (student: Student) => {
-    setDeletingStudent(student);
-    setShowDeleteDialog(true);
-  };
-
   const handleConfirmDelete = () => {
     if (deletingStudent) {
       deleteStudent(deletingStudent.id);
@@ -123,7 +114,7 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
   };
 
   return (
-    <div className={`h-screen overflow-y-auto ${theme.gradients.background} text-white`}>
+    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
@@ -135,80 +126,53 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           onClick: handleAddStudent,
           disabled: isCreating,
         }}
-        sticky={true}
+        sticky={false}
+        className="flex-shrink-0"
       />
 
-      {/* Body Section */}
-      <main className="p-5">
+      {/* Main Content Area - Fixed search bar with scrollable list below */}
+      <div className="flex flex-col h-full overflow-hidden">
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
-            <p className="text-base text-white/90 font-medium">
-              A carregar prés...
-            </p>
-          </div>
-        )}
-
-        {/* Error State */}
-        {isError && (
-          <div className="bg-red-500/20 border-2 border-red-400 rounded-xl p-6 mb-5">
-            <p className="text-white font-bold mb-2">
-              Erro ao carregar prés
-            </p>
-            <p className="text-white/90 text-sm mb-4">
-              {error instanceof Error ? error.message : 'Erro desconhecido'}
-            </p>
-            <button
-              onClick={() => refetch()}
-              className="px-5 py-3 bg-white text-cyan-600 hover:bg-white/90 rounded-xl text-sm font-medium transition-colors"
-            >
-              Tentar novamente
-            </button>
-          </div>
-        )}
-
-        {/* Search Bar and Filters */}
+        {/* Search Bar and Filters - Fixed at top */}
         {!isLoading && !isError && students.length > 0 && (
-          <div className="mb-5 space-y-3">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Procurar pré por nome..."
-                className="w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
-                >
-                  <X className="w-4 h-4 text-white/60" />
-                </button>
-              )}
-            </div>
+          <div className="flex-shrink-0 p-5 pb-3 space-y-3">
+            {/* Search Bar and Filter Button Row */}
+            <div className="flex gap-2">
+              {/* Search Bar */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Procurar pré por nome..."
+                  className="w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4 text-white/60" />
+                  </button>
+                )}
+              </div>
 
-            {/* Filter Toggle Button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-colors ${
-                showFilters || statusFilter !== 'all' || visitorFilter !== 'all'
-                  ? 'bg-white text-cyan-600'
-                  : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-              Filtros
-              {(statusFilter !== 'all' || visitorFilter !== 'all') && (
-                <span className="ml-1 px-2 py-0.5 bg-cyan-600 text-white text-xs rounded-full">
-                  Ativo
-                </span>
-              )}
-            </button>
+              {/* Filter Toggle Button */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors flex-shrink-0 ${
+                  showFilters || statusFilter !== 'all' || visitorFilter !== 'all'
+                    ? 'bg-white text-cyan-600'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                {(statusFilter !== 'all' || visitorFilter !== 'all') && (
+                  <span className="w-2 h-2 bg-cyan-600 rounded-full" />
+                )}
+              </button>
+            </div>
 
             {/* Filter Options */}
             {showFilters && (
@@ -283,8 +247,38 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
           </div>
         )}
 
-        {/* Student List */}
-        {!isLoading && !isError && (
+        {/* Scrollable Content Area - Takes remaining space */}
+        <div className="flex-1 overflow-y-auto px-5 pb-5">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
+              <p className="text-base text-white/90 font-medium">
+                A carregar prés...
+              </p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {isError && (
+            <div className="bg-red-500/20 border-2 border-red-400 rounded-xl p-6">
+              <p className="text-white font-bold mb-2">
+                Erro ao carregar prés
+              </p>
+              <p className="text-white/90 text-sm mb-4">
+                {error instanceof Error ? error.message : 'Erro desconhecido'}
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="px-5 py-3 bg-white text-cyan-600 hover:bg-white/90 rounded-xl text-sm font-medium transition-colors"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          )}
+
+          {/* Student List */}
+          {!isLoading && !isError && (
           <>
             {students.length === 0 ? (
               <div className="text-center py-16">
@@ -336,16 +330,16 @@ export function StudentManagementPage({ onBack }: StudentManagementPageProps) {
                     <StudentCard
                       key={student.id}
                       student={student}
-                      onEdit={handleEditStudent}
-                      onDelete={handleDeleteClick}
+                      onClick={onStudentClick || (() => {})}
                     />
                   ))}
                 </div>
               </>
             )}
           </>
-        )}
-      </main>
+          )}
+        </div>
+      </div>
 
       {/* Form Modal */}
       {showFormModal && (
