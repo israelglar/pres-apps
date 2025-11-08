@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { selectionTap, successVibration } from "../../utils/haptics";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
 import type { Student, AttendanceRecord } from "../../types/attendance.types";
 
 export interface AttendanceMarkingPageProps {
@@ -49,6 +50,11 @@ export const useAttendanceMarkingLogic = ({
     handleCancelLeave,
   } = useAttendanceCore({
     visitorStudents,
+  });
+
+  // Fetch absence alerts for students
+  const { alerts, dismissAlert } = useAbsenceAlerts({
+    threshold: 3,
   });
 
   // Derived values
@@ -222,6 +228,10 @@ export const useAttendanceMarkingLogic = ({
 
     // Visitor management
     visitorManagement,
+
+    // Absence alerts
+    absenceAlerts: alerts,
+    dismissAbsenceAlert: dismissAlert,
 
     // Handlers
     handleMark,

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Fuse from "fuse.js";
 import { selectionTap, successVibration } from "../../utils/haptics";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
 import type { Student, AttendanceRecord } from "../../types/attendance.types";
 
 export interface SearchAttendanceMarkingPageProps {
@@ -41,6 +42,11 @@ export const useSearchAttendanceMarkingLogic = ({
     handleCancelLeave,
   } = useAttendanceCore({
     visitorStudents,
+  });
+
+  // Fetch absence alerts for students
+  const { alerts, dismissAlert } = useAbsenceAlerts({
+    threshold: 3,
   });
 
   // Auto-focus search input on mount
@@ -191,6 +197,10 @@ export const useSearchAttendanceMarkingLogic = ({
 
     // Visitor management
     visitorManagement,
+
+    // Absence alerts
+    absenceAlerts: alerts,
+    dismissAbsenceAlert: dismissAlert,
 
     // Handlers
     handleMarkPresent,

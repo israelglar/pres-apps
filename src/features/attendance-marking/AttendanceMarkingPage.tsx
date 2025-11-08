@@ -1,9 +1,10 @@
-import { CheckCircle, UserPlus, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, UserPlus, XCircle } from "lucide-react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { CompletionScreen } from "../../components/features/CompletionScreen";
 import { VisitorDialog } from "../../components/features/VisitorDialog";
 import { UnsavedChangesDialog } from "../../components/features/UnsavedChangesDialog";
+import { AbsenceAlertBanner } from "../../components/features/AbsenceAlertBanner";
 import {
   formatDate,
   getLessonName,
@@ -33,6 +34,8 @@ export const AttendanceMarkingPage = ({
     progress,
     blockerStatus,
     visitorManagement,
+    absenceAlerts,
+    dismissAbsenceAlert,
     handleMark,
     handleClickHistory,
     handleConfirmLeave,
@@ -98,6 +101,9 @@ export const AttendanceMarkingPage = ({
                 const record = attendanceRecords[student.id];
                 const isMarked = !!record;
                 const isCurrent = currentIndex === idx;
+                const studentIdNumber = parseInt(student.id);
+                const alert = absenceAlerts.get(studentIdNumber);
+                const hasAlert = !!alert && !isMarked;
 
                 return (
                   <button
@@ -135,6 +141,9 @@ export const AttendanceMarkingPage = ({
                         >
                           Visitante
                         </span>
+                      )}
+                      {hasAlert && (
+                        <AlertTriangle className="w-3 h-3 text-orange-600" />
                       )}
                       {isCurrent && !isMarked && (
                         <span className="ml-1 w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
@@ -252,9 +261,27 @@ export const AttendanceMarkingPage = ({
                   <h2 className="text-gray-800 text-2xl font-bold mb-1 leading-tight">
                     {getShortName(currentStudent.name)}
                   </h2>
-                  <p className="text-gray-500 text-xs">
+                  <p className="text-gray-500 text-xs mb-2">
                     Toque nos lados ou deslize
                   </p>
+
+                  {/* Absence Alert */}
+                  {(() => {
+                    const currentStudentIdNumber = parseInt(currentStudent.id);
+                    const alert = absenceAlerts.get(currentStudentIdNumber);
+                    console.log('🎨 [Swipe Marking Card] Current student:', currentStudent.name);
+                    console.log('  absenceAlerts map size:', absenceAlerts.size);
+                    console.log('  alert for this student:', alert);
+                    return alert ? (
+                      <div className="pointer-events-auto inline-block mt-2">
+                        <AbsenceAlertBanner
+                          absenceCount={alert.absenceCount}
+                          onDismiss={() => dismissAbsenceAlert(currentStudentIdNumber)}
+                          className="text-left"
+                        />
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
 
                 {/* Clickable areas overlaid */}

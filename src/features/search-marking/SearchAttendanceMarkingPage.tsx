@@ -1,4 +1,4 @@
-import { CheckCircle, Search, UserPlus } from "lucide-react";
+import { AlertTriangle, CheckCircle, Search, UserPlus, X } from "lucide-react";
 import React from "react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
@@ -31,6 +31,8 @@ export const SearchAttendanceMarkingPage: React.FC<
     totalCount,
     blockerStatus,
     visitorManagement,
+    absenceAlerts,
+    dismissAbsenceAlert,
     handleMarkPresent,
     handleUnmark,
     handleComplete,
@@ -120,64 +122,98 @@ export const SearchAttendanceMarkingPage: React.FC<
             ) : (
               displayedStudents.map((student) => {
                 const isMarked = !!attendanceRecords[student.id];
+                const studentIdNumber = parseInt(student.id);
+                const alert = absenceAlerts.get(studentIdNumber);
+
+                // Debug log for first student only
+                if (student === displayedStudents[0]) {
+                  console.log('🎨 [Search Marking Render] First student:', student.name);
+                  console.log('  absenceAlerts map size:', absenceAlerts.size);
+                  console.log('  alert for this student:', alert);
+                }
 
                 return (
-                  <button
-                    key={student.id}
-                    onClick={() => {
-                      if (isMarked) {
-                        handleUnmark(student.id);
-                      } else {
-                        handleMarkPresent(student);
-                      }
-                    }}
-                    className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
-                      isMarked
-                        ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
-                        : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      {isMarked && (
+                  <div key={student.id}>
+                    <div className="relative">
+                      <button
+                        onClick={() => {
+                          if (isMarked) {
+                            handleUnmark(student.id);
+                          } else {
+                            handleMarkPresent(student);
+                          }
+                        }}
+                        className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
+                          isMarked
+                            ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
+                            : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          {isMarked && (
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}
+                            >
+                              <span className="text-white font-bold text-xs">
+                                {student.name.charAt(0)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`text-sm font-semibold ${
+                                  isMarked
+                                    ? theme.text.primaryDarker
+                                    : theme.text.neutralDarker
+                                }`}
+                              >
+                                {student.name}
+                              </span>
+                              {student.isVisitor && (
+                                <span
+                                  className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
+                                >
+                                  Visitante
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        {isMarked && (
+                          <div
+                            className={`${theme.backgrounds.primaryLight} rounded-full p-0.5`}
+                          >
+                            <CheckCircle
+                              className={`w-4 h-4 ${theme.text.primary}`}
+                            />
+                          </div>
+                        )}
+                      </button>
+
+                      {/* Absence Alert Overlay - Semi-transparent overlay that blocks clicks */}
+                      {alert && !isMarked && (
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}
+                          className="absolute inset-0 flex items-center justify-end px-3 bg-orange-500/10 rounded-xl z-10"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <span className="text-white font-bold text-xs">
-                            {student.name.charAt(0)}
-                          </span>
+                          <div className="flex items-center gap-2 bg-orange-100/90 border-l-4 border-orange-600 rounded-lg px-3 py-1.5 shadow-lg">
+                            <AlertTriangle className="w-4 h-4 text-orange-700 flex-shrink-0" />
+                            <span className="text-xs text-orange-900 font-semibold whitespace-nowrap">
+                              Ausente há {alert.absenceCount} {alert.absenceCount === 1 ? 'domingo' : 'domingos'}
+                            </span>
+                            <button
+                              onClick={() => dismissAbsenceAlert(studentIdNumber)}
+                              className="ml-1 p-0.5 rounded hover:bg-orange-200 transition-colors"
+                              aria-label="Dispensar alerta"
+                            >
+                              <X className="w-4 h-4 text-orange-700" />
+                            </button>
+                          </div>
                         </div>
                       )}
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`text-sm font-semibold ${
-                              isMarked
-                                ? theme.text.primaryDarker
-                                : theme.text.neutralDarker
-                            }`}
-                          >
-                            {student.name}
-                          </span>
-                          {student.isVisitor && (
-                            <span
-                              className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
-                            >
-                              Visitante
-                            </span>
-                          )}
-                        </div>
-                      </div>
                     </div>
-                    {isMarked && (
-                      <div
-                        className={`${theme.backgrounds.primaryLight} rounded-full p-0.5`}
-                      >
-                        <CheckCircle
-                          className={`w-4 h-4 ${theme.text.primary}`}
-                        />
-                      </div>
-                    )}
-                  </button>
+                  </div>
                 );
               })
             )}
