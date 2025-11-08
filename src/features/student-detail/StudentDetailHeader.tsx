@@ -1,5 +1,4 @@
-import { User, Edit2, Trash2, TrendingUp, Users, UserX } from 'lucide-react'
-import { theme, buttonClasses } from '../../config/theme'
+import { Edit2, Trash2, TrendingUp } from 'lucide-react'
 import type { Student } from '../../types/database.types'
 import type { AttendanceStats } from './student-detail.logic'
 

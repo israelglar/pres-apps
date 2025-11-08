@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authenticated/search-marking')({
 function SearchMarkingRoute() {
   const navigate = useNavigate()
   const { date, serviceTimeId } = Route.useSearch()
-  const { students, visitorStudents, lessonNames } = useAttendanceData()
+  const { students, visitorStudents, lessonNames, serviceTimes } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
 
   const selectedDate = new Date(date)
@@ -61,6 +61,8 @@ function SearchMarkingRoute() {
         isVisitor: true
       }))}
       date={selectedDate}
+      serviceTimeId={serviceTimeId}
+      serviceTimes={serviceTimes}
       lessonNames={lessonNames}
       onComplete={onComplete}
       onCancel={onCancel}

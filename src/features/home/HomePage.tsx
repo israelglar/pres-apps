@@ -128,12 +128,6 @@ export function HomePage({
           <p className={`${theme.text.neutral} text-base font-medium`}>
             Marcar presenças para a lição de hoje
           </p>
-          <div
-            className={`mt-4 flex items-center justify-center ${theme.text.primary} font-semibold text-sm`}
-          >
-            <span>Começar</span>
-            <ArrowRight className="ml-1.5 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-          </div>
         </button>
 
         {/* History Button */}

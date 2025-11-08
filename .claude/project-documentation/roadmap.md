@@ -53,7 +53,7 @@ The following features were previously planned and are now **fully implemented**
 
 ### 4. Carers List Widget
 
-**Design:** Show on home page (below "Começar" button)
+**Design:** Show on home page
 
 - "Meus Pré-adolescentes" section on home page
 - Shows 3-5 students assigned to logged-in teacher

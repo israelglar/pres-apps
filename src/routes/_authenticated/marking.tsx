@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authenticated/marking')({
 function MarkingRoute() {
   const navigate = useNavigate()
   const { date, serviceTimeId } = Route.useSearch()
-  const { students, visitorStudents, lessonNames } = useAttendanceData()
+  const { students, visitorStudents, lessonNames, serviceTimes } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
 
   const onComplete = async (records: AttendanceRecord[]) => {
@@ -63,6 +63,8 @@ function MarkingRoute() {
         isVisitor: true
       }))}
       selectedDate={selectedDate}
+      serviceTimeId={serviceTimeId}
+      serviceTimes={serviceTimes}
       lessonNames={lessonNames}
       onComplete={onComplete}
       onCancel={onCancel}

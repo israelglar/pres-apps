@@ -17,6 +17,8 @@ export const AttendanceMarkingPage = ({
   students,
   visitorStudents,
   selectedDate,
+  serviceTimeId,
+  serviceTimes,
   lessonNames,
   onComplete,
   onCancel,
@@ -68,12 +70,19 @@ export const AttendanceMarkingPage = ({
     );
   }
 
+  // Format title with service time
+  const serviceTime = serviceTimes.find(st => st.id === serviceTimeId);
+  const timeFormatted = serviceTime?.time.slice(0, 5); // Remove seconds (hh:mm:ss -> hh:mm)
+  const titleWithTime = timeFormatted
+    ? `${formatDate(selectedDate)} - ${timeFormatted}`
+    : formatDate(selectedDate);
+
   return (
     <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel || (() => {})}
-        title={formatDate(selectedDate)}
+        title={titleWithTime}
         subtitle={getLessonName(selectedDate, lessonNames)}
         sticky={false}
         className="flex-shrink-0"

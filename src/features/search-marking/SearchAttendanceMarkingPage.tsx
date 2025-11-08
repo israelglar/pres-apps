@@ -15,6 +15,8 @@ export const SearchAttendanceMarkingPage: React.FC<
   students,
   visitorStudents,
   date,
+  serviceTimeId,
+  serviceTimes,
   lessonNames,
   onComplete,
   onCancel,
@@ -63,12 +65,19 @@ export const SearchAttendanceMarkingPage: React.FC<
     );
   }
 
+  // Format title with service time
+  const serviceTime = serviceTimes.find(st => st.id === serviceTimeId);
+  const timeFormatted = serviceTime?.time.slice(0, 5); // Remove seconds (hh:mm:ss -> hh:mm)
+  const titleWithTime = timeFormatted
+    ? `${formatDate(date)} - ${timeFormatted}`
+    : formatDate(date);
+
   return (
     <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel}
-        title={formatDate(date)}
+        title={titleWithTime}
         subtitle={getLessonName(date, lessonNames)}
         sticky={false}
         className="flex-shrink-0"

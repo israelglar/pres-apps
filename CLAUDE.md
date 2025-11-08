@@ -293,7 +293,6 @@ npm run db:link-lessons         # Link lessons to schedules
 - **Falta (F)** - Absent
 - **Atrasado** - Late
 - **Justificada** - Excused
-- **Começar** - Start
 - **Continuar** - Continue
 - **Voltar** - Go back
 - **Guardar** - Save

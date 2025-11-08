@@ -8,6 +8,8 @@ export interface AttendanceMarkingPageProps {
   students: Student[];
   visitorStudents: Student[];
   selectedDate: Date;
+  serviceTimeId: number;
+  serviceTimes: Array<{ id: number; time: string; name: string }>;
   lessonNames: Record<string, string>;
   onComplete: (records: AttendanceRecord[]) => void | Promise<void>;
   onCancel?: () => void;
