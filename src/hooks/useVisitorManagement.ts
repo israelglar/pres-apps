@@ -142,7 +142,7 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
         notesArray.push(`Primeira vez na igreja? ${firstTimeAtChurch === 'yes' ? 'Sim' : 'Não'}`);
       }
       if (willComeRegularly !== null) {
-        notesArray.push(`Vai vir regularmente? ${willComeRegularly === 'yes' ? 'Sim' : 'Não'}`);
+        notesArray.push(`Vai começar a vir regularmente? ${willComeRegularly === 'yes' ? 'Sim' : 'Não'}`);
       }
       const notes = notesArray.join(' | ');
 

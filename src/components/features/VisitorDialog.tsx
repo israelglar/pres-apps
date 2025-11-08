@@ -192,40 +192,42 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                 </div>
               </div>
 
-              {/* Question 2: Will come regularly? */}
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-2">
-                  Vai vir regularmente?
-                </label>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      visitorManagement.setWillComeRegularly("yes")
-                    }
-                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
-                      visitorManagement.willComeRegularly === "yes"
-                        ? `${theme.gradients.primaryButton} text-white border-transparent`
-                        : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
-                    }`}
-                  >
-                    Sim
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      visitorManagement.setWillComeRegularly("no")
-                    }
-                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
-                      visitorManagement.willComeRegularly === "no"
-                        ? `${theme.gradients.primaryButton} text-white border-transparent`
-                        : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
-                    }`}
-                  >
-                    Não
-                  </button>
+              {/* Question 2: Will come regularly? - Only show if first time at church */}
+              {visitorManagement.firstTimeAtChurch === "yes" && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-2">
+                    Vai começar a vir regularmente?
+                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        visitorManagement.setWillComeRegularly("yes")
+                      }
+                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                        visitorManagement.willComeRegularly === "yes"
+                          ? `${theme.gradients.primaryButton} text-white border-transparent`
+                          : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                      }`}
+                    >
+                      Sim
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        visitorManagement.setWillComeRegularly("no")
+                      }
+                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                        visitorManagement.willComeRegularly === "no"
+                          ? `${theme.gradients.primaryButton} text-white border-transparent`
+                          : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                      }`}
+                    >
+                      Não
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           )}
         </div>
