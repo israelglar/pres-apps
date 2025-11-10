@@ -1,6 +1,7 @@
 import {
   AlertCircle,
   AlertTriangle,
+  ArrowDownAZ,
   ArrowLeft,
   ArrowRight,
   Calendar,
@@ -10,9 +11,9 @@ import {
   Clock,
   ExternalLink,
   Eye,
-  Hand,
   Info,
   Search,
+  UserCheck,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 import type { Schedule } from "../../schemas/attendance.schema";
@@ -345,11 +346,11 @@ export function DateSelectionPage({
                         className="w-4 h-4 text-blue-600 focus:ring-blue-500 focus:ring-2"
                       />
                       <div className="ml-3 flex items-center gap-1.5 flex-1">
-                        <Search className="w-4 h-4 text-blue-600" />
+                        <UserCheck className="w-4 h-4 text-blue-600" />
                         <span
                           className={`font-bold text-sm ${theme.text.neutralDarker}`}
                         >
-                          Procurar por Nome
+                          Só Presentes
                         </span>
                       </div>
                     </label>
@@ -373,7 +374,7 @@ export function DateSelectionPage({
                         />
                         <div className="absolute right-0 top-full mt-2 w-72 p-4 bg-white rounded-xl border-2 border-blue-200 shadow-2xl z-50 animate-fade-in">
                           <p className={`text-sm ${theme.text.neutral}`}>
-                            Procura e seleciona cada pré presente. Ideal para
+                            Seleciona apenas os prés que estão presentes. Ideal para
                             registar pela ordem em que estão sentados.
                           </p>
                         </div>
@@ -399,11 +400,11 @@ export function DateSelectionPage({
                         className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
                       />
                       <div className="ml-3 flex items-center gap-2">
-                        <Hand className="w-4 h-4 text-emerald-600" />
+                        <ArrowDownAZ className="w-4 h-4 text-emerald-600" />
                         <span
                           className={`font-bold text-sm ${theme.text.neutralDarker}`}
                         >
-                          Método Tradicional
+                          Ordem Alfabética
                         </span>
                       </div>
                     </label>

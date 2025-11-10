@@ -215,7 +215,7 @@ export function HomePage({
                   A carregar...
                 </h2>
                 <p className={theme.text.neutral}>
-                  A obter dados do Google Sheets
+                  A obter dados
                 </p>
               </>
             )}
