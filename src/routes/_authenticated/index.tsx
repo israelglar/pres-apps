@@ -34,11 +34,19 @@ function HomeRoute() {
     navigate({ to: '/attendance-history' })
   }
 
+  const handleQuickStart = (date: string, serviceTimeId: number) => {
+    navigate({
+      to: '/search-marking',
+      search: { date, serviceTimeId }
+    })
+  }
+
   return (
     <HomePage
       onNavigate={handleNavigate}
       onManageStudents={handleManageStudents}
       onViewHistory={handleViewHistory}
+      onQuickStart={handleQuickStart}
     />
   )
 }

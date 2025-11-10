@@ -2,7 +2,9 @@ import {
   AlertCircle,
   ArrowRight,
   Calendar,
+  Clock,
   Download,
+  ExternalLink,
   History,
   Loader2,
   LogOut,
@@ -17,6 +19,7 @@ interface HomePageProps {
   onNavigate: () => void;
   onManageStudents: () => void;
   onViewHistory: () => void;
+  onQuickStart?: (date: string, serviceTimeId: number) => void;
 }
 
 /**
@@ -32,6 +35,7 @@ export function HomePage({
   onNavigate,
   onManageStudents,
   onViewHistory,
+  onQuickStart,
 }: HomePageProps) {
   const logic = useHomePageLogic({ onNavigate });
   const { teacher, signOut } = useAuth();
@@ -105,30 +109,108 @@ export function HomePage({
           )}
         </div>
 
-        <button
-          onClick={logic.handleStartClick}
-          className={`w-full bg-white ${theme.text.primary} rounded-xl shadow-xl p-8 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden`}
-        >
-          {/* Swipe indicator */}
-          {logic.swipeOffset < 0 && !logic.isAnimatingSwipe && (
-            <div
-              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-              style={{
-                opacity: Math.min(Math.abs(logic.swipeOffset) / 50, 1),
-              }}
-            >
-              <ArrowRight className={`w-6 h-6 ${theme.text.primary}`} />
-            </div>
-          )}
+        {/* Conditional rendering based on whether today is a lesson day */}
+        {logic.isLessonDay && logic.todaySchedules.length > 0 ? (
+          // LESSON DAY LAYOUT - Quick attendance flow
+          <div className="space-y-3">
+            {/* Lesson Details Card */}
+            <div className="bg-white rounded-xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`${theme.backgrounds.primaryLight} p-2 rounded-lg`}>
+                  <Calendar className={`w-6 h-6 ${theme.text.primary}`} />
+                </div>
+                <div className="flex-1">
+                  <p className={`text-xs ${theme.text.neutral} font-bold uppercase tracking-wide`}>
+                    Lição de Hoje
+                  </p>
+                  {logic.todaySchedules[0].lesson ? (
+                    logic.todaySchedules[0].lesson.resource_url ? (
+                      <a
+                        href={logic.todaySchedules[0].lesson.resource_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-base font-bold ${theme.text.primaryDark} hover:underline flex items-center gap-2`}
+                      >
+                        {logic.todaySchedules[0].lesson.name}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <p className={`text-base font-bold ${theme.text.primaryDark}`}>
+                        {logic.todaySchedules[0].lesson.name}
+                      </p>
+                    )
+                  ) : (
+                    <p className="text-base font-bold text-amber-600">
+                      Sem lição agendada
+                    </p>
+                  )}
+                </div>
+              </div>
 
-          <Calendar
-            className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`}
-          />
-          <h2 className="text-2xl font-bold mb-1">Registar Presenças</h2>
-          <p className={`${theme.text.neutral} text-base font-medium`}>
-            Marcar presenças para a lição de hoje
-          </p>
-        </button>
+              {/* Service Time Selection */}
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className={`w-4 h-4 ${theme.text.primary}`} />
+                  <p className={`text-xs ${theme.text.neutral} font-bold uppercase tracking-wide`}>
+                    Escolher Horário
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {logic.todaySchedules.map((schedule) => {
+                    // Skip if service_time_id is null
+                    if (!schedule.service_time_id) return null;
+
+                    return (
+                      <button
+                        key={schedule.service_time_id}
+                        onClick={() => onQuickStart?.(logic.today, schedule.service_time_id!)}
+                        className={`px-5 py-4 ${buttonClasses.primary} text-sm flex flex-col items-center justify-center gap-1`}
+                      >
+                        <Clock className="w-5 h-5" />
+                        <span className="font-bold">{schedule.serviceTimeTime.substring(0, 5)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Choose Another Date Button */}
+            <button
+              onClick={onNavigate}
+              className={`w-full px-5 py-3 ${buttonClasses.secondary} text-sm flex items-center justify-center gap-2`}
+            >
+              <Calendar className="w-4 h-4" />
+              Escolher Outra Data
+            </button>
+          </div>
+        ) : (
+          // REGULAR LAYOUT - Date selection flow
+          <button
+            onClick={logic.handleStartClick}
+            className={`w-full bg-white ${theme.text.primary} rounded-xl shadow-xl p-8 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden`}
+          >
+            {/* Swipe indicator */}
+            {logic.swipeOffset < 0 && !logic.isAnimatingSwipe && (
+              <div
+                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{
+                  opacity: Math.min(Math.abs(logic.swipeOffset) / 50, 1),
+                }}
+              >
+                <ArrowRight className={`w-6 h-6 ${theme.text.primary}`} />
+              </div>
+            )}
+
+            <Calendar
+              className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`}
+            />
+            <h2 className="text-2xl font-bold mb-1">Registar Presenças</h2>
+            <p className={`${theme.text.neutral} text-base font-medium`}>
+              Marcar presenças para a lição de hoje
+            </p>
+          </button>
+        )}
 
         {/* History Button */}
         <button

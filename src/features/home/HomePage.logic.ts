@@ -1,11 +1,17 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAttendanceData } from '../../hooks/useAttendanceData';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
+import type { Schedule } from '../../schemas/attendance.schema';
 
 export interface UseHomePageLogicProps {
   onNavigate: () => void;
+}
+
+interface TodaySchedule extends Schedule {
+  serviceTimeName: string;
+  serviceTimeTime: string;
 }
 
 /**
@@ -19,9 +25,39 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     error: dataError,
     refetch,
     isRefreshing: isRefetchingData,
+    getSchedule,
+    serviceTimes,
   } = useAttendanceData();
 
   const { canInstall, promptInstall, isInstalled, isRunningInPWA, openPWAApp, isIOS } = usePWAInstall();
+
+  // Get today's date in YYYY-MM-DD format
+  const today = useMemo(() => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  }, []);
+
+  // Check if today has any schedules and get them
+  const todaySchedules = useMemo<TodaySchedule[]>(() => {
+    if (!isDataReady) return [];
+
+    const schedules: TodaySchedule[] = [];
+
+    serviceTimes.forEach((serviceTime) => {
+      const schedule = getSchedule(today, serviceTime.id);
+      if (schedule) {
+        schedules.push({
+          ...schedule,
+          serviceTimeName: serviceTime.name,
+          serviceTimeTime: serviceTime.time,
+        });
+      }
+    });
+
+    return schedules;
+  }, [isDataReady, today, getSchedule, serviceTimes]);
+
+  const isLessonDay = todaySchedules.length > 0;
 
   const [waitingForData, setWaitingForData] = useState(false);
 
@@ -94,6 +130,11 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     isDataReady,
     dataError,
     isRefreshing: pullToRefresh.isRefreshing || isRefetchingData,
+
+    // Lesson day data
+    isLessonDay,
+    todaySchedules,
+    today,
 
     // UI states
     waitingForData,
