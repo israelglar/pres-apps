@@ -32,7 +32,17 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
   const { canInstall, promptInstall, isInstalled, isRunningInPWA, openPWAApp, isIOS } = usePWAInstall();
 
   // Get today's date in YYYY-MM-DD format
+  // In dev mode, check for override date in localStorage
   const today = useMemo(() => {
+    // Check for dev date override in localStorage (only in dev mode)
+    if (import.meta.env.DEV) {
+      const devDate = localStorage.getItem('devDate');
+      if (devDate && /^\d{4}-\d{2}-\d{2}$/.test(devDate)) {
+        console.log('🔧 DEV: Using mock date:', devDate);
+        return devDate;
+      }
+    }
+
     const now = new Date();
     return now.toISOString().split('T')[0];
   }, []);
@@ -60,6 +70,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
   const isLessonDay = todaySchedules.length > 0;
 
   const [waitingForData, setWaitingForData] = useState(false);
+  const [showDevTools, setShowDevTools] = useState(false);
 
   // Auto-navigate when data becomes ready while waiting
   useEffect(() => {
@@ -138,6 +149,8 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
     // UI states
     waitingForData,
+    showDevTools,
+    setShowDevTools,
     pullDistance: pullToRefresh.pullDistance,
     swipeOffset: swipeGesture.swipeOffset,
     isAnimatingSwipe: swipeGesture.isAnimating,
