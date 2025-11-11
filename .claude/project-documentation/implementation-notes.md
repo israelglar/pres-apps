@@ -109,12 +109,13 @@
 
 1. Create directory in `/features/[feature-name]/`
 2. Create main component: `[FeatureName]Page.tsx`
-3. Separate business logic: `[FeatureName]Page.logic.ts` (if complex)
-4. Create route in `/routes/[route-name].tsx`
-5. Update navigation in existing pages
-6. Consider admin vs teacher role access
-7. Add Portuguese translations
-8. Test on mobile device
+3. **Import theme:** `import { theme } from '@/config/theme'` - use theme constants for all colors
+4. Separate business logic: `[FeatureName]Page.logic.ts` (if complex)
+5. Create route in `/routes/[route-name].tsx`
+6. Update navigation in existing pages
+7. Consider admin vs teacher role access
+8. Add Portuguese translations
+9. Test on mobile device
 
 ### Modifying Attendance Flow
 
@@ -135,7 +136,10 @@
 
 ### UI Changes
 
-1. Follow existing design system (Emerald/Teal/Cyan gradient)
+1. **ALWAYS** import and use theme constants from `src/config/theme.ts`
+   - Use `theme.gradients.background` for gradients
+   - Use `theme.text.primary`, `theme.backgrounds.primaryLight` for colors
+   - **NEVER** hardcode colors - maintain consistency across all pages
 2. Maintain gesture interactions (swipe, pull-to-refresh)
 3. Keep large touch targets for mobile
 4. Test haptic feedback still works

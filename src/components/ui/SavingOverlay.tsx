@@ -1,4 +1,5 @@
 import { AlertCircle, Loader2 } from "lucide-react";
+import { theme } from "@/config/theme";
 
 interface SavingOverlayProps {
   error: string | null;
@@ -20,14 +21,14 @@ export const SavingOverlay = ({ error, onRetry }: SavingOverlayProps) => {
             <p className="text-gray-600 mb-8">{error}</p>
             <button
               onClick={onRetry}
-              className="w-full px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg active:scale-95 transition-all"
+              className={`w-full px-6 py-4 ${theme.gradients.activeItem} text-white rounded-xl font-semibold text-lg hover:shadow-lg active:scale-95 transition-all`}
             >
               Voltar ao Início
             </button>
           </>
         ) : (
           <>
-            <Loader2 className="w-16 h-16 text-emerald-600 mx-auto mb-4 animate-spin" />
+            <Loader2 className={`w-16 h-16 ${theme.text.primary} mx-auto mb-4 animate-spin`} />
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               A Guardar...
             </h2>

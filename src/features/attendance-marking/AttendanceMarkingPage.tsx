@@ -236,8 +236,8 @@ export const AttendanceMarkingPage = ({
                   }}
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <CheckCircle className="w-8 h-8 text-emerald-500" />
-                    <span className="text-xs font-bold text-emerald-600">
+                    <CheckCircle className={`w-8 h-8 ${theme.text.success}`} />
+                    <span className={`text-xs font-bold ${theme.text.success}`}>
                       Presente
                     </span>
                   </div>
@@ -313,7 +313,7 @@ export const AttendanceMarkingPage = ({
                 />
                 <button
                   onClick={() => handleMark("P")}
-                  className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-emerald-200/60 transition-colors rounded-r-3xl z-20 touch-none"
+                  className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/60 transition-colors rounded-r-3xl z-20 touch-none"
                   style={{
                     background:
                       "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)",

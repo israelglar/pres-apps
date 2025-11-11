@@ -169,12 +169,14 @@ Types: `src/types/database.types.ts`
 - Cards: `rounded-2xl`, `shadow-2xl`, `p-5`
 
 **Colors:**
-- Primary gradient: Emerald → Teal → Cyan
-- Present: Green (#10b981)
-- Absent: Red
-- Theme: `src/config/theme.ts`
+- **ALWAYS** import and use theme constants from `src/config/theme.ts`
+- Primary gradient: `theme.gradients.background` (Emerald → Teal → Cyan)
+- Primary text: `theme.text.primary`
+- Primary background: `theme.backgrounds.primaryLight`
+- **NEVER** hardcode colors like `bg-emerald-400` or `text-teal-600`
+- Use theme utilities for consistency across all pages
 
-**Reference:** `src/features/home/HomePage.tsx`
+**Reference:** `src/features/home/HomePage.tsx`, `src/routes/dev-login.tsx`
 
 ---
 

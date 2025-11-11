@@ -275,6 +275,14 @@ See `AUTH_SETUP.md` for complete configuration guide:
 - Created `link_teacher_on_signup()` trigger (auto-linking)
 - Updated all RLS policies to require authentication
 
+## Design & Theme System
+
+**IMPORTANT:** All pages must use the centralized theme system:
+- Import: `import { theme } from '@/config/theme'`
+- Use theme constants: `theme.gradients.background`, `theme.text.primary`, `theme.backgrounds.primaryLight`
+- **NEVER** hardcode colors like `bg-emerald-400` or `text-teal-600`
+- Reference examples: `HomePage.tsx`, `dev-login.tsx`
+
 ## Gesture Interactions
 
 - **Pull-to-refresh:** Swipe down on home page to reload data

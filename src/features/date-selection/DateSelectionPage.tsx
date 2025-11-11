@@ -303,7 +303,7 @@ export function DateSelectionPage({
                         onChange={() =>
                           logic.setSelectedServiceTimeId(serviceTime.id)
                         }
-                        className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
+                        className={`w-4 h-4 ${theme.text.primary} focus:ring-2`}
                       />
                       <span
                         className={`ml-3 font-bold text-sm ${
@@ -397,10 +397,10 @@ export function DateSelectionPage({
                         value="swipe"
                         checked={logic.selectedMethod === "swipe"}
                         onChange={() => logic.setSelectedMethod("swipe")}
-                        className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
+                        className={`w-4 h-4 ${theme.text.primary} focus:ring-2`}
                       />
                       <div className="ml-3 flex items-center gap-2">
-                        <ArrowDownAZ className="w-4 h-4 text-emerald-600" />
+                        <ArrowDownAZ className={`w-4 h-4 ${theme.text.primary}`} />
                         <span
                           className={`font-bold text-sm ${theme.text.neutralDarker}`}
                         >
@@ -418,7 +418,7 @@ export function DateSelectionPage({
                       }}
                       className="ml-2 p-1 hover:bg-cyan-100 rounded-full transition-colors relative"
                     >
-                      <Info className="w-4 h-4 text-emerald-600" />
+                      <Info className={`w-4 h-4 ${theme.text.primary}`} />
                     </button>
                     {logic.showMethodInfo === "swipe" && (
                       <>

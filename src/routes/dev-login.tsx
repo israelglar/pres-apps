@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, Lock, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { theme } from '@/config/theme';
 
 // Test users for local development
 const TEST_USERS = [
@@ -84,7 +85,7 @@ function DevLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-5">
+    <div className={`min-h-screen flex items-center justify-center ${theme.gradients.background} p-5`}>
       <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
         {/* Back button */}
         <button
@@ -97,7 +98,7 @@ function DevLoginPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full mb-4">
+          <div className={`inline-flex items-center justify-center w-16 h-16 ${theme.gradients.background} rounded-full mb-4`}>
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -123,7 +124,7 @@ function DevLoginPage() {
               key={user.email}
               onClick={() => handleQuickLogin(user.email, user.password)}
               disabled={loading !== null}
-              className="w-full p-5 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-emerald-50 hover:to-teal-50 border-2 border-gray-200 hover:border-emerald-400 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left"
+              className="w-full p-5 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-emerald-50 hover:to-cyan-50 border-2 border-gray-200 hover:border-emerald-400 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left"
             >
               <div className="flex items-start gap-4">
                 <div className="text-3xl flex-shrink-0">{user.icon}</div>
@@ -145,7 +146,7 @@ function DevLoginPage() {
                   </div>
                 </div>
                 {loading === user.email && (
-                  <Loader2 className="w-5 h-5 text-emerald-500 animate-spin flex-shrink-0" />
+                  <Loader2 className={`w-5 h-5 ${theme.text.primary} animate-spin flex-shrink-0`} />
                 )}
               </div>
             </button>
