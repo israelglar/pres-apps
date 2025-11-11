@@ -111,36 +111,6 @@ export async function createSchedule(schedule: ScheduleInsert): Promise<Schedule
 }
 
 /**
- * Get upcoming schedules (not cancelled, future dates)
- */
-export async function getUpcomingSchedules(limit: number = 5): Promise<ScheduleWithRelations[]> {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-
-    const { data, error } = await supabase
-      .from('schedules')
-      .select(`
-        *,
-        lesson:lessons(*),
-        service_time:service_times(*),
-        assignments:schedule_assignments(
-          *,
-          teacher:teachers(*)
-        )
-      `)
-      .eq('is_cancelled', false)
-      .gte('date', today)
-      .order('date', { ascending: true })
-      .limit(limit);
-
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    handleSupabaseError(error);
-  }
-}
-
-/**
  * Get all unique dates that have schedules
  */
 export async function getScheduleDates(): Promise<string[]> {

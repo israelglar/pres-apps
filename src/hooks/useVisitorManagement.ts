@@ -149,8 +149,9 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
       // Haptic feedback for success
       selectionTap();
 
-      // Invalidate React Query cache to refetch students
+      // Invalidate React Query caches to refetch data
       queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['students'] }); // Invalidate students cache
 
       // Close dialog and reset form
       closeVisitorDialog();

@@ -6,21 +6,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getAllStudents,
+  getActiveStudents,
   createStudent,
   updateStudent,
   deleteStudent,
 } from '../api/supabase/students';
 import type { StudentInsert, StudentUpdate } from '../types/database.types';
 
-const STUDENTS_QUERY_KEY = ['students'];
-
 /**
- * Fetch all students (regardless of status)
+ * Fetch students with optional filtering
+ * @param filter - 'all' for all students, 'active' for active students only
  */
-export function useStudents() {
+export function useStudents(filter: 'all' | 'active' = 'all') {
   return useQuery({
-    queryKey: STUDENTS_QUERY_KEY,
-    queryFn: getAllStudents,
+    queryKey: ['students', filter],
+    queryFn: filter === 'active' ? getActiveStudents : getAllStudents,
   });
 }
 
@@ -33,8 +33,8 @@ export function useCreateStudent() {
   return useMutation({
     mutationFn: (student: StudentInsert) => createStudent(student),
     onSuccess: () => {
-      // Invalidate and refetch students list
-      queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      // Invalidate all student queries (both 'all' and 'active' filters)
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });
 }
@@ -49,8 +49,8 @@ export function useUpdateStudent() {
     mutationFn: ({ id, updates }: { id: number; updates: StudentUpdate }) =>
       updateStudent(id, updates),
     onSuccess: () => {
-      // Invalidate and refetch students list
-      queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      // Invalidate all student queries (both 'all' and 'active' filters)
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });
 }
@@ -64,8 +64,8 @@ export function useDeleteStudent() {
   return useMutation({
     mutationFn: (id: number) => deleteStudent(id),
     onSuccess: () => {
-      // Invalidate and refetch students list
-      queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      // Invalidate all student queries (both 'all' and 'active' filters)
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });
 }

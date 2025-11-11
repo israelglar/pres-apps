@@ -137,7 +137,8 @@ export function useEditAttendance() {
     // Always refetch after success or error
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ['attendance'] }); // Also invalidate main attendance data
+      queryClient.invalidateQueries({ queryKey: ['schedules'] }); // Invalidate schedules cache
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] }); // Invalidate today's attendance
     },
   });
 

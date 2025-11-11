@@ -1,10 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAttendance, bulkUpdateAttendance } from '../api/attendance';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { bulkUpdateAttendance } from '../api/attendance';
 import type { ServiceTime, Schedule } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
+import { useStudents } from './useStudentManagement';
+import { useSchedules } from './useSchedules';
+import { useServiceTimes } from './useServiceTimes';
+import { useScheduleDates } from './useScheduleDates';
 
 /**
- * Query key for attendance data
+ * Query key for attendance data (kept for backward compatibility)
  */
 export const ATTENDANCE_QUERY_KEY = ['attendance'] as const;
 
@@ -17,27 +21,48 @@ export const ATTENDANCE_QUERY_KEY = ['attendance'] as const;
  * - Retry logic
  * - Optimistic updates
  * - Loading and error states
+ * - Uses composed queries for better cache management
  *
  * @returns Attendance data, derived data, loading/error states, and mutation functions
  */
 export function useAttendanceData() {
   const queryClient = useQueryClient();
 
-  // Fetch attendance data
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: ATTENDANCE_QUERY_KEY,
-    queryFn: getAttendance,
-    staleTime: 55 * 60 * 1000, // 55 minutes
-    gcTime: 60 * 60 * 1000, // 60 minutes
-    retry: 3,
-    refetchOnMount: 'always', // Always refetch when component mounts
-  });
+  // Fetch data using composed hooks (better caching!)
+  const studentsQuery = useStudents('active');
+  const schedulesQuery = useSchedules();
+  const serviceTimesQuery = useServiceTimes();
+  const datesQuery = useScheduleDates();
+
+  // Aggregate loading and error states
+  const isLoading = studentsQuery.isLoading || schedulesQuery.isLoading ||
+                    serviceTimesQuery.isLoading || datesQuery.isLoading;
+  const isFetching = studentsQuery.isFetching || schedulesQuery.isFetching ||
+                     serviceTimesQuery.isFetching || datesQuery.isFetching;
+  const error = studentsQuery.error || schedulesQuery.error ||
+                serviceTimesQuery.error || datesQuery.error;
+
+  // Compose data object for backward compatibility
+  const data = useMemo(() => {
+    if (!studentsQuery.data || !schedulesQuery.data ||
+        !serviceTimesQuery.data || !datesQuery.data) {
+      return undefined;
+    }
+    return {
+      students: studentsQuery.data,
+      schedules: schedulesQuery.data,
+      serviceTimes: serviceTimesQuery.data,
+      dates: datesQuery.data,
+    };
+  }, [studentsQuery.data, schedulesQuery.data, serviceTimesQuery.data, datesQuery.data]);
+
+  // Refetch all data
+  const refetch = () => {
+    studentsQuery.refetch();
+    schedulesQuery.refetch();
+    serviceTimesQuery.refetch();
+    datesQuery.refetch();
+  };
 
   // Mutation for saving attendance
   const saveMutation = useMutation({
@@ -55,8 +80,11 @@ export function useAttendanceData() {
       }>;
     }) => bulkUpdateAttendance(date, serviceTimeId, records),
     onSuccess: () => {
-      // Invalidate and refetch attendance data after successful save
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
+      // Invalidate relevant caches after successful save
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['attendance-history'] });
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      // Note: No need to invalidate students or service times as they don't change
     },
   });
 
