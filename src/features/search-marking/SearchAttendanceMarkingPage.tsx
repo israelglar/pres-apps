@@ -113,14 +113,14 @@ export const SearchAttendanceMarkingPage: React.FC<
           <div className="flex gap-3">
             <button
               onClick={visitorManagement.openVisitorDialog}
-              className="flex-1 px-5 py-3 bg-white text-cyan-600 rounded-xl text-sm font-medium hover:bg-white/90 transition-all shadow-lg flex items-center justify-center gap-2"
+              className={`flex-1 px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium ${theme.backgrounds.whiteTransparent90} transition-all shadow-lg flex items-center justify-center gap-2`}
             >
               <UserPlus className="w-4 h-4" />
               <span>Adicionar Visitante</span>
             </button>
             <button
               onClick={handleComplete}
-              className="px-5 py-3 bg-white/20 text-white rounded-xl text-sm font-medium hover:bg-white/30 transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-sm"
+              className={`px-5 py-3 ${theme.backgrounds.whiteTransparent} ${theme.text.white} rounded-xl text-sm font-medium ${theme.backgrounds.whiteHover} transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-sm`}
             >
               <CheckCircle className="w-4 h-4" />
               <span>Concluir</span>
@@ -203,20 +203,20 @@ export const SearchAttendanceMarkingPage: React.FC<
                       {/* Absence Alert Overlay - Semi-transparent overlay that blocks clicks */}
                       {alert && !isMarked && (
                         <div
-                          className="absolute inset-0 flex items-center justify-end px-3 bg-orange-500/10 rounded-xl z-10"
+                          className={`absolute inset-0 flex items-center justify-end px-3 ${theme.backgrounds.warningLight} rounded-xl z-10`}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex items-center gap-2 bg-orange-100/90 border-l-4 border-orange-600 rounded-lg px-3 py-1.5 shadow-lg">
-                            <AlertTriangle className="w-4 h-4 text-orange-700 flex-shrink-0" />
-                            <span className="text-xs text-orange-900 font-semibold whitespace-nowrap">
+                          <div className={`flex items-center gap-2 ${theme.backgrounds.warning} border-l-4 ${theme.borders.success} rounded-lg px-3 py-1.5 shadow-lg`}>
+                            <AlertTriangle className={`w-4 h-4 ${theme.text.warning} flex-shrink-0`} />
+                            <span className={`text-xs ${theme.text.warning} font-semibold whitespace-nowrap`}>
                               Ausente há {alert.absenceCount} {alert.absenceCount === 1 ? 'domingo' : 'domingos'}
                             </span>
                             <button
                               onClick={() => dismissAbsenceAlert(studentIdNumber)}
-                              className="ml-1 p-0.5 rounded hover:bg-orange-200 transition-colors"
+                              className={`ml-1 p-0.5 rounded ${theme.backgrounds.whiteHover} transition-colors`}
                               aria-label="Dispensar alerta"
                             >
-                              <X className="w-4 h-4 text-orange-700" />
+                              <X className={`w-4 h-4 ${theme.text.warning}`} />
                             </button>
                           </div>
                         </div>

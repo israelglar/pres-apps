@@ -57,7 +57,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
           <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1 relative">
             {/* Animated background slider */}
             <div
-              className="absolute top-1 bottom-1 rounded-md bg-white shadow-md transition-all duration-300 ease-out"
+              className={`absolute top-1 bottom-1 rounded-md ${theme.backgrounds.white} shadow-md transition-all duration-300 ease-out`}
               style={{
                 width: "calc(50% - 3px)",
                 left: selectedServiceTime === "09:00:00" ? "4px" : "calc(50% + 0px)",
@@ -69,8 +69,8 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               onClick={() => handleServiceTimeChange("09:00:00")}
               className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
                 selectedServiceTime === "09:00:00"
-                  ? "text-cyan-700"
-                  : "text-white hover:bg-white/10"
+                  ? theme.text.primaryDark
+                  : `${theme.text.white} ${theme.backgrounds.whiteHover}`
               }`}
             >
               09:00
@@ -79,8 +79,8 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               onClick={() => handleServiceTimeChange("11:00:00")}
               className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
                 selectedServiceTime === "11:00:00"
-                  ? "text-cyan-700"
-                  : "text-white hover:bg-white/10"
+                  ? theme.text.primaryDark
+                  : `${theme.text.white} ${theme.backgrounds.whiteHover}`
               }`}
             >
               11:00
@@ -100,11 +100,11 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-100 border-2 border-red-400 rounded-2xl p-5 text-center">
-            <p className="text-red-800 font-semibold mb-2 text-base">
+          <div className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}>
+            <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
               Erro ao carregar histórico
             </p>
-            <p className="text-red-700 text-sm mb-4">{error.toString()}</p>
+            <p className={`${theme.text.error} text-sm mb-4`}>{error.toString()}</p>
             <button
               onClick={handleRefresh}
               className={`${buttonClasses.danger} px-5 py-3 text-sm`}
@@ -116,12 +116,12 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
         {/* Empty State */}
         {!isLoading && !error && history && history.length === 0 && (
-          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-12 text-center">
-            <HistoryIcon className="w-16 h-16 text-white/50 mx-auto mb-4" />
-            <p className="text-white text-base font-semibold mb-2">
+          <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-2xl p-12 text-center`}>
+            <HistoryIcon className={`w-16 h-16 ${theme.text.white}/50 mx-auto mb-4`} />
+            <p className={`${theme.text.white} text-base font-semibold mb-2`}>
               Nenhum histórico disponível
             </p>
-            <p className="text-white/80 text-sm">
+            <p className={`${theme.text.white}/80 text-sm`}>
               Ainda não existem registos de presenças
             </p>
           </div>
@@ -160,7 +160,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
             {/* End of List Message */}
             {!canLoadMore && history.length >= 5 && (
               <div className="text-center py-4">
-                <p className="text-white/70 text-sm">Fim do histórico</p>
+                <p className={`${theme.text.white}/70 text-sm`}>Fim do histórico</p>
               </div>
             )}
           </div>

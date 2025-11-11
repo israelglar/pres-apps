@@ -56,12 +56,12 @@ function DevLoginPage() {
   if (!isDev) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-500 to-red-700 p-5">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
-          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md w-full text-center`}>
+          <AlertCircle className={`w-16 h-16 mx-auto mb-4 ${theme.text.error}`} />
+          <h1 className={`text-2xl font-bold ${theme.text.neutralDarkest} mb-2`}>
             Acesso Negado
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className={`text-sm ${theme.text.neutral}`}>
             Esta página só está disponível em modo de desenvolvimento.
           </p>
         </div>
@@ -86,11 +86,11 @@ function DevLoginPage() {
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${theme.gradients.background} p-5`}>
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md w-full`}>
         {/* Back button */}
         <button
           onClick={() => navigate({ to: '/' })}
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className={`flex items-center gap-2 text-sm ${theme.text.neutral} ${theme.text.neutralDarkest} mb-6 transition-colors`}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar</span>
@@ -101,19 +101,19 @@ function DevLoginPage() {
           <div className={`inline-flex items-center justify-center w-16 h-16 ${theme.gradients.background} rounded-full mb-4`}>
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className={`text-3xl font-bold ${theme.text.neutralDarkest} mb-2`}>
             Dev Login
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className={`text-sm ${theme.text.neutral}`}>
             Escolha um utilizador de teste para iniciar sessão
           </p>
         </div>
 
         {/* Error message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{error}</div>
+          <div className={`mb-6 p-4 ${theme.backgrounds.errorLight} border ${theme.borders.error} rounded-lg flex items-start gap-3`}>
+            <AlertCircle className={`w-5 h-5 ${theme.text.error} flex-shrink-0 mt-0.5`} />
+            <div className={`text-sm ${theme.text.error}`}>{error}</div>
           </div>
         )}
 
@@ -124,23 +124,23 @@ function DevLoginPage() {
               key={user.email}
               onClick={() => handleQuickLogin(user.email, user.password)}
               disabled={loading !== null}
-              className="w-full p-5 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-emerald-50 hover:to-cyan-50 border-2 border-gray-200 hover:border-emerald-400 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left"
+              className={`w-full p-5 ${theme.gradients.neutralButton} ${theme.gradients.devCardHover} border-2 ${theme.borders.neutralLight} ${theme.borders.primaryHover} rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left`}
             >
               <div className="flex items-start gap-4">
                 <div className="text-3xl flex-shrink-0">{user.icon}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-bold text-gray-900">
+                    <h3 className={`text-base font-bold ${theme.text.neutralDarkest}`}>
                       {user.name}
                     </h3>
-                    <span className="text-xs px-2 py-0.5 bg-gray-200 text-gray-700 rounded-full font-medium">
+                    <span className={`text-xs px-2 py-0.5 ${theme.backgrounds.neutral} ${theme.text.neutralDark} rounded-full font-medium`}>
                       {user.role}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 mb-2">
+                  <p className={`text-xs ${theme.text.neutral} mb-2`}>
                     {user.description}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className={`flex items-center gap-2 text-xs ${theme.text.neutralMedium}`}>
                     <User className="w-3 h-3" />
                     <span className="font-mono">{user.email}</span>
                   </div>
@@ -154,8 +154,8 @@ function DevLoginPage() {
         </div>
 
         {/* Info footer */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
+        <div className={`mt-8 pt-6 border-t ${theme.borders.neutralLight}`}>
+          <p className={`text-xs ${theme.text.neutralMedium} text-center`}>
             💡 Estas credenciais só funcionam em desenvolvimento local
           </p>
         </div>

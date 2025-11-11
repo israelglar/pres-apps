@@ -1,5 +1,6 @@
 import { User, ChevronRight } from 'lucide-react';
 import type { Student } from '../../types/database.types';
+import { theme } from '../../config/theme';
 
 interface StudentCardProps {
   student: Student;
@@ -20,19 +21,19 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
     const statusConfig = {
       active: {
         label: 'Ativo',
-        className: 'bg-green-100 text-green-700 border-green-300',
+        className: `${theme.studentStatus.active.bg} ${theme.studentStatus.active.text} ${theme.studentStatus.active.border}`,
       },
       inactive: {
         label: 'Inativo',
-        className: 'bg-gray-100 text-gray-700 border-gray-300',
+        className: `${theme.studentStatus.inactive.bg} ${theme.studentStatus.inactive.text} ${theme.studentStatus.inactive.border}`,
       },
       'aged-out': {
         label: 'Saiu',
-        className: 'bg-amber-100 text-amber-700 border-amber-300',
+        className: `${theme.studentStatus['aged-out'].bg} ${theme.studentStatus['aged-out'].text} ${theme.studentStatus['aged-out'].border}`,
       },
       moved: {
         label: 'Mudou',
-        className: 'bg-blue-100 text-blue-700 border-blue-300',
+        className: `${theme.studentStatus.moved.bg} ${theme.studentStatus.moved.text} ${theme.studentStatus.moved.border}`,
       },
     };
 
@@ -50,26 +51,26 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
   return (
     <button
       onClick={() => onClick(student)}
-      className="w-full bg-white rounded-xl shadow-lg p-3 hover:shadow-xl hover:bg-gray-50 active:scale-[0.99] transition-all cursor-pointer text-left"
+      className={`w-full ${theme.backgrounds.white} rounded-xl shadow-lg p-3 hover:shadow-xl ${theme.backgrounds.neutralHover} active:scale-[0.99] transition-all cursor-pointer text-left`}
     >
       <div className="flex items-center justify-between gap-2">
         {/* Student Info */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {/* Avatar */}
-          <div className="bg-cyan-100 p-1.5 rounded-lg flex-shrink-0">
-            <User className="w-4 h-4 text-cyan-600" />
+          <div className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg flex-shrink-0`}>
+            <User className={`w-4 h-4 ${theme.text.primary}`} />
           </div>
 
           {/* Details */}
           <div className="flex-1 min-w-0">
             {/* Name, Status, and Visitor Badge */}
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className={`text-sm font-bold ${theme.text.neutralDarkest}`}>
                 {student.name}
               </h3>
               {student.status !== 'active' && getStatusBadge(student.status)}
               {student.is_visitor && (
-                <span className="px-1.5 py-0.5 text-xs font-bold rounded-full border bg-purple-100 text-purple-700 border-purple-300">
+                <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full border ${theme.studentStatus.visitor.bg} ${theme.studentStatus.visitor.text} ${theme.studentStatus.visitor.border}`}>
                   Visitante
                 </span>
               )}
@@ -77,7 +78,7 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
 
             {/* Notes */}
             {student.notes && (
-              <p className="text-xs text-gray-600 mt-1 line-clamp-1">
+              <p className={`text-xs ${theme.text.neutral} mt-1 line-clamp-1`}>
                 <span className="font-semibold">Notas:</span> {student.notes}
               </p>
             )}
@@ -86,7 +87,7 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
 
         {/* Right Arrow Icon */}
         <div className="flex-shrink-0">
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <ChevronRight className={`w-5 h-5 ${theme.text.neutralLight}`} />
         </div>
       </div>
     </button>

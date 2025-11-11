@@ -99,7 +99,7 @@ export const AttendanceMarkingPage = ({
           <div className="flex-shrink-0 p-5 pb-3">
             <button
               onClick={visitorManagement.openVisitorDialog}
-              className="w-full px-5 py-3 bg-white text-cyan-600 rounded-xl text-sm font-medium hover:bg-white/90 transition-all shadow-lg flex items-center justify-center gap-2"
+              className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium ${theme.backgrounds.whiteTransparent90} transition-all shadow-lg flex items-center justify-center gap-2`}
             >
               <UserPlus className="w-4 h-4" />
               <span>Adicionar Visitante</span>
@@ -141,7 +141,7 @@ export const AttendanceMarkingPage = ({
                           isMarked
                             ? record.status === "P"
                               ? theme.text.primaryDarker
-                              : "text-red-900"
+                              : theme.status.absent.text
                             : theme.text.neutralDarker
                         }`}
                       >
@@ -155,10 +155,10 @@ export const AttendanceMarkingPage = ({
                         </span>
                       )}
                       {hasAlert && (
-                        <AlertTriangle className="w-3 h-3 text-orange-600" />
+                        <AlertTriangle className={`w-3 h-3 ${theme.text.warning}`} />
                       )}
                       {isCurrent && !isMarked && (
-                        <span className="ml-1 w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                        <span className={`ml-1 w-2 h-2 ${theme.backgrounds.secondary} rounded-full animate-pulse`} />
                       )}
                     </div>
                   </button>
@@ -220,8 +220,8 @@ export const AttendanceMarkingPage = ({
                   }}
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <XCircle className="w-8 h-8 text-red-500" />
-                    <span className="text-xs font-bold text-red-600">
+                    <XCircle className={`w-8 h-8 ${theme.status.absent.text}`} />
+                    <span className={`text-xs font-bold ${theme.status.absent.text}`}>
                       Falta
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export const AttendanceMarkingPage = ({
 
                 {/* Center - Student info */}
                 <div
-                  className="text-center relative z-10 pointer-events-none"
+                  className={`text-center relative z-10 pointer-events-none`}
                   style={{
                     transform: `translateX(${swipeOffset}px)`,
                     transition: isAnimatingSwipe
@@ -270,10 +270,10 @@ export const AttendanceMarkingPage = ({
                       : "transform 0ms",
                   }}
                 >
-                  <h2 className="text-gray-800 text-2xl font-bold mb-1 leading-tight">
+                  <h2 className={`${theme.text.neutralDarker} text-2xl font-bold mb-1 leading-tight`}>
                     {getShortName(currentStudent.name)}
                   </h2>
-                  <p className="text-gray-500 text-xs mb-2">
+                  <p className={`${theme.text.neutralMedium} text-xs mb-2`}>
                     Toque nos lados ou deslize
                   </p>
 
@@ -342,10 +342,10 @@ export const AttendanceMarkingPage = ({
                   className={`${theme.gradients.errorButton} ${theme.gradients.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
                 >
                   <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                      <XCircle className="w-8 h-8 text-white" />
+                    <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>
+                      <XCircle className={`w-8 h-8 ${theme.text.white}`} />
                     </div>
-                    <p className="text-white text-base font-bold">Falta</p>
+                    <p className={`${theme.text.white} text-base font-bold`}>Falta</p>
                   </div>
                 </button>
 
@@ -354,10 +354,10 @@ export const AttendanceMarkingPage = ({
                   className={`${theme.gradients.activeItem} hover:from-cyan-600 hover:to-cyan-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
                 >
                   <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform">
-                      <CheckCircle className="w-8 h-8 text-white" />
+                    <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>
+                      <CheckCircle className={`w-8 h-8 ${theme.text.white}`} />
                     </div>
-                    <p className="text-white text-base font-bold">Presente</p>
+                    <p className={`${theme.text.white} text-base font-bold`}>Presente</p>
                   </div>
                 </button>
               </div>

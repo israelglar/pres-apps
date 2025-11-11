@@ -30,14 +30,14 @@ function StudentDetailRoute() {
   if (isNaN(studentIdNum)) {
     return (
       <div className={`fixed inset-0 ${theme.gradients.background} flex items-center justify-center`}>
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">ID Inválido</h2>
-          <p className="text-sm text-gray-600 mb-5">
+        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md text-center`}>
+          <h2 className={`text-xl font-bold ${theme.text.neutralDarkest} mb-2`}>ID Inválido</h2>
+          <p className={`text-sm ${theme.text.neutral} mb-5`}>
             O ID do pré fornecido não é válido.
           </p>
           <button
             onClick={handleBack}
-            className={`px-5 py-3 ${theme.backgrounds.primary} text-white rounded-lg font-semibold hover:bg-cyan-700 active:scale-95 transition-all`}
+            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryActive} active:scale-95 transition-all`}
           >
             Voltar
           </button>

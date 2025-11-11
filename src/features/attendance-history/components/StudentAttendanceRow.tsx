@@ -15,26 +15,26 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
   const statusConfig = {
     present: {
       icon: <Check className="w-5 h-5" />,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: theme.status.present.text,
+      bgColor: theme.status.present.bg,
       label: 'Presente',
     },
     absent: {
       icon: <X className="w-5 h-5" />,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
+      color: theme.status.absent.text,
+      bgColor: theme.status.absent.bg,
       label: 'Falta',
     },
     late: {
       icon: <Clock className="w-5 h-5" />,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
+      color: theme.status.late.text,
+      bgColor: theme.status.late.bg,
       label: 'Atrasado',
     },
     excused: {
       icon: <FileText className="w-5 h-5" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: theme.status.excused.text,
+      bgColor: theme.status.excused.bg,
       label: 'Justificada',
     },
   };
@@ -54,24 +54,24 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
         {/* Student Name */}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <p className="font-medium text-gray-800 text-sm">{record.student?.name || 'Unknown'}</p>
+            <p className={`font-medium ${theme.text.neutralDarker} text-sm`}>{record.student?.name || 'Unknown'}</p>
             {/* Visitor Indicator */}
             {record.student?.is_visitor && (
               <div
-                className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+                className={`w-2 h-2 rounded-full ${theme.indicators.visitor} flex-shrink-0`}
                 title="Visitante"
               />
             )}
           </div>
           {record.notes && (
-            <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
+            <p className={`text-xs ${theme.text.neutral} mt-0.5 line-clamp-1`}>
               {record.notes}
             </p>
           )}
         </div>
 
         {/* Status Label (mobile hidden) */}
-        <div className="hidden sm:block text-sm font-medium text-gray-600">
+        <div className={`hidden sm:block text-sm font-medium ${theme.text.neutral}`}>
           {config.label}
         </div>
       </div>

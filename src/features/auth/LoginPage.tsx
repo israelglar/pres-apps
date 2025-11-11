@@ -24,14 +24,14 @@ export function LoginPage() {
     <div
       className={`min-h-screen flex items-center justify-center p-5 ${theme.gradients.background}`}
     >
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
+      <div className={`w-full max-w-md ${theme.backgrounds.white} rounded-2xl shadow-2xl p-8`}>
         {/* Back button */}
         <button
           onClick={() => {
             // Use window.location to clear history and bypass auth redirect
             window.location.href = '/';
           }}
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className={`flex items-center gap-2 text-sm ${theme.text.neutral} ${theme.text.neutralDarkest} mb-6 transition-colors`}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar</span>
@@ -39,18 +39,18 @@ export function LoginPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className={`text-3xl font-bold ${theme.text.neutralDarkest} mb-2`}>
             Prés App
           </h1>
-          <p className="text-base font-medium text-gray-600">
+          <p className={`text-base font-medium ${theme.text.neutral}`}>
             Registo de Presenças
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className={`mb-6 p-4 ${theme.backgrounds.errorLight} border ${theme.borders.error} rounded-lg`}>
+            <p className={`text-sm ${theme.text.error}`}>{error}</p>
           </div>
         )}
 
@@ -58,7 +58,7 @@ export function LoginPage() {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-5 py-3 bg-white border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className={`w-full flex items-center justify-center gap-3 px-5 py-3 ${theme.backgrounds.white} border-2 ${theme.borders.neutral} rounded-lg text-sm font-medium ${theme.text.neutralDark} ${theme.backgrounds.neutralHover} ${theme.borders.neutral} transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm`}
         >
           {isLoading ? (
             <>
@@ -74,7 +74,7 @@ export function LoginPage() {
         </button>
 
         {/* Info Text */}
-        <p className="mt-6 text-xs text-gray-500 text-center">
+        <p className={`mt-6 text-xs ${theme.text.neutralMedium} text-center`}>
           Apenas professores autorizados podem fazer login
         </p>
       </div>

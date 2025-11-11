@@ -92,7 +92,7 @@ export function StudentFormModal({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-fade-in overflow-y-auto">
       <div className="flex items-start justify-center py-8 px-4 min-h-screen">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in">
+        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in`}>
         {/* Header */}
         <div className={`${theme.gradients.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
           <h2 className="text-2xl font-bold text-white">
@@ -122,7 +122,7 @@ export function StudentFormModal({
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-4 py-3 text-sm ${inputClasses} ${errors.name ? 'border-red-500' : ''}`}
+              className={`w-full px-4 py-3 text-sm ${inputClasses} ${errors.name ? theme.borders.error : ''}`}
               placeholder="Nome completo do pré"
               disabled={isSubmitting}
             />

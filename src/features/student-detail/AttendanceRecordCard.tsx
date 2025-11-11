@@ -20,12 +20,12 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
   const statusIcon = getStatusIcon(status)
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-3 border border-gray-100 hover:shadow-lg transition-all">
+    <div className={`${theme.backgrounds.white} rounded-xl shadow-md p-3 border ${theme.borders.neutralLight} hover:shadow-lg transition-all`}>
       {/* Header: Date and Service Time Badges */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <Calendar className={`w-3.5 h-3.5 ${theme.text.primary}`} />
-          <span className="text-sm font-bold text-gray-800">{dateDisplay}</span>
+          <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>{dateDisplay}</span>
         </div>
         {/* Service Time Badges */}
         {serviceTimes.length > 0 && (
@@ -33,7 +33,7 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
             {serviceTimes.map((serviceTime) => (
               <div
                 key={serviceTime.id}
-                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-700 text-xs font-semibold"
+                className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded ${theme.backgrounds.primaryLight} ${theme.text.primaryDark} text-xs font-semibold`}
               >
                 <Clock className="w-3 h-3" />
                 <span>{serviceTime.name}</span>
@@ -47,7 +47,7 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
       {lesson && (
         <div className="flex items-start gap-1.5 mb-2">
           <BookOpen className={`w-3.5 h-3.5 ${theme.text.neutral} flex-shrink-0 mt-0.5`} />
-          <p className="text-xs text-gray-700 line-clamp-2">
+          <p className={`text-xs ${theme.text.neutralDark} line-clamp-2`}>
             {lesson.name}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
 
       {/* Teacher Name */}
       {teacher && (
-        <div className="flex items-center gap-1 text-xs text-gray-600 mb-1.5">
+        <div className={`flex items-center gap-1 text-xs ${theme.text.neutral} mb-1.5`}>
           <User className="w-3 h-3" />
           <span>Prof: {teacher}</span>
         </div>
@@ -73,8 +73,8 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
 
       {/* Notes */}
       {notes && (
-        <div className="mt-2 pt-2 border-t border-gray-100">
-          <p className="text-xs text-gray-600 italic">
+        <div className={`mt-2 pt-2 border-t ${theme.borders.neutralLight}`}>
+          <p className={`text-xs ${theme.text.neutral} italic`}>
             <span className="font-semibold not-italic">Notas: </span>
             {notes}
           </p>

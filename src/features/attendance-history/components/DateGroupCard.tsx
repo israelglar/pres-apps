@@ -54,7 +54,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
       {/* Header - Clickable to expand/collapse */}
       <button
         onClick={toggleExpand}
-        className="bg-white p-5 w-full text-left hover:bg-gray-50 transition-all active:scale-[0.99]"
+        className={`${theme.backgrounds.white} p-5 w-full text-left ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99]`}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
@@ -64,7 +64,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                 {formattedDate}
                 {isToday && (
                   <span
-                    className={`ml-1.5 text-xs font-semibold ${theme.backgrounds.primary} text-white px-1.5 py-0.5 rounded-full`}
+                    className={`ml-1.5 text-xs font-semibold ${theme.backgrounds.primary} ${theme.text.white} px-1.5 py-0.5 rounded-full`}
                   >
                     Hoje
                   </span>
@@ -139,7 +139,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
             </div>
           ) : (
             <div className="p-5 text-center">
-              <p className="text-gray-500 text-sm">
+              <p className={`${theme.text.neutralMedium} text-sm`}>
                 Nenhuma presença registada
               </p>
             </div>

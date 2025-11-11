@@ -168,15 +168,157 @@ Types: `src/types/database.types.ts`
 - Icons: `w-4 h-4` (standard), `w-8 h-8` (large), `w-16 h-16` (XL)
 - Cards: `rounded-2xl`, `shadow-2xl`, `p-5`
 
-**Colors:**
-- **ALWAYS** import and use theme constants from `src/config/theme.ts`
-- Primary gradient: `theme.gradients.background` (Emerald → Teal → Cyan)
-- Primary text: `theme.text.primary`
-- Primary background: `theme.backgrounds.primaryLight`
-- **NEVER** hardcode colors like `bg-emerald-400` or `text-teal-600`
-- Use theme utilities for consistency across all pages
+**Colors - Centralized Theme System:**
 
-**Reference:** `src/features/home/HomePage.tsx`, `src/routes/dev-login.tsx`
+**CRITICAL RULES:**
+1. **ALWAYS** import and use theme constants from `src/config/theme.ts`
+2. **NEVER** hardcode Tailwind color classes like `bg-gray-100`, `text-red-600`, `border-cyan-300`
+3. **ALL** colors must come from the theme - no exceptions
+4. Import theme: `import { theme } from '@/config/theme'` or `'../../config/theme'`
+
+**Architecture:**
+The theme uses a **DRY (Don't Repeat Yourself)** architecture:
+- Base `colors` object is the **single source of truth** for all color values
+- All other theme properties (`text`, `backgrounds`, `borders`, etc.) **reference** the `colors` object
+- To change the color scheme (e.g., cyan → teal), update **only** the `colors` object
+- Changes automatically propagate to all derived theme properties
+
+**Theme Structure:**
+```typescript
+// Base colors
+theme.colors.white, theme.colors.black
+theme.colors.primary.*     // Cyan shades (50-900)
+theme.colors.secondary.*   // Blue shades (50-900)
+theme.colors.success.*     // Green shades (50-700)
+theme.colors.error.*       // Red shades (50-700)
+theme.colors.warning.*     // Amber shades (50-600)
+theme.colors.neutral.*     // Gray shades (50-900)
+theme.colors.visitor.*     // Purple shades (50-700)
+
+// Text colors
+theme.text.white, theme.text.whiteHover, theme.text.whiteTransparent
+theme.text.primary, theme.text.primaryDark, theme.text.primaryDarker
+theme.text.secondary, theme.text.secondaryDark
+theme.text.success, theme.text.error, theme.text.warning
+theme.text.neutral, theme.text.neutralLight, theme.text.neutralDark,
+theme.text.neutralDarker, theme.text.neutralDarkest
+theme.text.visitor, theme.text.visitorDev
+
+// Backgrounds
+theme.backgrounds.white, theme.backgrounds.whiteTransparent,
+theme.backgrounds.whiteHover
+theme.backgrounds.primary, theme.backgrounds.primaryLight,
+theme.backgrounds.primaryLighter, theme.backgrounds.primaryHover
+theme.backgrounds.secondary*, theme.backgrounds.success*,
+theme.backgrounds.error*, theme.backgrounds.warning*
+theme.backgrounds.neutral, theme.backgrounds.neutralLight,
+theme.backgrounds.neutralHover
+theme.backgrounds.visitor*
+
+// Borders
+theme.borders.primary, theme.borders.primaryLight, theme.borders.primaryFocus
+theme.borders.secondary, theme.borders.neutral, theme.borders.neutralLight
+theme.borders.success, theme.borders.error, theme.borders.visitor*
+
+// Gradients (pre-built combinations)
+theme.gradients.background          // Main app gradient
+theme.gradients.primaryButton       // Action buttons
+theme.gradients.successButton       // Success actions
+theme.gradients.errorButton         // Danger actions
+theme.gradients.cardPrimary         // Card backgrounds
+theme.gradients.lessonRegular       // Lesson type badges
+theme.gradients.devCardHover        // Dev tools hover
+
+// Status indicators (for attendance)
+theme.indicators.present    // bg-green-500
+theme.indicators.absent     // bg-red-500
+theme.indicators.late       // bg-amber-500
+theme.indicators.excused    // bg-blue-500
+theme.indicators.visitor    // bg-cyan-500
+
+// Semantic status configurations
+theme.status.present   // { text, bg, bgMedium, indicator, border }
+theme.status.absent    // { text, bg, bgMedium, indicator, border }
+theme.status.late      // { text, bg, bgMedium, indicator, border }
+theme.status.excused   // { text, bg, bgMedium, indicator, border }
+
+// Student status badges
+theme.studentStatus.active      // { bg, text, border }
+theme.studentStatus.inactive    // { bg, text, border }
+theme.studentStatus['aged-out'] // { bg, text, border }
+theme.studentStatus.moved       // { bg, text, border }
+theme.studentStatus.visitor     // { bg, text, border }
+
+// Pre-built button classes
+buttonClasses.primary    // Primary action button
+buttonClasses.secondary  // Secondary/cancel button
+buttonClasses.success    // Success confirmation
+buttonClasses.danger     // Delete/destructive action
+
+// Pre-built input classes
+inputClasses  // Standard input styling
+```
+
+**Common Patterns:**
+```tsx
+// Card with background
+<div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-5`}>
+
+// Status indicator circle
+<span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`} />
+
+// Status badge (using semantic config)
+<span className={`px-2 py-1 ${theme.status.present.text} ${theme.status.present.bg} rounded-full`}>
+  Presente
+</span>
+
+// Student status badge
+<span className={`${theme.studentStatus.active.bg} ${theme.studentStatus.active.text} ${theme.studentStatus.active.border}`}>
+  Ativo
+</span>
+
+// Primary action button
+<button className={buttonClasses.primary}>Save</button>
+
+// Text with neutral color
+<p className={theme.text.neutral}>Description text</p>
+
+// Hover state
+<button className={`${theme.backgrounds.white} ${theme.backgrounds.primaryHover}`}>
+  Click me
+</button>
+```
+
+**When Adding New Features:**
+1. Check if needed color exists in `theme.ts`
+2. If missing, add to `theme.ts` first (don't hardcode!)
+3. Use semantic names (e.g., `statusPresent` not `green600`)
+4. Group related colors together
+5. Test on mobile viewport (primary target)
+
+**How to Change Color Scheme:**
+To change from cyan/blue to a different color scheme (e.g., teal/indigo):
+1. Open `src/config/theme.ts`
+2. Update **only** the `colors` object at the top of the file:
+   ```typescript
+   const colors = {
+     primary: {
+       50: 'teal-50',    // was cyan-50
+       100: 'teal-100',  // was cyan-100
+       // ... update all shades
+     },
+     secondary: {
+       50: 'indigo-50',  // was blue-50
+       // ... update all shades
+     },
+   }
+   ```
+3. All theme properties automatically update (no other changes needed!)
+4. Run `npm run build` to validate
+
+**Reference Files:**
+- Theme config: `src/config/theme.ts`
+- Good examples: `src/components/AttendanceStats.tsx`, `src/features/student-management/StudentCard.tsx`
 
 ---
 

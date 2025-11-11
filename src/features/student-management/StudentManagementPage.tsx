@@ -163,13 +163,13 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors flex-shrink-0 ${
                   showFilters || statusFilter !== 'all' || visitorFilter !== 'all'
-                    ? 'bg-white text-cyan-600'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    ? `${theme.backgrounds.white} ${theme.text.primary}`
+                    : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
                 }`}
               >
                 <Filter className="w-4 h-4" />
                 {(statusFilter !== 'all' || visitorFilter !== 'all') && (
-                  <span className="w-2 h-2 bg-cyan-600 rounded-full" />
+                  <span className={`w-2 h-2 ${theme.backgrounds.primary} rounded-full`} />
                 )}
               </button>
             </div>
@@ -195,8 +195,8 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                         onClick={() => setStatusFilter(option.value as StatusFilter)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                           statusFilter === option.value
-                            ? 'bg-white text-cyan-600'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? `${theme.backgrounds.white} ${theme.text.primary}`
+                            : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
                         }`}
                       >
                         {option.label}
@@ -220,8 +220,8 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                         onClick={() => setVisitorFilter(option.value as VisitorFilter)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                           visitorFilter === option.value
-                            ? 'bg-white text-cyan-600'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? `${theme.backgrounds.white} ${theme.text.primary}`
+                            : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
                         }`}
                       >
                         {option.label}
@@ -237,7 +237,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       setStatusFilter('all');
                       setVisitorFilter('all');
                     }}
-                    className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium transition-colors"
+                    className={`w-full py-2 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.white} rounded-lg text-xs font-medium transition-colors`}
                   >
                     Limpar Filtros
                   </button>
@@ -261,16 +261,16 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
 
           {/* Error State */}
           {isError && (
-            <div className="bg-red-500/20 border-2 border-red-400 rounded-xl p-6">
-              <p className="text-white font-bold mb-2">
+            <div className={`${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-xl p-6`}>
+              <p className={`${theme.text.white} font-bold mb-2`}>
                 Erro ao carregar prés
               </p>
-              <p className="text-white/90 text-sm mb-4">
+              <p className={`${theme.text.whiteTransparent} text-sm mb-4`}>
                 {error instanceof Error ? error.message : 'Erro desconhecido'}
               </p>
               <button
                 onClick={() => refetch()}
-                className="px-5 py-3 bg-white text-cyan-600 hover:bg-white/90 rounded-xl text-sm font-medium transition-colors"
+                className={`px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} ${theme.backgrounds.whiteTransparent90} rounded-xl text-sm font-medium transition-colors`}
               >
                 Tentar novamente
               </button>
@@ -287,7 +287,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                 </p>
                 <button
                   onClick={handleAddStudent}
-                  className="px-5 py-3 bg-white text-cyan-600 hover:bg-white/90 rounded-xl text-sm font-medium inline-flex items-center transition-colors"
+                  className={`px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} ${theme.backgrounds.whiteTransparent90} rounded-xl text-sm font-medium inline-flex items-center transition-colors`}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Primeiro Pré
@@ -304,7 +304,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                 </p>
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="mt-4 px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-colors"
+                  className={`mt-4 px-5 py-3 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.white} rounded-xl text-sm font-medium transition-colors`}
                 >
                   Limpar pesquisa
                 </button>

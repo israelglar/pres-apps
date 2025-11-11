@@ -39,19 +39,19 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200">
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200`}>
         <div className="text-center mb-6">
           <div
             className={`w-16 h-16 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-4`}
           >
             <UserPlus className={`w-8 h-8 ${theme.text.primary}`} />
           </div>
-          <h3 className="text-base font-bold text-gray-800 mb-2">
+          <h3 className={`text-base font-bold ${theme.text.neutralDarker} mb-2`}>
             {visitorManagement.selectedVisitor
               ? "Marcar Visitante"
               : "Adicionar Visitante"}
           </h3>
-          <p className="text-gray-600 text-sm mb-4">
+          <p className={`${theme.text.neutral} text-sm mb-4`}>
             {visitorManagement.selectedVisitor
               ? "Este visitante já existe. Clique para marcar presente."
               : "Procure por visitantes existentes ou adicione um novo. Será marcado como presente automaticamente."}
@@ -84,7 +84,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
             {/* Search Results Dropdown - Only show if there are results */}
             {visitorManagement.showResults &&
               visitorManagement.searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                <div className={`absolute z-10 w-full mt-1 ${theme.backgrounds.white} border-2 ${theme.borders.neutralLight} rounded-xl shadow-lg max-h-48 overflow-y-auto`}>
                   <ul className="py-1">
                     {visitorManagement.searchResults.map((visitor) => (
                       <li
@@ -92,14 +92,14 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                         onClick={() =>
                           visitorManagement.handleSelectVisitor(visitor)
                         }
-                        className="px-4 py-3 hover:bg-cyan-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                        className={`px-4 py-3 ${theme.backgrounds.primaryHover} cursor-pointer transition-colors border-b ${theme.borders.neutralLight} last:border-b-0`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold text-gray-800">
+                          <span className={`text-sm font-semibold ${theme.text.neutralDarker}`}>
                             {visitor.name}
                           </span>
                           <span
-                            className={`px-2 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
+                            className={`px-2 py-0.5 ${theme.gradients.badge} ${theme.text.white} text-xs font-bold rounded-full`}
                           >
                             Visitante
                           </span>
@@ -111,7 +111,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
               )}
 
             {visitorManagement.error && (
-              <p className="text-red-500 text-xs mt-2">
+              <p className={`${theme.text.error} text-xs mt-2`}>
                 {visitorManagement.error}
               </p>
             )}
@@ -120,20 +120,20 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
           {/* Selected Visitor Card */}
           {visitorManagement.selectedVisitor && (
             <div
-              className={`p-3 ${theme.gradients.cardPrimary} rounded-xl border-2 ${theme.borders.success}`}
+              className={`p-3 ${theme.gradients.cardPrimary} rounded-xl border-2 ${theme.borders.successLight}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle
                     className={`w-5 h-5 ${theme.text.primary}`}
                   />
-                  <span className="text-sm font-bold text-gray-800">
+                  <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>
                     {visitorManagement.selectedVisitor.name}
                   </span>
                 </div>
                 <button
                   onClick={visitorManagement.handleClearSelection}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className={`${theme.text.neutralMedium} hover:${theme.text.neutralDark} transition-colors`}
                   aria-label="Limpar seleção"
                 >
                   <svg
@@ -170,8 +170,8 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     }
                     className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                       visitorManagement.firstTimeAtChurch === "yes"
-                        ? `${theme.gradients.primaryButton} text-white border-transparent`
-                        : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                        : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                     }`}
                   >
                     Sim
@@ -183,8 +183,8 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     }
                     className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                       visitorManagement.firstTimeAtChurch === "no"
-                        ? `${theme.gradients.primaryButton} text-white border-transparent`
-                        : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                        ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                        : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                     }`}
                   >
                     Não
@@ -206,8 +206,8 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       }
                       className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                         visitorManagement.willComeRegularly === "yes"
-                          ? `${theme.gradients.primaryButton} text-white border-transparent`
-                          : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                          ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                          : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                       }`}
                     >
                       Sim
@@ -219,8 +219,8 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       }
                       className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                         visitorManagement.willComeRegularly === "no"
-                          ? `${theme.gradients.primaryButton} text-white border-transparent`
-                          : `bg-white ${theme.borders.neutral} text-gray-700 hover:bg-gray-50`
+                          ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                          : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                       }`}
                     >
                       Não

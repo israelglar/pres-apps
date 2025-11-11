@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { buttonClasses } from '../../config/theme';
+import { buttonClasses, theme } from '../../config/theme';
 
 interface UnsavedChangesDialogProps {
   isOpen: boolean;
@@ -21,11 +21,11 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200">
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-md w-full p-5 animate-in fade-in zoom-in duration-200`}>
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className={`w-16 h-16 ${theme.backgrounds.warning} rounded-full flex items-center justify-center mx-auto mb-4`}>
             <svg
-              className="w-8 h-8 text-amber-600"
+              className={`w-8 h-8 ${theme.text.warning}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -38,10 +38,10 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
               />
             </svg>
           </div>
-          <h3 className="text-base font-bold text-gray-800 mb-2">
+          <h3 className={`text-base font-bold ${theme.text.neutralDarker} mb-2`}>
             Tem a certeza?
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className={`${theme.text.neutral} text-sm`}>
             Tem registos de presença por guardar. Se sair agora, perderá
             todo o progresso.
           </p>

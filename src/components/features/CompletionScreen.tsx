@@ -34,7 +34,7 @@ export function CompletionScreen({
       className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}
     >
       <div className="max-w-md w-full text-center">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 md:p-12`}>
           <div
             className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}
           >
@@ -42,19 +42,19 @@ export function CompletionScreen({
               className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`}
             />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+          <h2 className={`text-2xl md:text-3xl font-bold ${theme.text.neutralDarker} mb-4`}>
             Confirmar Presenças?
           </h2>
-          <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">
+          <p className={`${theme.text.neutral} mb-6 md:mb-8 text-sm md:text-base`}>
             {lessonName}
           </p>
           <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
             <div className="text-center">
-              <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <Users className="w-6 h-6 md:w-7 md:h-7 text-gray-600" />
+              <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.backgrounds.neutral} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                <Users className={`w-6 h-6 md:w-7 md:h-7 ${theme.text.neutral}`} />
               </div>
               <div
-                className={`text-3xl md:text-4xl font-bold text-gray-800 mb-1`}
+                className={`text-3xl md:text-4xl font-bold ${theme.text.neutralDarker} mb-1`}
               >
                 {totalCount}
               </div>
@@ -65,11 +65,11 @@ export function CompletionScreen({
               </div>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 md:w-14 md:h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <UserCheck className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
+              <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.status.present.bgMedium} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                <UserCheck className={`w-6 h-6 md:w-7 md:h-7 ${theme.status.present.text}`} />
               </div>
               <div
-                className={`text-3xl md:text-4xl font-bold text-green-600 mb-1`}
+                className={`text-3xl md:text-4xl font-bold ${theme.status.present.text} mb-1`}
               >
                 {presentCount}
               </div>
@@ -81,11 +81,11 @@ export function CompletionScreen({
             </div>
             {visitorsCount > 0 && (
               <div className="text-center">
-                <div className="w-12 h-12 md:w-14 md:h-14 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <UserPlus className="w-6 h-6 md:w-7 md:h-7 text-cyan-600" />
+                <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                  <UserPlus className={`w-6 h-6 md:w-7 md:h-7 ${theme.text.primary}`} />
                 </div>
                 <div
-                  className={`text-3xl md:text-4xl font-bold text-cyan-600 mb-1`}
+                  className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}
                 >
                   {visitorsCount}
                 </div>

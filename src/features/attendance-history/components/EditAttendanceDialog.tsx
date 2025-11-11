@@ -50,33 +50,33 @@ export function EditAttendanceDialog({
       value: 'present',
       label: 'Presente',
       icon: <Check className="w-5 h-5" />,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-300',
+      color: theme.status.present.text,
+      bgColor: theme.status.present.bg,
+      borderColor: theme.status.present.border,
     },
     {
       value: 'absent',
       label: 'Falta',
       icon: <XIcon className="w-5 h-5" />,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-300',
+      color: theme.status.absent.text,
+      bgColor: theme.status.absent.bg,
+      borderColor: theme.status.absent.border,
     },
     {
       value: 'late',
       label: 'Atrasado',
       icon: <Clock className="w-5 h-5" />,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
-      borderColor: 'border-amber-300',
+      color: theme.status.late.text,
+      bgColor: theme.status.late.bg,
+      borderColor: theme.status.late.border,
     },
     {
       value: 'excused',
       label: 'Justificada',
       icon: <FileText className="w-5 h-5" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-300',
+      color: theme.status.excused.text,
+      bgColor: theme.status.excused.bg,
+      borderColor: theme.status.excused.border,
     },
   ] as const;
 
@@ -100,10 +100,10 @@ export function EditAttendanceDialog({
           {/* Student Info */}
           <div className={`p-4 rounded-xl ${theme.gradients.cardHighlight} border ${theme.borders.primary}`}>
             <p className={`text-sm font-semibold ${theme.text.neutralDark} mb-1`}>Pré</p>
-            <p className="text-lg font-bold text-gray-800">{record.student?.name || 'Unknown'}</p>
-            <p className="text-sm text-gray-600 mt-1">{formattedDate}</p>
+            <p className={`text-lg font-bold ${theme.text.neutralDarker}`}>{record.student?.name || 'Unknown'}</p>
+            <p className={`text-sm ${theme.text.neutral} mt-1`}>{formattedDate}</p>
             {record.schedule?.lesson?.name && (
-              <p className="text-sm text-gray-600">{record.schedule.lesson.name}</p>
+              <p className={`text-sm ${theme.text.neutral}`}>{record.schedule.lesson.name}</p>
             )}
             {record.schedule?.service_time?.time && (
               <span className={`inline-block mt-2 px-2 py-1 text-xs font-bold ${theme.text.primary} ${theme.backgrounds.primaryLighter} rounded-md`}>
@@ -128,13 +128,13 @@ export function EditAttendanceDialog({
                     p-3 rounded-xl border-2 transition-all
                     ${status === option.value
                       ? `${option.bgColor} ${option.borderColor} ${option.color} font-bold shadow-md`
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                      : `${theme.backgrounds.white} ${theme.borders.neutralLight} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                     }
                     active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
                 >
                   <div className="flex flex-col items-center gap-2">
-                    <div className={status === option.value ? option.color : 'text-gray-400'}>
+                    <div className={status === option.value ? option.color : theme.text.neutralLight}>
                       {option.icon}
                     </div>
                     <span className="text-sm">{option.label}</span>
@@ -161,7 +161,7 @@ export function EditAttendanceDialog({
               placeholder="Observações (ex: Chegou atrasado por causa do trânsito)"
               disabled={isSubmitting}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className={`text-xs ${theme.text.neutralMedium} mt-1`}>
               Adiciona contexto sobre a presença do pré
             </p>
           </div>
