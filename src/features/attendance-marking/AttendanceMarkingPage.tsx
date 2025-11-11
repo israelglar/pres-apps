@@ -51,18 +51,21 @@ export const AttendanceMarkingPage = ({
   } = useAttendanceMarkingLogic({ students, visitorStudents, selectedDate, onComplete });
 
   if (isComplete) {
-    const presentCount = Object.values(attendanceRecords).filter(
-      (r) => r.status === "P"
+    // Count visitors who are marked present - check if student is in visitorStudents array
+    const visitorsCount = Object.values(attendanceRecords).filter(
+      (r) => r.status === "P" && visitorStudents.some(v => v.id === r.studentId)
     ).length;
-    const absentCount = Object.values(attendanceRecords).filter(
-      (r) => r.status === "F"
+
+    // Count only regular students present (excluding visitors)
+    const presentCount = Object.values(attendanceRecords).filter(
+      (r) => r.status === "P" && !visitorStudents.some(v => v.id === r.studentId)
     ).length;
 
     return (
       <CompletionScreen
         lessonName={getLessonName(selectedDate, lessonNames)}
         presentCount={presentCount}
-        absentCount={absentCount}
+        visitorsCount={visitorsCount}
         onConfirm={handleComplete}
         onGoBack={handleGoBack}
         isLoading={isLoading}

@@ -2,12 +2,7 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-  Clock,
   ExternalLink,
-  FileText,
-  UserPlus,
-  Users,
-  UserX,
 } from "lucide-react";
 import { useState } from "react";
 import { theme } from "../../../config/theme";
@@ -15,6 +10,7 @@ import type { AttendanceRecordWithRelations } from "../../../types/database.type
 import { lightTap } from "../../../utils/haptics";
 import type { AttendanceHistoryGroup } from "../hooks/useAttendanceHistory";
 import { StudentAttendanceRow } from "./StudentAttendanceRow";
+import { AttendanceStats } from "../../../components/AttendanceStats";
 
 interface DateGroupCardProps {
   group: AttendanceHistoryGroup;
@@ -85,35 +81,8 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
 
             {/* Summary Stats - Show when collapsed */}
             {!isExpanded && records.length > 0 && (
-              <div
-                className={`flex items-center gap-3 mt-1.5 ${theme.text.neutral} text-xs`}
-              >
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                  {stats.present}
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                  {stats.absent}
-                </span>
-                {stats.late > 0 && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                    {stats.late}
-                  </span>
-                )}
-                {stats.excused > 0 && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                    {stats.excused}
-                  </span>
-                )}
-                {stats.visitors > 0 && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-                    {stats.visitors} visitantes
-                  </span>
-                )}
+              <div className="mt-1.5">
+                <AttendanceStats stats={stats} mode="inline" showAbsent={true} />
               </div>
             )}
           </div>
@@ -153,78 +122,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
             <div
               className={`${theme.gradients.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {/* Present */}
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Presenças</p>
-                    <p className="text-base font-bold text-green-600">
-                      {stats.present}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Absent */}
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-                    <UserX className="w-4 h-4 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Faltas</p>
-                    <p className="text-base font-bold text-red-600">
-                      {stats.absent}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Late */}
-                {stats.late > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Atrasados</p>
-                      <p className="text-base font-bold text-amber-600">
-                        {stats.late}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Excused */}
-                {stats.excused > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Justificadas</p>
-                      <p className="text-base font-bold text-blue-600">
-                        {stats.excused}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Visitors */}
-                {stats.visitors > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center">
-                      <UserPlus className="w-4 h-4 text-cyan-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Visitantes</p>
-                      <p className="text-base font-bold text-cyan-600">
-                        {stats.visitors}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <AttendanceStats stats={stats} mode="detailed" showAbsent={true} />
             </div>
           )}
 

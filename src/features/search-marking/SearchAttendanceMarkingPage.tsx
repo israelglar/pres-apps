@@ -51,13 +51,19 @@ export const SearchAttendanceMarkingPage: React.FC<
   });
 
   if (isComplete) {
-    const absentCount = totalCount - presentCount;
+    // Count visitors who are marked present - check if student is in visitorStudents array
+    const visitorsCount = Object.values(attendanceRecords).filter(
+      (r) => r.status === "P" && visitorStudents.some(v => v.id === r.studentId)
+    ).length;
+
+    // Count only regular students present (excluding visitors)
+    const regularPresentCount = presentCount - visitorsCount;
 
     return (
       <CompletionScreen
         lessonName={getLessonName(date, lessonNames)}
-        presentCount={presentCount}
-        absentCount={absentCount}
+        presentCount={regularPresentCount}
+        visitorsCount={visitorsCount}
         onConfirm={handleConfirmComplete}
         onGoBack={handleGoBack}
         isLoading={isLoading}

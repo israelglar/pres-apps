@@ -1,10 +1,12 @@
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, Users, UserCheck, UserPlus } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 
 interface CompletionScreenProps {
   lessonName: string;
   presentCount: number;
-  absentCount: number;
+  lateCount?: number;
+  excusedCount?: number;
+  visitorsCount?: number;
   onConfirm: () => void;
   onGoBack: () => void;
   isLoading?: boolean;
@@ -17,11 +19,16 @@ interface CompletionScreenProps {
 export function CompletionScreen({
   lessonName,
   presentCount,
-  absentCount,
+  lateCount = 0,
+  excusedCount = 0,
+  visitorsCount = 0,
   onConfirm,
   onGoBack,
   isLoading = false,
 }: CompletionScreenProps) {
+  // Calculate total as everyone who attended (present + late + excused + visitors)
+  const totalCount = presentCount + lateCount + excusedCount + visitorsCount;
+
   return (
     <div
       className={`min-h-screen ${theme.gradients.background} flex items-center justify-center p-4`}
@@ -43,8 +50,26 @@ export function CompletionScreen({
           </p>
           <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
             <div className="text-center">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Users className="w-6 h-6 md:w-7 md:h-7 text-gray-600" />
+              </div>
               <div
-                className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}
+                className={`text-3xl md:text-4xl font-bold text-gray-800 mb-1`}
+              >
+                {totalCount}
+              </div>
+              <div
+                className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
+              >
+                Total
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <UserCheck className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
+              </div>
+              <div
+                className={`text-3xl md:text-4xl font-bold text-green-600 mb-1`}
               >
                 {presentCount}
               </div>
@@ -54,18 +79,23 @@ export function CompletionScreen({
                 Presentes
               </div>
             </div>
-            <div className="text-center">
-              <div
-                className={`text-3xl md:text-4xl font-bold ${theme.text.error} mb-1`}
-              >
-                {absentCount}
+            {visitorsCount > 0 && (
+              <div className="text-center">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <UserPlus className="w-6 h-6 md:w-7 md:h-7 text-cyan-600" />
+                </div>
+                <div
+                  className={`text-3xl md:text-4xl font-bold text-cyan-600 mb-1`}
+                >
+                  {visitorsCount}
+                </div>
+                <div
+                  className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
+                >
+                  Visitantes
+                </div>
               </div>
-              <div
-                className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
-              >
-                Faltas
-              </div>
-            </div>
+            )}
           </div>
           <div className="flex gap-3 justify-center">
             <button

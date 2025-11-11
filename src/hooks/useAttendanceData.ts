@@ -36,6 +36,7 @@ export function useAttendanceData() {
     staleTime: 55 * 60 * 1000, // 55 minutes
     gcTime: 60 * 60 * 1000, // 60 minutes
     retry: 3,
+    refetchOnMount: 'always', // Always refetch when component mounts
   });
 
   // Mutation for saving attendance

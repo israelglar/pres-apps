@@ -1,8 +1,11 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAttendanceData } from '../../hooks/useAttendanceData';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { getAttendanceBySchedule } from '../../api/supabase/attendance';
+import { calculateStats, type AttendanceStats } from '../../utils/attendance';
 import type { Schedule } from '../../schemas/attendance.schema';
 
 export interface UseHomePageLogicProps {
@@ -12,6 +15,7 @@ export interface UseHomePageLogicProps {
 interface TodaySchedule extends Schedule {
   serviceTimeName: string;
   serviceTimeTime: string;
+  stats?: AttendanceStats;
 }
 
 /**
@@ -68,6 +72,34 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
   }, [isDataReady, today, getSchedule, serviceTimes]);
 
   const isLessonDay = todaySchedules.length > 0;
+
+  // Fetch attendance data for today's schedules
+  // Always fetch fresh data - no caching
+  const { data: todayAttendanceData } = useQuery({
+    queryKey: ['today-attendance', todaySchedules.map(s => s.id)],
+    queryFn: async () => {
+      const results = await Promise.all(
+        todaySchedules.map(schedule => getAttendanceBySchedule(schedule.id))
+      );
+      return results;
+    },
+    enabled: todaySchedules.length > 0,
+    staleTime: 0, // Data always stale - always refetch
+    gcTime: 0, // Don't cache results
+    refetchOnMount: 'always', // Always refetch when component mounts
+  });
+
+  // Merge schedules with their attendance stats
+  const todaySchedulesWithStats = useMemo<TodaySchedule[]>(() => {
+    if (!todayAttendanceData || todayAttendanceData.length === 0) {
+      return todaySchedules;
+    }
+
+    return todaySchedules.map((schedule, index) => ({
+      ...schedule,
+      stats: calculateStats(todayAttendanceData[index] || []),
+    }));
+  }, [todaySchedules, todayAttendanceData]);
 
   const [waitingForData, setWaitingForData] = useState(false);
   const [showDevTools, setShowDevTools] = useState(false);
@@ -144,7 +176,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
     // Lesson day data
     isLessonDay,
-    todaySchedules,
+    todaySchedules: todaySchedulesWithStats,
     today,
 
     // UI states

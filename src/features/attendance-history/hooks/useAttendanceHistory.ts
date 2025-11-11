@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllSchedules } from '../../../api/supabase/schedules';
 import { getAttendanceBySchedule, updateAttendanceRecord } from '../../../api/supabase/attendance';
 import type { ScheduleWithRelations, AttendanceRecordWithRelations } from '../../../types/database.types';
+import { calculateStats, type AttendanceStats } from '../../../utils/attendance';
 
 /**
  * Query key for attendance history
@@ -14,34 +15,7 @@ export const ATTENDANCE_HISTORY_QUERY_KEY = ['attendance-history'] as const;
 export interface AttendanceHistoryGroup {
   schedule: ScheduleWithRelations;
   records: AttendanceRecordWithRelations[];
-  stats: {
-    present: number;
-    absent: number;
-    late: number;
-    excused: number;
-    visitors: number;
-    total: number;
-  };
-}
-
-/**
- * Calculate statistics for attendance records
- */
-function calculateStats(records: AttendanceRecordWithRelations[]) {
-  const present = records.filter(r => r.status === 'present').length;
-  const absent = records.filter(r => r.status === 'absent').length;
-  const late = records.filter(r => r.status === 'late').length;
-  const excused = records.filter(r => r.status === 'excused').length;
-  const visitors = records.filter(r => r.student?.is_visitor === true).length;
-
-  return {
-    present,
-    absent,
-    late,
-    excused,
-    visitors,
-    total: records.length,
-  };
+  stats: AttendanceStats;
 }
 
 /**

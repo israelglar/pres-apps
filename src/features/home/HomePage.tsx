@@ -16,6 +16,7 @@ import {
 import { buttonClasses, theme } from "../../config/theme";
 import { useHomePageLogic } from "./HomePage.logic";
 import { useAuth } from "../../contexts/AuthContext";
+import { AttendanceStats } from "../../components/AttendanceStats";
 
 interface HomePageProps {
   onNavigate: () => void;
@@ -174,14 +175,37 @@ export function HomePage({
                     // Skip if service_time_id is null
                     if (!schedule.service_time_id) return null;
 
+                    // Check if attendance has been recorded
+                    const hasAttendance = schedule.stats && schedule.stats.total > 0;
+                    // Calculate total present (including visitors)
+                    // Note: visitors might overlap with present/late/excused, but we count all who attended
+                    const totalPresent = schedule.stats
+                      ? schedule.stats.present + schedule.stats.late + schedule.stats.excused + schedule.stats.visitors
+                      : 0;
+
                     return (
                       <button
                         key={schedule.service_time_id}
                         onClick={() => onQuickStart?.(logic.today, schedule.service_time_id!)}
-                        className={`px-5 py-4 ${buttonClasses.primary} text-sm flex flex-col items-center justify-center gap-1`}
+                        className={`px-3 py-2.5 ${buttonClasses.primary} text-sm flex flex-col items-center justify-center gap-2`}
                       >
-                        <Clock className="w-5 h-5" />
-                        <span className="font-bold">{schedule.serviceTimeTime.substring(0, 5)}</span>
+                        {/* Top: Clock + Time */}
+                        <div className={`flex items-center gap-2 ${!hasAttendance ? 'text-xl' : ''}`}>
+                          <Clock className={!hasAttendance ? 'w-5 h-5' : 'w-4 h-4'} />
+                          <span className="font-bold">{schedule.serviceTimeTime.substring(0, 5)}</span>
+                        </div>
+
+                        {/* Bottom: Attendance stats if available */}
+                        {hasAttendance && (
+                          <div className="flex items-center gap-2">
+                            {/* Total count */}
+                            <span className="text-xl font-bold">
+                              {totalPresent}
+                            </span>
+                            {/* Stats circles */}
+                            <AttendanceStats stats={schedule.stats!} mode="compact" showAbsent={false} />
+                          </div>
+                        )}
                       </button>
                     );
                   })}
