@@ -120,7 +120,6 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
       <PageHeader
         onBack={onBack}
         title="Gerir Prés"
-        subtitle="Adicionar, editar ou remover prés"
         rightAction={{
           icon: <Plus className="w-5 h-5" />,
           label: "Adicionar",

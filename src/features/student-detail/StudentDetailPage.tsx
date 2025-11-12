@@ -150,6 +150,7 @@ export function StudentDetailPage({
         title="Detalhes do pré"
         subtitle=""
         sticky={true}
+        variant='minimal'
       />
 
       <div className="max-w-4xl mx-auto p-5 pb-20 space-y-5">

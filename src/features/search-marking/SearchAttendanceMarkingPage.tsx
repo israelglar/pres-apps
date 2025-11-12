@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, UserPlus, X } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle, UserPlus, X } from "lucide-react";
 import React from "react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
@@ -86,13 +86,18 @@ export const SearchAttendanceMarkingPage: React.FC<
         onBack={onCancel}
         title={titleWithTime}
         subtitle={getLessonName(date, lessonNames)}
-        sticky={false}
+        sticky={true}
         className="flex-shrink-0"
+        rightAction={{
+          icon: <Check className="w-5 h-5" />,
+          label: "",
+          onClick: handleComplete,
+        }}
       />
 
       {/* Main Content Area - Fixed at top with scrollable list below */}
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Search Bar and Visitor Button - Fixed at top */}
+        {/* Search Bar - Fixed at top */}
         <div className="flex-shrink-0 p-5 pb-3">
           <SearchBar
             ref={searchInputRef}
@@ -100,31 +105,21 @@ export const SearchAttendanceMarkingPage: React.FC<
             onChange={setSearchQuery}
             placeholder="Procurar pelo nome..."
             autoFocus
-            className="mb-4"
             rightContent={
-              <span className={`${theme.text.primary} font-bold text-sm`}>
-                {presentCount}/{totalCount} presentes
-              </span>
+              <div className="flex items-center gap-3">
+                <span className={`${theme.text.primary} font-bold text-sm whitespace-nowrap`}>
+                  {presentCount}/{totalCount}
+                </span>
+                <button
+                  onClick={visitorManagement.openVisitorDialog}
+                  className={`${theme.text.primary} hover:opacity-70 transition-opacity`}
+                  aria-label="Adicionar visitante"
+                >
+                  <UserPlus className="w-5 h-5" />
+                </button>
+              </div>
             }
           />
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={visitorManagement.openVisitorDialog}
-              className={`flex-1 px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium border-2 ${theme.borders.primary} hover:shadow-md transition-all flex items-center justify-center gap-2`}
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Adicionar Visitante</span>
-            </button>
-            <button
-              onClick={handleComplete}
-              className={`px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium ${theme.solids.primaryButtonHover} hover:shadow-md transition-all flex items-center justify-center gap-2`}
-            >
-              <CheckCircle className="w-4 h-4" />
-              <span>Concluir</span>
-            </button>
-          </div>
         </div>
 
         {/* Scrollable Student List - Takes remaining space */}

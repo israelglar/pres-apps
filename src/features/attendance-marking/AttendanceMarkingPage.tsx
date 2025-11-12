@@ -170,7 +170,7 @@ export const AttendanceMarkingPage = ({
 
         {/* Swipe Card Section - Separate scroll area */}
         <div className="flex-1 overflow-y-auto h-1/3 md:h-auto">
-          <div className="p-5 h-full">
+          <div className="p-5 pb-8 min-h-full">
             <div className="max-w-2xl mx-auto w-full">
               {/* Compact Progress Indicator */}
               <div className="flex items-center gap-2 mb-5">
@@ -186,12 +186,27 @@ export const AttendanceMarkingPage = ({
               </div>
 
               {/* Swipe Card */}
-              <div
-                className={`${theme.backgrounds.primaryLighter} rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8 border-2 ${theme.borders.primaryLight}`}
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
-              >
+              {(() => {
+                const currentStudentIdNumber = parseInt(currentStudent.id);
+                const hasAlert = absenceAlerts.has(currentStudentIdNumber);
+
+                return (
+                  <div
+                    className={`${theme.backgrounds.primaryLighter} rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8 border-2 ${theme.borders.primaryLight}`}
+                    onTouchStart={hasAlert ? undefined : onTouchStart}
+                    onTouchMove={hasAlert ? undefined : onTouchMove}
+                    onTouchEnd={hasAlert ? undefined : onTouchEnd}
+                  >
+                    {/* Transparent overlay when alert is shown - blocks all interactions */}
+                    {hasAlert && (
+                      <div
+                        className="absolute inset-0 bg-black/10 backdrop-blur-[2px] rounded-3xl z-40"
+                        onTouchStart={(e) => e.preventDefault()}
+                        onTouchMove={(e) => e.preventDefault()}
+                        onTouchEnd={(e) => e.preventDefault()}
+                      />
+                    )}
+
                 {/* Always visible gradient backgrounds */}
                 <div
                   className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-l-3xl z-0"
@@ -273,68 +288,71 @@ export const AttendanceMarkingPage = ({
                   <h2 className={`${theme.text.neutralDarker} text-2xl font-bold mb-1 leading-tight`}>
                     {getShortName(currentStudent.name)}
                   </h2>
-                  <p className={`${theme.text.neutralMedium} text-xs mb-2`}>
-                    Toque nos lados ou deslize
-                  </p>
-
-                  {/* Absence Alert */}
-                  {(() => {
-                    const currentStudentIdNumber = parseInt(currentStudent.id);
-                    const alert = absenceAlerts.get(currentStudentIdNumber);
-                    return alert ? (
-                      <div className="pointer-events-auto inline-block mt-2">
-                        <AbsenceAlertBanner
-                          absenceCount={alert.absenceCount}
-                          onDismiss={() => dismissAbsenceAlert(currentStudentIdNumber)}
-                          className="text-left"
-                        />
-                      </div>
-                    ) : null;
-                  })()}
                 </div>
 
+                {/* Absence Alert - Floating at bottom */}
+                {(() => {
+                  const currentStudentIdNumber = parseInt(currentStudent.id);
+                  const alert = absenceAlerts.get(currentStudentIdNumber);
+                  return alert ? (
+                    <div className="absolute bottom-4 left-4 right-4 z-50">
+                      <AbsenceAlertBanner
+                        absenceCount={alert.absenceCount}
+                        onDismiss={() => dismissAbsenceAlert(currentStudentIdNumber)}
+                        className="shadow-lg"
+                      />
+                    </div>
+                  ) : null;
+                })()}
+
                 {/* Clickable areas overlaid */}
-                <button
-                  onClick={() => handleMark("F")}
-                  className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/40 transition-colors rounded-l-3xl z-20 touch-none"
-                  style={{
-                    background:
-                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)",
-                  }}
-                  onPointerDown={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(220, 38, 38, 0.25), transparent)";
-                  }}
-                  onPointerUp={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
-                  }}
-                  onPointerLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
-                  }}
-                />
-                <button
-                  onClick={() => handleMark("P")}
-                  className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/40 transition-colors rounded-r-3xl z-20 touch-none"
-                  style={{
-                    background:
-                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)",
-                  }}
-                  onPointerDown={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(34, 197, 94, 0.25), transparent)";
-                  }}
-                  onPointerUp={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
-                  }}
-                  onPointerLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
-                  }}
-                />
+                {!hasAlert && (
+                  <>
+                    <button
+                      onClick={() => handleMark("F")}
+                      className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/40 transition-colors rounded-l-3xl z-20 touch-none"
+                      style={{
+                        background:
+                          "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)",
+                      }}
+                      onPointerDown={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to right, rgba(220, 38, 38, 0.25), transparent)";
+                      }}
+                      onPointerUp={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
+                      }}
+                      onPointerLeave={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
+                      }}
+                    />
+                    <button
+                      onClick={() => handleMark("P")}
+                      className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/40 transition-colors rounded-r-3xl z-20 touch-none"
+                      style={{
+                        background:
+                          "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)",
+                      }}
+                      onPointerDown={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to left, rgba(34, 197, 94, 0.25), transparent)";
+                      }}
+                      onPointerUp={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
+                      }}
+                      onPointerLeave={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
+                      }}
+                    />
+                  </>
+                )}
               </div>
+                );
+              })()}
 
               <div className="hidden md:grid grid-cols-2 gap-4">
                 <button
