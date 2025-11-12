@@ -197,6 +197,14 @@ theme.colors.visitor.*     // Purple shades (50-700)
 
 // Text colors
 theme.text.white, theme.text.whiteHover, theme.text.whiteTransparent
+
+// Theme-aware text colors (change with theme variant)
+theme.text.onPrimary          // Text for primary backgrounds (buttons, headers)
+theme.text.onPrimaryHover     // Hover text on primary backgrounds
+theme.text.onSecondary        // Text for secondary backgrounds
+theme.text.onLight            // Main text on light/card backgrounds
+theme.text.onLightSecondary   // Secondary text on light backgrounds
+
 theme.text.primary, theme.text.primaryDark, theme.text.primaryDarker
 theme.text.secondary, theme.text.secondaryDark
 theme.text.success, theme.text.error, theme.text.warning
@@ -219,15 +227,6 @@ theme.backgrounds.visitor*
 theme.borders.primary, theme.borders.primaryLight, theme.borders.primaryFocus
 theme.borders.secondary, theme.borders.neutral, theme.borders.neutralLight
 theme.borders.success, theme.borders.error, theme.borders.visitor*
-
-// Gradients (pre-built combinations)
-theme.gradients.background          // Main app gradient
-theme.gradients.primaryButton       // Action buttons
-theme.gradients.successButton       // Success actions
-theme.gradients.errorButton         // Danger actions
-theme.gradients.cardPrimary         // Card backgrounds
-theme.gradients.lessonRegular       // Lesson type badges
-theme.gradients.devCardHover        // Dev tools hover
 
 // Status indicators (for attendance)
 theme.indicators.present    // bg-green-500
@@ -264,6 +263,17 @@ inputClasses  // Standard input styling
 // Card with background
 <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-5`}>
 
+// Primary colored background with theme-aware text
+<div className={`${theme.solids.background} ${theme.text.onPrimary} p-4`}>
+  This text automatically uses the right color for the theme
+</div>
+
+// Light card with theme-aware text
+<div className={`${theme.backgrounds.white} ${theme.text.onLight} p-5`}>
+  <h2>Main heading</h2>
+  <p className={theme.text.onLightSecondary}>Secondary text</p>
+</div>
+
 // Status indicator circle
 <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`} />
 
@@ -277,8 +287,11 @@ inputClasses  // Standard input styling
   Ativo
 </span>
 
-// Primary action button
+// Primary action button (automatically uses onPrimary text)
 <button className={buttonClasses.primary}>Save</button>
+
+// Secondary button (automatically uses onLight text)
+<button className={buttonClasses.secondary}>Cancel</button>
 
 // Text with neutral color
 <p className={theme.text.neutral}>Description text</p>
@@ -296,24 +309,34 @@ inputClasses  // Standard input styling
 4. Group related colors together
 5. Test on mobile viewport (primary target)
 
-**How to Change Color Scheme:**
-To change from cyan/blue to a different color scheme (e.g., teal/indigo):
+**Theme Variants:**
+The app supports multiple theme variants (Ocean, Sky, Deep Waters, Tropical Sea):
+- Each variant defines its own primary/secondary color palettes
+- Each variant also defines appropriate text colors for those palettes
+- Theme variants automatically set the right text colors for backgrounds
+- Use `theme.text.onPrimary` for text on primary backgrounds
+- Use `theme.text.onLight` for text on light/card backgrounds
+- Change themes at runtime via the app's theme selector
+
+**How to Add New Theme Variant:**
 1. Open `src/config/theme.ts`
-2. Update **only** the `colors` object at the top of the file:
+2. Add a new theme variant in the `themeVariants` object:
    ```typescript
-   const colors = {
-     primary: {
-       50: 'teal-50',    // was cyan-50
-       100: 'teal-100',  // was cyan-100
-       // ... update all shades
-     },
-     secondary: {
-       50: 'indigo-50',  // was blue-50
-       // ... update all shades
+   sunset: {
+     name: 'Sunset',
+     description: 'Warm orange and pink',
+     primary: { /* color shades */ },
+     secondary: { /* color shades */ },
+     text: {
+       onPrimary: 'white',        // Text on primary backgrounds
+       onPrimaryHover: 'orange-50',
+       onSecondary: 'white',       // Text on secondary backgrounds
+       onLight: 'gray-900',        // Text on light backgrounds
+       onLightSecondary: 'gray-600', // Secondary text on light
      },
    }
    ```
-3. All theme properties automatically update (no other changes needed!)
+3. All theme properties automatically use these colors!
 4. Run `npm run build` to validate
 
 **Reference Files:**

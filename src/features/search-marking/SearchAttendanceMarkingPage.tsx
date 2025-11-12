@@ -79,7 +79,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     : formatDate(date);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel}
@@ -94,17 +94,17 @@ export const SearchAttendanceMarkingPage: React.FC<
         {/* Search Bar and Visitor Button - Fixed at top */}
         <div className="flex-shrink-0 p-5 pb-3">
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white w-4 h-4" />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.onPrimary} w-4 h-4`} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Procurar pelo nome..."
-              className="w-full pl-10 pr-16 py-3 rounded-xl text-sm bg-white/10 text-white placeholder-white/60 border border-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className={`w-full pl-10 pr-16 py-3 rounded-xl text-sm bg-white/10 ${theme.text.onPrimary} placeholder-white/60 border border-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all`}
               autoFocus
             />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white font-bold text-sm">
+            <span className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme.text.onPrimary} font-bold text-sm`}>
               {presentCount}/{totalCount} presentes
             </span>
           </div>
@@ -132,7 +132,7 @@ export const SearchAttendanceMarkingPage: React.FC<
         <div className="flex-1 overflow-y-auto px-5 pb-5">
           <div className="space-y-2">
             {displayedStudents.length === 0 && searchQuery.trim() !== "" ? (
-              <div className="text-center py-8 text-white/80">
+              <div className={`text-center py-8 ${theme.text.onPrimary}/80`}>
                 Nenhum pré encontrado
               </div>
             ) : (
@@ -163,7 +163,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                             <div
                               className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.solids.activeItem}`}
                             >
-                              <span className="text-white font-bold text-xs">
+                              <span className={`${theme.text.onPrimary} font-bold text-xs`}>
                                 {student.name.charAt(0)}
                               </span>
                             </div>
@@ -181,7 +181,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                               </span>
                               {student.isVisitor && (
                                 <span
-                                  className={`px-1.5 py-0.5 ${theme.solids.badge} text-white text-xs font-bold rounded-full`}
+                                  className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimary} text-xs font-bold rounded-full`}
                                 >
                                   Visitante
                                 </span>

@@ -137,7 +137,6 @@
 ### UI Changes
 
 1. **ALWAYS** import and use theme constants from `src/config/theme.ts`
-   - Use `theme.gradients.background` for gradients
    - Use `theme.text.primary`, `theme.backgrounds.primaryLight` for colors
    - **NEVER** hardcode colors - maintain consistency across all pages
 2. Maintain gesture interactions (swipe, pull-to-refresh)

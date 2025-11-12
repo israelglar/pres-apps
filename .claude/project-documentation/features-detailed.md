@@ -279,7 +279,7 @@ See `AUTH_SETUP.md` for complete configuration guide:
 
 **IMPORTANT:** All pages must use the centralized theme system:
 - Import: `import { theme } from '@/config/theme'`
-- Use theme constants: `theme.gradients.background`, `theme.text.primary`, `theme.backgrounds.primaryLight`
+- Use theme constants: `theme.text.primary`, `theme.backgrounds.primaryLight`
 - **NEVER** hardcode colors like `bg-emerald-400` or `text-teal-600`
 - Reference examples: `HomePage.tsx`, `dev-login.tsx`
 

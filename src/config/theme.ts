@@ -51,6 +51,17 @@ const themeVariants = {
       800: 'blue-800',
       900: 'blue-900',
     },
+    // Text colors for this theme
+    text: {
+      // Text to use on primary colored backgrounds (buttons, headers, etc)
+      onPrimary: 'white',
+      onPrimaryHover: 'white',
+      // Text to use on secondary colored backgrounds
+      onSecondary: 'white',
+      // Text to use on light/card backgrounds
+      onLight: 'gray-900',
+      onLightSecondary: 'gray-600',
+    },
   },
 
   // Option 1 - Light Sky (lighter, airier blue with darker backgrounds for contrast)
@@ -80,6 +91,13 @@ const themeVariants = {
       700: 'cyan-800',
       800: 'cyan-900',
       900: 'cyan-950',
+    },
+    text: {
+      onPrimary: 'white',
+      onPrimaryHover: 'sky-50',
+      onSecondary: 'white',
+      onLight: 'gray-900',
+      onLightSecondary: 'gray-600',
     },
   },
 
@@ -111,6 +129,13 @@ const themeVariants = {
       800: 'indigo-950',
       900: 'indigo-950',
     },
+    text: {
+      onPrimary: 'white',
+      onPrimaryHover: 'blue-50',
+      onSecondary: 'white',
+      onLight: 'gray-900',
+      onLightSecondary: 'gray-600',
+    },
   },
 
   // Option 3 - Tropical Sea (teal variation with darker backgrounds for contrast)
@@ -141,11 +166,185 @@ const themeVariants = {
       800: 'cyan-900',
       900: 'cyan-950',
     },
+    text: {
+      onPrimary: 'white',
+      onPrimaryHover: 'teal-50',
+      onSecondary: 'white',
+      onLight: 'gray-900',
+      onLightSecondary: 'gray-600',
+    },
   },
 } as const;
 
 // Get active theme variant
 const activeTheme = themeVariants[getCurrentTheme()];
+
+// Pre-computed literal class mappings for each theme
+// ALL class names must be literal strings for Tailwind JIT compilation
+const themeClasses = {
+  ocean: {
+    // Background colors
+    bgPrimary: 'bg-cyan-600',
+    bgPrimaryHover: 'hover:bg-cyan-700',
+    bgPrimaryActive: 'hover:bg-cyan-700',
+    bgPrimaryLight: 'bg-cyan-50',
+    bgPrimaryLighter: 'bg-cyan-50',
+    bgPrimary100: 'bg-cyan-100',
+    bgPrimary200: 'bg-cyan-200',
+    hoverBgPrimary: 'hover:bg-cyan-50',
+    hoverBgPrimaryLight: 'hover:bg-cyan-50',
+    devCardHover: 'hover:bg-cyan-50',
+    bgSecondary: 'bg-blue-600',
+    bgSecondary50: 'bg-blue-50',
+    bgSecondary100: 'bg-blue-100',
+    hoverBgSecondary: 'hover:bg-blue-100',
+    bgPrimary500: 'bg-cyan-500',
+    bgSecondary500: 'bg-blue-500',
+
+    // Text colors
+    textPrimary: 'text-cyan-600',
+    textPrimaryDark: 'text-cyan-700',
+    textPrimaryDarker: 'text-cyan-800',
+    textPrimaryLight: 'text-cyan-50',
+    textSecondary: 'text-blue-600',
+    textSecondaryDark: 'text-blue-700',
+    textOnPrimaryHover: 'hover:text-white',
+
+    // Border colors
+    borderPrimary: 'border-cyan-300',
+    borderPrimaryLight: 'border-cyan-200',
+    borderPrimaryHover: 'hover:border-cyan-400',
+    borderPrimaryHoverLight: 'hover:border-cyan-300',
+    focusBorderPrimary: 'focus:border-cyan-500',
+    borderSecondary: 'border-blue-500',
+    borderSecondary300: 'border-blue-300',
+
+    // Ring colors
+    ringPrimary: 'focus:ring-cyan-400',
+  },
+  sky: {
+    // Background colors
+    bgPrimary: 'bg-sky-700',
+    bgPrimaryHover: 'hover:bg-sky-800',
+    bgPrimaryActive: 'hover:bg-sky-800',
+    bgPrimaryLight: 'bg-sky-50',
+    bgPrimaryLighter: 'bg-sky-50',
+    bgPrimary100: 'bg-sky-100',
+    bgPrimary200: 'bg-sky-200',
+    hoverBgPrimary: 'hover:bg-sky-50',
+    hoverBgPrimaryLight: 'hover:bg-sky-50',
+    devCardHover: 'hover:bg-sky-50',
+    bgSecondary: 'bg-cyan-700',
+    bgSecondary50: 'bg-cyan-50',
+    bgSecondary100: 'bg-cyan-100',
+    hoverBgSecondary: 'hover:bg-cyan-100',
+    bgPrimary500: 'bg-sky-600',
+    bgSecondary500: 'bg-cyan-600',
+
+    // Text colors
+    textPrimary: 'text-sky-700',
+    textPrimaryDark: 'text-sky-800',
+    textPrimaryDarker: 'text-sky-900',
+    textPrimaryLight: 'text-sky-50',
+    textSecondary: 'text-cyan-700',
+    textSecondaryDark: 'text-cyan-800',
+    textOnPrimaryHover: 'hover:text-sky-50',
+
+    // Border colors
+    borderPrimary: 'border-sky-300',
+    borderPrimaryLight: 'border-sky-200',
+    borderPrimaryHover: 'hover:border-sky-400',
+    borderPrimaryHoverLight: 'hover:border-sky-300',
+    focusBorderPrimary: 'focus:border-sky-500',
+    borderSecondary: 'border-cyan-500',
+    borderSecondary300: 'border-cyan-300',
+
+    // Ring colors
+    ringPrimary: 'focus:ring-sky-400',
+  },
+  deep: {
+    // Background colors
+    bgPrimary: 'bg-blue-800',
+    bgPrimaryHover: 'hover:bg-blue-900',
+    bgPrimaryActive: 'hover:bg-blue-900',
+    bgPrimaryLight: 'bg-blue-50',
+    bgPrimaryLighter: 'bg-blue-50',
+    bgPrimary100: 'bg-blue-100',
+    bgPrimary200: 'bg-blue-200',
+    hoverBgPrimary: 'hover:bg-blue-50',
+    hoverBgPrimaryLight: 'hover:bg-blue-50',
+    devCardHover: 'hover:bg-blue-50',
+    bgSecondary: 'bg-indigo-800',
+    bgSecondary50: 'bg-indigo-50',
+    bgSecondary100: 'bg-indigo-100',
+    hoverBgSecondary: 'hover:bg-indigo-100',
+    bgPrimary500: 'bg-blue-700',
+    bgSecondary500: 'bg-indigo-700',
+
+    // Text colors
+    textPrimary: 'text-blue-800',
+    textPrimaryDark: 'text-blue-900',
+    textPrimaryDarker: 'text-blue-950',
+    textPrimaryLight: 'text-blue-50',
+    textSecondary: 'text-indigo-800',
+    textSecondaryDark: 'text-indigo-900',
+    textOnPrimaryHover: 'hover:text-blue-50',
+
+    // Border colors
+    borderPrimary: 'border-blue-300',
+    borderPrimaryLight: 'border-blue-200',
+    borderPrimaryHover: 'hover:border-blue-400',
+    borderPrimaryHoverLight: 'hover:border-blue-300',
+    focusBorderPrimary: 'focus:border-blue-500',
+    borderSecondary: 'border-indigo-500',
+    borderSecondary300: 'border-indigo-300',
+
+    // Ring colors
+    ringPrimary: 'focus:ring-blue-400',
+  },
+  tropical: {
+    // Background colors
+    bgPrimary: 'bg-teal-700',
+    bgPrimaryHover: 'hover:bg-teal-800',
+    bgPrimaryActive: 'hover:bg-teal-800',
+    bgPrimaryLight: 'bg-teal-50',
+    bgPrimaryLighter: 'bg-teal-50',
+    bgPrimary100: 'bg-teal-100',
+    bgPrimary200: 'bg-teal-200',
+    hoverBgPrimary: 'hover:bg-teal-50',
+    hoverBgPrimaryLight: 'hover:bg-teal-50',
+    devCardHover: 'hover:bg-teal-50',
+    bgSecondary: 'bg-cyan-700',
+    bgSecondary50: 'bg-cyan-50',
+    bgSecondary100: 'bg-cyan-100',
+    hoverBgSecondary: 'hover:bg-cyan-100',
+    bgPrimary500: 'bg-teal-600',
+    bgSecondary500: 'bg-cyan-600',
+
+    // Text colors
+    textPrimary: 'text-teal-700',
+    textPrimaryDark: 'text-teal-800',
+    textPrimaryDarker: 'text-teal-900',
+    textPrimaryLight: 'text-teal-50',
+    textSecondary: 'text-cyan-700',
+    textSecondaryDark: 'text-cyan-800',
+    textOnPrimaryHover: 'hover:text-teal-50',
+
+    // Border colors
+    borderPrimary: 'border-teal-300',
+    borderPrimaryLight: 'border-teal-200',
+    borderPrimaryHover: 'hover:border-teal-400',
+    borderPrimaryHoverLight: 'hover:border-teal-300',
+    focusBorderPrimary: 'focus:border-teal-500',
+    borderSecondary: 'border-cyan-500',
+    borderSecondary300: 'border-cyan-300',
+
+    // Ring colors
+    ringPrimary: 'focus:ring-teal-400',
+  },
+} as const;
+
+const currentThemeClasses = themeClasses[getCurrentTheme()];
 
 // Base color definitions - SINGLE SOURCE OF TRUTH
 // Change colors here and they propagate throughout the entire theme
@@ -159,6 +358,9 @@ const colors = {
 
   // Secondary colors (dynamic based on theme)
   secondary: activeTheme.secondary,
+
+  // Theme-specific text colors (dynamic based on theme)
+  themeText: activeTheme.text,
 
   // Success colors (green)
   success: {
@@ -222,228 +424,236 @@ export const theme = {
   colors,
 
   // Solid color combinations (NO GRADIENTS)
+  // Using pre-computed literal class names
   solids: {
-    // Main app background - solid color
-    background: `bg-${colors.primary[600]}`,
+    // Main app background
+    background: currentThemeClasses.bgPrimary,
 
-    // Primary action button - solid color
-    primaryButton: `bg-${colors.primary[600]}`,
-    primaryButtonHover: `hover:bg-${colors.primary[700]}`,
+    // Primary action button
+    primaryButton: currentThemeClasses.bgPrimary,
+    primaryButtonHover: currentThemeClasses.bgPrimaryHover,
 
     // Secondary/neutral button
-    neutralButton: `bg-${colors.neutral[100]}`,
-    neutralButtonHover: `hover:bg-${colors.neutral[200]}`,
+    neutralButton: 'bg-gray-100',
+    neutralButtonHover: 'hover:bg-gray-200',
 
     // Success button
-    successButton: `bg-${colors.success[600]}`,
-    successButtonHover: `hover:bg-${colors.success[700]}`,
+    successButton: 'bg-green-600',
+    successButtonHover: 'hover:bg-green-700',
 
     // Error/danger button
-    errorButton: `bg-${colors.error[600]}`,
-    errorButtonHover: `hover:bg-${colors.error[700]}`,
+    errorButton: 'bg-red-600',
+    errorButtonHover: 'hover:bg-red-700',
 
     // Card/surface backgrounds
-    cardPrimary: `bg-${colors.primary[50]}`,
-    cardHighlight: `bg-${colors.primary[50]}`,
-    cardNeutral: `bg-${colors.white}`,
+    cardPrimary: currentThemeClasses.bgPrimaryLight,
+    cardHighlight: currentThemeClasses.bgPrimaryLight,
+    cardNeutral: 'bg-white',
 
     // Progress bar
-    progress: `bg-${colors.primary[600]}`,
+    progress: currentThemeClasses.bgPrimary,
 
     // Selected/active states
-    selectedItem: `bg-${colors.primary[100]}`,
-    activeItem: `bg-${colors.primary[600]}`,
+    selectedItem: currentThemeClasses.bgPrimary100,
+    activeItem: currentThemeClasses.bgPrimary,
 
     // Badge
-    badge: `bg-${colors.primary[600]}`,
+    badge: currentThemeClasses.bgPrimary,
 
     // Lesson type badges
-    lessonRegular: `bg-${colors.success[500]}`,
-    lessonSpecial: `bg-${colors.warning[500]}`,
+    lessonRegular: 'bg-green-500',
+    lessonSpecial: 'bg-amber-500',
 
     // Dev login hover
-    devCardHover: `hover:bg-${colors.primary[50]}`,
+    devCardHover: currentThemeClasses.devCardHover,
   },
 
-  // Text colors
+  // Text colors - MUST use literal class names
   text: {
     // Base colors
-    white: `text-${colors.white}`,
-    whiteHover: `hover:text-${colors.white}/80`,
-    whiteTransparent: `text-${colors.white}/90`,
+    white: 'text-white',
+    whiteHover: 'hover:text-white/80',
+    whiteTransparent: 'text-white/90',
 
-    // Primary colors
-    primary: `text-${colors.primary[600]}`,
-    primaryDark: `text-${colors.primary[700]}`,
-    primaryDarker: `text-${colors.primary[800]}`,
-    primaryLight: `text-${colors.primary[50]}`,
+    // Theme-aware text colors (change with theme variant)
+    onPrimary: 'text-white',               // Text on primary backgrounds (all themes use white)
+    onPrimaryHover: currentThemeClasses.textOnPrimaryHover,
+    onSecondary: 'text-white',           // Text on secondary backgrounds
+    onLight: 'text-gray-900',                   // Text on light/card backgrounds
+    onLightSecondary: 'text-gray-600', // Secondary text on light backgrounds
 
-    // Secondary colors
-    secondary: `text-${colors.secondary[600]}`,
-    secondaryDark: `text-${colors.secondary[700]}`,
+    // Primary colors (from theme)
+    primary: currentThemeClasses.textPrimary,
+    primaryDark: currentThemeClasses.textPrimaryDark,
+    primaryDarker: currentThemeClasses.textPrimaryDarker,
+    primaryLight: currentThemeClasses.textPrimaryLight,
+
+    // Secondary colors (from theme)
+    secondary: currentThemeClasses.textSecondary,
+    secondaryDark: currentThemeClasses.textSecondaryDark,
 
     // Status colors
-    success: `text-${colors.success[600]}`,
-    error: `text-${colors.error[600]}`,
-    warning: `text-${colors.warning[600]}`,
+    success: 'text-green-600',
+    error: 'text-red-600',
+    warning: 'text-amber-600',
 
     // Neutral colors
-    neutral: `text-${colors.neutral[600]}`,
-    neutralLight: `text-${colors.neutral[400]}`,
-    neutralMedium: `text-${colors.neutral[500]}`,
-    neutralDark: `text-${colors.neutral[700]}`,
-    neutralDarker: `text-${colors.neutral[800]}`,
-    neutralDarkest: `text-${colors.neutral[900]}`,
+    neutral: 'text-gray-600',
+    neutralLight: 'text-gray-400',
+    neutralMedium: 'text-gray-500',
+    neutralDark: 'text-gray-700',
+    neutralDarker: 'text-gray-800',
+    neutralDarkest: 'text-gray-900',
 
     // Visitor colors
-    visitor: `text-${colors.visitor[700]}`,
-    visitorDev: `text-${colors.visitor[600]}`,
+    visitor: 'text-purple-700',
+    visitorDev: 'text-purple-600',
   },
 
   // Border colors
   borders: {
-    // Primary colors
-    primary: `border-${colors.primary[300]}`,
-    primaryLight: `border-${colors.primary[200]}`,
-    primaryFocus: `focus:border-${colors.primary[500]}`,
-    primaryHover: `hover:border-${colors.primary[400]}`,
-    primaryHoverLight: `hover:border-${colors.primary[300]}`,
+    // Primary colors (from theme)
+    primary: currentThemeClasses.borderPrimary,
+    primaryLight: currentThemeClasses.borderPrimaryLight,
+    primaryFocus: currentThemeClasses.focusBorderPrimary,
+    primaryHover: currentThemeClasses.borderPrimaryHover,
+    primaryHoverLight: currentThemeClasses.borderPrimaryHoverLight,
 
-    // Secondary colors
-    secondary: `border-${colors.secondary[500]}`,
+    // Secondary colors (from theme)
+    secondary: currentThemeClasses.borderSecondary,
 
     // Neutral colors
-    neutral: `border-${colors.neutral[300]}`,
-    neutralLight: `border-${colors.neutral[200]}`,
+    neutral: 'border-gray-300',
+    neutralLight: 'border-gray-200',
 
     // Status colors
-    success: `border-${colors.success[400]}`,
-    successLight: `border-${colors.success[300]}`,
-    error: `border-${colors.error[400]}`,
-    warning: `border-${colors.warning[300]}`,
+    success: 'border-green-400',
+    successLight: 'border-green-300',
+    error: 'border-red-400',
+    warning: 'border-amber-300',
 
     // Visitor colors
-    visitor: `border-${colors.visitor[300]}`,
-    visitorLight: `border-${colors.visitor[200]}`,
-    visitorFocus: `focus:border-${colors.visitor[500]}`,
+    visitor: 'border-purple-300',
+    visitorLight: 'border-purple-200',
+    visitorFocus: 'focus:border-purple-500',
   },
 
   // Background colors
   backgrounds: {
     // Base colors
-    white: `bg-${colors.white}`,
-    whiteTransparent: `bg-${colors.white}/50`,
-    whiteTransparent90: `bg-${colors.white}/90`,
-    whiteHover: `hover:bg-${colors.white}/20`,
+    white: 'bg-white',
+    whiteTransparent: 'bg-white/50',
+    whiteTransparent90: 'bg-white/90',
+    whiteHover: 'hover:bg-white/20',
 
-    // Primary colors
-    primary: `bg-${colors.primary[600]}`,
-    primaryLight: `bg-${colors.primary[100]}`,
-    primaryLighter: `bg-${colors.primary[50]}`,
-    primaryHover: `hover:bg-${colors.primary[50]}`,
-    primaryActive: `hover:bg-${colors.primary[700]}`,
+    // Primary colors (from theme)
+    primary: currentThemeClasses.bgPrimary,
+    primaryLight: currentThemeClasses.bgPrimary100,
+    primaryLighter: currentThemeClasses.bgPrimaryLighter,
+    primaryHover: currentThemeClasses.hoverBgPrimary,
+    primaryActive: currentThemeClasses.bgPrimaryActive,
 
-    // Secondary colors
-    secondary: `bg-${colors.secondary[600]}`,
-    secondaryLight50: `bg-${colors.secondary[50]}`,
-    secondaryLight100: `bg-${colors.secondary[100]}`,
-    secondaryHover: `hover:bg-${colors.secondary[100]}`,
+    // Secondary colors (from theme)
+    secondary: currentThemeClasses.bgSecondary,
+    secondaryLight50: currentThemeClasses.bgSecondary50,
+    secondaryLight100: currentThemeClasses.bgSecondary100,
+    secondaryHover: currentThemeClasses.hoverBgSecondary,
 
     // Status colors
-    success: `bg-${colors.success[100]}`,
-    successLight: `bg-${colors.success[50]}`,
-    successMedium: `bg-${colors.success[500]}`,
-    error: `bg-${colors.error[100]}`,
-    errorLight: `bg-${colors.error[50]}`,
-    errorMedium: `bg-${colors.error[500]}`,
-    errorDark: `bg-${colors.error[600]}`,
-    warning: `bg-${colors.warning[100]}`,
-    warningLight: `bg-${colors.warning[50]}`,
-    warningMedium: `bg-${colors.warning[500]}`,
+    success: 'bg-green-100',
+    successLight: 'bg-green-50',
+    successMedium: 'bg-green-500',
+    error: 'bg-red-100',
+    errorLight: 'bg-red-50',
+    errorMedium: 'bg-red-500',
+    errorDark: 'bg-red-600',
+    warning: 'bg-amber-100',
+    warningLight: 'bg-amber-50',
+    warningMedium: 'bg-amber-500',
 
     // Neutral colors
-    neutral: `bg-${colors.neutral[100]}`,
-    neutralLight: `bg-${colors.neutral[50]}`,
-    neutralHover: `hover:bg-${colors.neutral[50]}`,
+    neutral: 'bg-gray-100',
+    neutralLight: 'bg-gray-50',
+    neutralHover: 'hover:bg-gray-50',
 
     // Visitor colors
-    visitor: `bg-${colors.visitor[100]}`,
-    visitorLight: `bg-${colors.visitor[50]}`,
-    visitorHover: `hover:bg-${colors.visitor[700]}`,
+    visitor: 'bg-purple-100',
+    visitorLight: 'bg-purple-50',
+    visitorHover: 'hover:bg-purple-700',
   },
 
   // Ring/focus colors
   rings: {
-    primary: `focus:ring-${colors.primary[400]}`,
+    primary: currentThemeClasses.ringPrimary,
   },
 
   // Status indicator circles (for attendance stats)
   indicators: {
-    present: `bg-${colors.success[500]}`,
-    absent: `bg-${colors.error[500]}`,
-    late: `bg-${colors.warning[500]}`,
-    excused: `bg-${colors.secondary[500]}`,
-    visitor: `bg-${colors.primary[500]}`,
+    present: 'bg-green-500',
+    absent: 'bg-red-500',
+    late: 'bg-amber-500',
+    excused: currentThemeClasses.bgSecondary500,
+    visitor: currentThemeClasses.bgPrimary500,
   },
 
   // Semantic status configurations
   status: {
     present: {
-      text: `text-${colors.success[600]}`,
-      bg: `bg-${colors.success[50]}`,
-      bgMedium: `bg-${colors.success[100]}`,
-      indicator: `bg-${colors.success[500]}`,
-      border: `border-${colors.success[300]}`,
+      text: 'text-green-600',
+      bg: 'bg-green-50',
+      bgMedium: 'bg-green-100',
+      indicator: 'bg-green-500',
+      border: 'border-green-300',
     },
     absent: {
-      text: `text-${colors.error[600]}`,
-      bg: `bg-${colors.error[50]}`,
-      bgMedium: `bg-${colors.error[100]}`,
-      indicator: `bg-${colors.error[500]}`,
-      border: `border-${colors.error[400]}`,
+      text: 'text-red-600',
+      bg: 'bg-red-50',
+      bgMedium: 'bg-red-100',
+      indicator: 'bg-red-500',
+      border: 'border-red-400',
     },
     late: {
-      text: `text-${colors.warning[600]}`,
-      bg: `bg-${colors.warning[50]}`,
-      bgMedium: `bg-${colors.warning[100]}`,
-      indicator: `bg-${colors.warning[500]}`,
-      border: `border-${colors.warning[300]}`,
+      text: 'text-amber-600',
+      bg: 'bg-amber-50',
+      bgMedium: 'bg-amber-100',
+      indicator: 'bg-amber-500',
+      border: 'border-amber-300',
     },
     excused: {
-      text: `text-${colors.secondary[600]}`,
-      bg: `bg-${colors.secondary[50]}`,
-      bgMedium: `bg-${colors.secondary[100]}`,
-      indicator: `bg-${colors.secondary[500]}`,
-      border: `border-${colors.secondary[300]}`,
+      text: currentThemeClasses.textSecondary,
+      bg: currentThemeClasses.bgSecondary50,
+      bgMedium: currentThemeClasses.bgSecondary100,
+      indicator: currentThemeClasses.bgSecondary500,
+      border: currentThemeClasses.borderSecondary300,
     },
   },
 
   // Student status badges
   studentStatus: {
     active: {
-      bg: `bg-${colors.success[100]}`,
-      text: `text-${colors.success[700]}`,
-      border: `border-${colors.success[300]}`,
+      bg: 'bg-green-100',
+      text: 'text-green-700',
+      border: 'border-green-300',
     },
     inactive: {
-      bg: `bg-${colors.neutral[100]}`,
-      text: `text-${colors.neutral[700]}`,
-      border: `border-${colors.neutral[300]}`,
+      bg: 'bg-gray-100',
+      text: 'text-gray-700',
+      border: 'border-gray-300',
     },
     'aged-out': {
-      bg: `bg-${colors.warning[100]}`,
-      text: `text-${colors.warning[700]}`,
-      border: `border-${colors.warning[300]}`,
+      bg: 'bg-amber-100',
+      text: 'text-amber-700',
+      border: 'border-amber-300',
     },
     moved: {
-      bg: `bg-${colors.secondary[100]}`,
-      text: `text-${colors.secondary[700]}`,
-      border: `border-${colors.secondary[300]}`,
+      bg: currentThemeClasses.bgSecondary100,
+      text: currentThemeClasses.textSecondaryDark,
+      border: currentThemeClasses.borderSecondary300,
     },
     visitor: {
-      bg: `bg-${colors.visitor[100]}`,
-      text: `text-${colors.visitor[700]}`,
-      border: `border-${colors.visitor[200]}`,
+      bg: 'bg-purple-100',
+      text: 'text-purple-700',
+      border: 'border-purple-200',
     },
   },
 } as const;
@@ -452,9 +662,9 @@ export const theme = {
  * Helper function to get complete button class string
  */
 export const buttonClasses = {
-  primary: `${theme.solids.primaryButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.solids.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
+  primary: `${theme.solids.primaryButton} ${theme.text.onPrimary} rounded-xl font-bold shadow-md ${theme.solids.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 
-  secondary: `${theme.solids.neutralButton} ${theme.text.neutralDark} rounded-xl font-bold ${theme.borders.neutral} border-2 ${theme.solids.neutralButtonHover} hover:shadow-md active:scale-95 transition-all`,
+  secondary: `${theme.solids.neutralButton} ${theme.text.onLight} rounded-xl font-bold ${theme.borders.neutral} border-2 ${theme.solids.neutralButtonHover} hover:shadow-md active:scale-95 transition-all`,
 
   success: `${theme.solids.successButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.solids.successButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 

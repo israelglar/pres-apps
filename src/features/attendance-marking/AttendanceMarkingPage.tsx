@@ -81,7 +81,7 @@ export const AttendanceMarkingPage = ({
     : formatDate(selectedDate);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel || (() => {})}
@@ -149,7 +149,7 @@ export const AttendanceMarkingPage = ({
                       </span>
                       {student.isVisitor && (
                         <span
-                          className={`px-1.5 py-0.5 ${theme.solids.badge} text-white text-xs font-bold rounded-full`}
+                          className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimary} text-xs font-bold rounded-full`}
                         >
                           Visitante
                         </span>
@@ -174,7 +174,7 @@ export const AttendanceMarkingPage = ({
             <div className="max-w-2xl mx-auto w-full">
               {/* Compact Progress Indicator */}
               <div className="flex items-center gap-2 mb-5">
-                <span className="text-white/90 text-xs font-medium">
+                <span className={`${theme.text.onPrimary}/90 text-xs font-medium`}>
                   {completedCount} / {students.length}
                 </span>
                 <div className="flex-1 bg-white/20 rounded-full h-1.5 overflow-hidden">

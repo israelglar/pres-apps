@@ -53,7 +53,7 @@ export function HomePage({
 
   return (
     <div
-      className={`min-h-screen ${theme.solids.background} flex items-center justify-center p-4 relative`}
+      className={`min-h-screen ${theme.solids.background} ${theme.text.onPrimary} flex items-center justify-center p-4 relative`}
       onTouchStart={logic.handleTouchStart}
       onTouchMove={logic.handleTouchMove}
       onTouchEnd={logic.handleTouchEnd}
@@ -62,7 +62,7 @@ export function HomePage({
       {import.meta.env.DEV && (
         <button
           onClick={() => logic.setShowDevTools(true)}
-          className="fixed top-4 left-4 p-2 text-white hover:bg-white/10 rounded-lg transition-colors z-50"
+          className={`fixed top-4 left-4 p-2 ${theme.text.onPrimary} hover:bg-white/10 rounded-lg transition-colors z-50`}
           aria-label="Dev Tools"
           title="Dev Tools"
         >
@@ -74,7 +74,7 @@ export function HomePage({
       {teacher && (
         <button
           onClick={handleSignOut}
-          className="fixed top-4 right-4 p-2 text-white hover:bg-white/10 rounded-lg transition-colors z-50"
+          className={`fixed top-4 right-4 p-2 ${theme.text.onPrimary} hover:bg-white/10 rounded-lg transition-colors z-50`}
           aria-label="Sair"
           title="Sair"
         >
@@ -116,9 +116,9 @@ export function HomePage({
         }}
       >
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white">Pré-adolescentes</h1>
+          <h1 className={`text-3xl font-bold ${theme.text.onPrimary}`}>Pré-adolescentes</h1>
           {teacher && (
-            <p className="text-sm text-white/80 mt-2">
+            <p className={`text-sm ${theme.text.onPrimary}/80 mt-2`}>
               Olá, {teacher.name.split(' ')[0]}!
             </p>
           )}
@@ -253,7 +253,7 @@ export function HomePage({
         {/* History Button */}
         <button
           onClick={onViewHistory}
-          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
+          className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
         >
           <History className="w-4 h-4" />
           <span className="font-semibold text-sm">Histórico de Presenças</span>
@@ -262,7 +262,7 @@ export function HomePage({
         {/* Manage Students Button */}
         <button
           onClick={onManageStudents}
-          className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
+          className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
         >
           <Users className="w-4 h-4" />
           <span className="font-semibold text-sm">Gerir Prés</span>
@@ -272,7 +272,7 @@ export function HomePage({
         {!logic.isRunningInPWA && logic.canInstall && (
           <button
             onClick={logic.promptInstall}
-            className="w-full bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3"
+            className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
           >
             <Download className="w-4 h-4" />
             <span className="font-semibold text-sm">

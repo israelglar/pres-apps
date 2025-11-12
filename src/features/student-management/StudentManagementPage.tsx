@@ -114,7 +114,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
   };
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
@@ -140,20 +140,20 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
             <div className="flex gap-2">
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${theme.text.onPrimary}/60`} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Procurar pré por nome..."
-                  className="w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  className={`w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 ${theme.text.onPrimary} placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30`}
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
                     className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
                   >
-                    <X className="w-4 h-4 text-white/60" />
+                    <X className={`w-4 h-4 ${theme.text.onPrimary}/60`} />
                   </button>
                 )}
               </div>
@@ -179,7 +179,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
               <div className="bg-white/10 rounded-xl p-4 space-y-4 border border-white/20">
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-xs font-bold text-white mb-2">
+                  <label className={`block text-xs font-bold ${theme.text.onPrimary} mb-2`}>
                     Estado
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -207,7 +207,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
 
                 {/* Visitor Filter */}
                 <div>
-                  <label className="block text-xs font-bold text-white mb-2">
+                  <label className={`block text-xs font-bold ${theme.text.onPrimary} mb-2`}>
                     Visitantes
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -252,8 +252,8 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
           {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
-              <p className="text-base text-white/90 font-medium">
+              <Loader2 className={`w-16 h-16 ${theme.text.onPrimary} animate-spin mb-4`} />
+              <p className={`text-base ${theme.text.onPrimary}/90 font-medium`}>
                 A carregar prés...
               </p>
             </div>
@@ -282,7 +282,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
           <>
             {students.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-base text-white/90 font-medium mb-4">
+                <p className={`text-base ${theme.text.onPrimary}/90 font-medium mb-4`}>
                   Nenhum pré encontrado
                 </p>
                 <button
@@ -295,11 +295,11 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
               </div>
             ) : filteredStudents.length === 0 ? (
               <div className="text-center py-16">
-                <Search className="w-16 h-16 text-white/60 mx-auto mb-4" />
-                <p className="text-base text-white/90 font-medium mb-2">
+                <Search className={`w-16 h-16 ${theme.text.onPrimary}/60 mx-auto mb-4`} />
+                <p className={`text-base ${theme.text.onPrimary}/90 font-medium mb-2`}>
                   Nenhum pré encontrado
                 </p>
-                <p className="text-sm text-white/80">
+                <p className={`text-sm ${theme.text.onPrimary}/80`}>
                   Tenta procurar com outro nome
                 </p>
                 <button
@@ -312,7 +312,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
             ) : (
               <>
                 <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm text-white/90 font-medium">
+                  <p className={`text-sm ${theme.text.onPrimary}/90 font-medium`}>
                     {searchQuery ? (
                       <>
                         A mostrar {filteredStudents.length} de {students.length} {students.length === 1 ? 'pré' : 'prés'}

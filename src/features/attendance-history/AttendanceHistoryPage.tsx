@@ -37,7 +37,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
   return (
     <div
-      className={`fixed inset-0 ${theme.solids.background} overflow-y-auto`}
+      className={`fixed inset-0 ${theme.solids.background} ${theme.text.onPrimary} overflow-y-auto`}
       onTouchStart={swipeGesture.handleTouchStart}
       onTouchMove={swipeGesture.handleTouchMove}
       onTouchEnd={swipeGesture.handleTouchEnd}
@@ -70,7 +70,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
                 selectedServiceTime === "09:00:00"
                   ? theme.text.primaryDark
-                  : `${theme.text.white} ${theme.backgrounds.whiteHover}`
+                  : `${theme.text.onPrimary} ${theme.backgrounds.whiteHover}`
               }`}
             >
               09:00
@@ -80,7 +80,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
                 selectedServiceTime === "11:00:00"
                   ? theme.text.primaryDark
-                  : `${theme.text.white} ${theme.backgrounds.whiteHover}`
+                  : `${theme.text.onPrimary} ${theme.backgrounds.whiteHover}`
               }`}
             >
               11:00
@@ -91,8 +91,8 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         {/* Loading State */}
         {isLoading && !history && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-16 h-16 text-white animate-spin mb-4" />
-            <p className="text-white text-base font-semibold">
+            <Loader2 className={`w-16 h-16 ${theme.text.onPrimary} animate-spin mb-4`} />
+            <p className={`${theme.text.onPrimary} text-base font-semibold`}>
               A carregar histórico...
             </p>
           </div>

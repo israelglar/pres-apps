@@ -50,7 +50,7 @@ export function PageHeader({
         {/* Left: Back Button with "Voltar" text */}
         <button
           onClick={onBack}
-          className={`flex items-center gap-2 ${theme.text.white} ${theme.text.whiteHover} transition-colors`}
+          className={`flex items-center gap-2 ${theme.text.onPrimary} ${theme.text.onPrimaryHover} transition-colors`}
         >
           <svg
             className="w-5 h-5"
@@ -85,8 +85,8 @@ export function PageHeader({
 
       {/* Title Section */}
       <div className="px-4 pb-4">
-        <h1 className={`text-2xl font-bold ${theme.text.white} mb-1`}>{title}</h1>
-        <p className={`text-sm font-medium ${theme.text.whiteTransparent}`}>{subtitle}</p>
+        <h1 className={`text-2xl font-bold ${theme.text.onPrimary} mb-1`}>{title}</h1>
+        <p className={`text-sm font-medium ${theme.text.onPrimary}/90`}>{subtitle}</p>
       </div>
     </header>
   );

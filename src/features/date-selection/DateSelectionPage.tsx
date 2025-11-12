@@ -103,7 +103,7 @@ export function DateSelectionPage({
         style={{ maxHeight: "calc(100vh - 2rem)" }}
       >
         <div className="text-center mb-6 flex-shrink-0">
-          <h1 className="text-3xl font-bold text-white">Selecionar Data</h1>
+          <h1 className={`text-3xl font-bold ${theme.text.onPrimary}`}>Selecionar Data</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden flex-1 min-h-0">
@@ -174,7 +174,7 @@ export function DateSelectionPage({
                                 </span>
                                 {dateLabel && (
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-bold ${theme.solids.badge} text-white rounded-full shadow-sm`}
+                                    className={`px-2 py-0.5 text-xs font-bold ${theme.solids.badge} ${theme.text.onPrimary} rounded-full shadow-sm`}
                                   >
                                     {dateLabel}
                                   </span>
