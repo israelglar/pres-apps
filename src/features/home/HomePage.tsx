@@ -128,13 +128,19 @@ export function HomePage({
                       className="fixed inset-0 z-40"
                       onClick={() => setShowUserMenu(false)}
                     />
-                    <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 min-w-[180px]`}>
+                    <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 min-w-[200px]`}>
+                      <div className={`px-4 py-3 border-b ${theme.borders.neutralLight}`}>
+                        <p className={`text-xs ${theme.text.neutral} mb-1`}>Olá,</p>
+                        <p className={`font-semibold text-sm ${theme.text.neutralDarker}`}>
+                          {teacher.name}
+                        </p>
+                      </div>
                       <button
                         onClick={() => {
                           handleSignOut();
                           setShowUserMenu(false);
                         }}
-                        className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center gap-3 rounded-xl ${theme.text.neutralDarker}`}
+                        className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center gap-3 rounded-b-xl ${theme.text.neutralDarker}`}
                       >
                         <LogOut className="w-4 h-4" />
                         <span className="font-medium text-sm">Sair</span>
@@ -145,14 +151,9 @@ export function HomePage({
               </div>
             )}
 
-            {/* Title and Greeting */}
+            {/* Title */}
             <div className="text-center">
               <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>Pré-adolescentes</h1>
-              {teacher && (
-                <p className={`text-base ${theme.text.neutral}`}>
-                  Olá, {teacher.name.split(' ')[0]}!
-                </p>
-              )}
             </div>
           </div>
 
