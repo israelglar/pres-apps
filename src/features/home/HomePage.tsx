@@ -116,9 +116,9 @@ export function HomePage({
         }}
       >
         <div className="text-center mb-6">
-          <h1 className={`text-3xl font-bold ${theme.text.primary}`}>Pré-adolescentes</h1>
+          <h1 className={`text-3xl font-semibold ${theme.text.primary} leading-relaxed`}>Pré-adolescentes</h1>
           {teacher && (
-            <p className={`text-sm ${theme.text.onLightSecondary} mt-2`}>
+            <p className={`text-base ${theme.text.onLightSecondary} mt-2 leading-relaxed`}>
               Olá, {teacher.name.split(' ')[0]}!
             </p>
           )}
@@ -243,8 +243,8 @@ export function HomePage({
             <Calendar
               className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`}
             />
-            <h2 className="text-2xl font-bold mb-1">Registar Presenças</h2>
-            <p className={`${theme.text.neutral} text-base font-medium`}>
+            <h2 className={`text-2xl font-semibold mb-1 ${theme.text.primary} leading-relaxed`}>Registar Presenças</h2>
+            <p className={`${theme.text.neutral} text-base leading-relaxed`}>
               Marcar presenças para a lição de hoje
             </p>
           </button>

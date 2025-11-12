@@ -103,7 +103,7 @@ export function DateSelectionPage({
         style={{ maxHeight: "calc(100vh - 2rem)" }}
       >
         <div className="text-center mb-6 flex-shrink-0">
-          <h1 className={`text-3xl font-bold ${theme.text.primary}`}>Selecionar Data</h1>
+          <h1 className={`text-3xl font-semibold ${theme.text.primary} leading-relaxed`}>Selecionar Data</h1>
         </div>
 
         <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl flex flex-col overflow-hidden flex-1 min-h-0 border-2 ${theme.borders.primaryLight}`}>

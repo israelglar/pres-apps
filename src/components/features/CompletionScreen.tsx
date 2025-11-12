@@ -42,10 +42,10 @@ export function CompletionScreen({
               className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`}
             />
           </div>
-          <h2 className={`text-2xl md:text-3xl font-bold ${theme.text.neutralDarker} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-semibold ${theme.text.neutralDarker} mb-4 leading-relaxed`}>
             Confirmar Presenças?
           </h2>
-          <p className={`${theme.text.neutral} mb-6 md:mb-8 text-sm md:text-base`}>
+          <p className={`${theme.text.neutral} mb-6 md:mb-8 text-base leading-relaxed`}>
             {lessonName}
           </p>
           <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">

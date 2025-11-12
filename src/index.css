@@ -1,14 +1,17 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* Override Tailwind's h-screen to use dvh instead of vh for mobile browsers */
 @theme {
   --spacing-screen: 100dvh;
+  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 html, body {
   overflow: hidden;
   height: 100dvh; /* dvh = dynamic viewport height, accounts for mobile browser bars */
   width: 100vw;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 #root {

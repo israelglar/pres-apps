@@ -85,8 +85,8 @@ export function PageHeader({
 
       {/* Title Section */}
       <div className="px-4 pb-4">
-        <h1 className={`text-2xl font-bold ${theme.text.onPrimaryButton} mb-1`}>{title}</h1>
-        <p className={`text-sm font-medium ${theme.text.onPrimaryButton} opacity-90`}>{subtitle}</p>
+        <h1 className={`text-2xl font-semibold ${theme.text.onPrimaryButton} mb-1 leading-relaxed`}>{title}</h1>
+        <p className={`text-base ${theme.text.onPrimaryButton} opacity-90 leading-relaxed`}>{subtitle}</p>
       </div>
     </header>
   );

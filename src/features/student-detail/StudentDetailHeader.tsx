@@ -34,12 +34,12 @@ export function StudentDetailHeader({
   return (
     <div className="space-y-3">
       {/* Student Info Card */}
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-4 border border-white/50`}>
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-4 hover:shadow-xl transition-shadow`}>
         {/* Header with Name and Action Icons */}
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Name and Badges */}
           <div className="flex-1 min-w-0">
-            <h1 className={`text-2xl font-bold ${theme.text.neutralDarkest} mb-2 break-words`}>
+            <h1 className={`text-3xl font-semibold ${theme.text.neutralDarkest} mb-2 break-words leading-relaxed`}>
               {student.name}
             </h1>
 
@@ -86,15 +86,15 @@ export function StudentDetailHeader({
 
         {/* Age */}
         {age !== null && (
-          <div className={`mb-2 text-sm ${theme.text.neutralDark}`}>
+          <div className={`mb-2 text-base ${theme.text.neutralDark} leading-relaxed`}>
             <span className="font-semibold">Idade:</span> {age} anos
           </div>
         )}
 
         {/* Notes */}
         {student.notes && (
-          <div className={`${theme.backgrounds.neutralLight} rounded-lg p-2.5 border ${theme.borders.neutralLight}`}>
-            <p className={`text-sm ${theme.text.neutralDark}`}>
+          <div className={`${theme.backgrounds.neutralLight} rounded-lg p-3 border ${theme.borders.neutralLight}`}>
+            <p className={`text-base ${theme.text.neutralDark} leading-relaxed`}>
               <span className="font-semibold">Notas:</span> {student.notes}
             </p>
           </div>
@@ -102,44 +102,44 @@ export function StudentDetailHeader({
 
         {/* Statistics */}
         {stats.total > 0 && (
-          <div className={`mt-3 pt-3 border-t ${theme.borders.neutralLight}`}>
-            <h2 className={`text-xs font-bold ${theme.text.neutralDarker} mb-2 flex items-center gap-1.5`}>
-              <TrendingUp className={`w-3.5 h-3.5 ${theme.text.primary}`} />
+          <div className={`mt-4 pt-4 border-t ${theme.borders.neutralLight}`}>
+            <h2 className={`text-sm font-semibold ${theme.text.neutralDarker} mb-3 flex items-center gap-2`}>
+              <TrendingUp className={`w-4 h-4 ${theme.text.primary}`} />
               Estatísticas
             </h2>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               {/* Attendance Rate */}
-              <div className="text-center p-2">
-                <div className={`text-xl font-bold ${theme.text.primaryDark} mb-0.5`}>
+              <div className="text-center p-3 bg-gray-50 rounded-xl">
+                <div className={`text-2xl font-semibold ${theme.text.primaryDark} mb-1`}>
                   {stats.attendanceRate}%
                 </div>
-                <div className={`text-xs ${theme.text.neutral}`}>Taxa</div>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>Taxa</div>
               </div>
 
               {/* Present Count */}
-              <div className="text-center p-2">
-                <div className={`text-xl font-bold ${theme.text.success} mb-0.5`}>
+              <div className="text-center p-3 bg-green-50 rounded-xl">
+                <div className={`text-2xl font-semibold ${theme.text.success} mb-1`}>
                   {stats.present}
                 </div>
-                <div className={`text-xs ${theme.text.neutral}`}>Presenças</div>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>Presenças</div>
               </div>
 
               {/* Absent Count */}
-              <div className="text-center p-2">
-                <div className={`text-xl font-bold ${theme.text.error} mb-0.5`}>
+              <div className="text-center p-3 bg-red-50 rounded-xl">
+                <div className={`text-2xl font-semibold ${theme.text.error} mb-1`}>
                   {stats.absent}
                 </div>
-                <div className={`text-xs ${theme.text.neutral}`}>Faltas</div>
+                <div className={`text-xs ${theme.text.neutral} font-medium`}>Faltas</div>
               </div>
             </div>
 
             {/* Additional Stats Row (if excused exists) */}
             {stats.excused > 0 && (
-              <div className={`flex justify-center mt-2 pt-2 border-t ${theme.borders.neutralLight}`}>
-                <div className="text-center">
-                  <span className={`text-lg font-bold ${theme.text.secondary}`}>{stats.excused}</span>
-                  <span className={`text-xs ${theme.text.neutral} ml-1`}>Justificadas</span>
+              <div className={`flex justify-center mt-3 pt-3 border-t ${theme.borders.neutralLight}`}>
+                <div className="text-center p-3 bg-blue-50 rounded-xl">
+                  <span className={`text-xl font-semibold ${theme.text.secondary}`}>{stats.excused}</span>
+                  <span className={`text-sm ${theme.text.neutral} ml-2 font-medium`}>Justificadas</span>
                 </div>
               </div>
             )}

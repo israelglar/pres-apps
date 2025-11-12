@@ -19,16 +19,16 @@ export function AttendanceTimelineList({
   // Empty state
   if (!isLoading && records.length === 0) {
     return (
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 text-center`}>
-        <div className="flex flex-col items-center gap-3">
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-8 text-center`}>
+        <div className="flex flex-col items-center gap-4">
           <div className={`w-16 h-16 rounded-full ${theme.backgrounds.neutral} flex items-center justify-center`}>
             <CalendarX className={`w-8 h-8 ${theme.text.neutralLight}`} />
           </div>
           <div>
-            <h3 className={`text-base font-bold ${theme.text.neutralDarker} mb-1`}>
+            <h3 className={`text-xl font-semibold ${theme.text.neutralDarker} mb-2 leading-relaxed`}>
               Sem registos de presença
             </h3>
-            <p className={`text-sm ${theme.text.neutral}`}>
+            <p className={`text-base ${theme.text.neutral} leading-relaxed`}>
               Este pré ainda não tem presenças registadas
             </p>
           </div>
@@ -42,11 +42,11 @@ export function AttendanceTimelineList({
       {/* Section Header */}
       <div className="flex items-center gap-2 px-1">
         <History className={`w-5 h-5 ${theme.text.primary}`} />
-        <h2 className={`text-lg font-bold ${theme.text.neutralDarker}`}>
+        <h2 className={`text-xl font-semibold ${theme.text.neutralDarker} leading-relaxed`}>
           Histórico de Presenças
         </h2>
         {records.length > 0 && (
-          <span className={`ml-auto text-sm ${theme.text.neutral}`}>
+          <span className={`ml-auto text-base ${theme.text.neutral} font-medium`}>
             {records.length} {records.length === 1 ? 'registo' : 'registos'}
           </span>
         )}

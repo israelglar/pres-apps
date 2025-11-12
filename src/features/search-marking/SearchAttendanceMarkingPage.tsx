@@ -196,17 +196,17 @@ export const SearchAttendanceMarkingPage: React.FC<
                           className="absolute inset-0 flex items-center justify-end px-3 bg-amber-50/40 rounded-xl z-10"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className={`flex items-center gap-2 ${theme.backgrounds.warning} border-l-4 ${theme.borders.success} rounded-lg px-3 py-1.5 shadow-lg`}>
-                            <AlertTriangle className={`w-4 h-4 ${theme.text.warning} flex-shrink-0`} />
-                            <span className={`text-xs ${theme.text.warning} font-semibold whitespace-nowrap`}>
+                          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-300 text-amber-700 rounded-lg px-3 py-1.5 shadow-lg">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                            <span className="text-xs font-semibold whitespace-nowrap">
                               Ausente há {alert.absenceCount} {alert.absenceCount === 1 ? 'domingo' : 'domingos'}
                             </span>
                             <button
                               onClick={() => dismissAbsenceAlert(studentIdNumber)}
-                              className={`ml-1 p-0.5 rounded ${theme.backgrounds.whiteHover} transition-colors`}
+                              className="ml-1 p-0.5 rounded text-amber-700/80 hover:text-amber-900 hover:bg-white/20 transition-colors"
                               aria-label="Dispensar alerta"
                             >
-                              <X className={`w-4 h-4 ${theme.text.warning}`} />
+                              <X className="w-4 h-4" />
                             </button>
                           </div>
                         </div>
