@@ -94,8 +94,8 @@ export function StudentFormModal({
       <div className="flex items-start justify-center py-8 px-4 min-h-screen">
         <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in`}>
         {/* Header */}
-        <div className={`${theme.solids.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
-          <h2 className="text-2xl font-bold text-white">
+        <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between sticky top-0 z-10 rounded-t-2xl`}>
+          <h2 className={`text-2xl font-bold ${theme.text.onPrimaryButton}`}>
             {isEditMode ? 'Editar Pré' : 'Adicionar Pré'}
           </h2>
           <button
@@ -103,7 +103,7 @@ export function StudentFormModal({
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             disabled={isSubmitting}
           >
-            <X className="w-4 h-4 text-white" />
+            <X className={`w-4 h-4 ${theme.text.onPrimaryButton}`} />
           </button>
         </div>
 

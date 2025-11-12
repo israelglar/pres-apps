@@ -54,7 +54,7 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
         {/* Student Name */}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <p className={`font-medium ${theme.text.neutralDarker} text-sm`}>{record.student?.name || 'Unknown'}</p>
+            <p className={`font-medium ${theme.text.primary} text-sm`}>{record.student?.name || 'Unknown'}</p>
             {/* Visitor Indicator */}
             {record.student?.is_visitor && (
               <div

@@ -65,7 +65,7 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
           <div className="flex-1 min-w-0">
             {/* Name, Status, and Visitor Badge */}
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 className={`text-sm font-bold ${theme.text.neutralDarkest}`}>
+              <h3 className={`text-sm font-bold ${theme.text.primary}`}>
                 {student.name}
               </h3>
               {student.status !== 'active' && getStatusBadge(student.status)}

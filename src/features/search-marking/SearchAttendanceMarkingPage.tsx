@@ -1,7 +1,8 @@
-import { AlertTriangle, CheckCircle, Search, UserPlus, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, UserPlus, X } from "lucide-react";
 import React from "react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
+import { SearchBar } from "../../components/ui/SearchBar";
 import { CompletionScreen } from "../../components/features/CompletionScreen";
 import { VisitorDialog } from "../../components/features/VisitorDialog";
 import { UnsavedChangesDialog } from "../../components/features/UnsavedChangesDialog";
@@ -79,7 +80,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     : formatDate(date);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       {/* Header Section */}
       <PageHeader
         onBack={onCancel}
@@ -93,34 +94,32 @@ export const SearchAttendanceMarkingPage: React.FC<
       <div className="flex flex-col h-full overflow-hidden">
         {/* Search Bar and Visitor Button - Fixed at top */}
         <div className="flex-shrink-0 p-5 pb-3">
-          <div className="relative mb-4">
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.onPrimary} w-4 h-4`} />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Procurar pelo nome..."
-              className={`w-full pl-10 pr-16 py-3 rounded-xl text-sm bg-white/10 ${theme.text.onPrimary} placeholder-white/60 border border-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all`}
-              autoFocus
-            />
-            <span className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme.text.onPrimary} font-bold text-sm`}>
-              {presentCount}/{totalCount} presentes
-            </span>
-          </div>
+          <SearchBar
+            ref={searchInputRef}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Procurar pelo nome..."
+            autoFocus
+            className="mb-4"
+            rightContent={
+              <span className={`${theme.text.primary} font-bold text-sm`}>
+                {presentCount}/{totalCount} presentes
+              </span>
+            }
+          />
 
           {/* Action Buttons */}
           <div className="flex gap-3">
             <button
               onClick={visitorManagement.openVisitorDialog}
-              className={`flex-1 px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium ${theme.backgrounds.whiteTransparent90} transition-all shadow-lg flex items-center justify-center gap-2`}
+              className={`flex-1 px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium border-2 ${theme.borders.primary} hover:shadow-md transition-all flex items-center justify-center gap-2`}
             >
               <UserPlus className="w-4 h-4" />
               <span>Adicionar Visitante</span>
             </button>
             <button
               onClick={handleComplete}
-              className={`px-5 py-3 ${theme.backgrounds.whiteTransparent} ${theme.text.white} rounded-xl text-sm font-medium ${theme.backgrounds.whiteHover} transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-sm`}
+              className={`px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium ${theme.solids.primaryButtonHover} hover:shadow-md transition-all flex items-center justify-center gap-2`}
             >
               <CheckCircle className="w-4 h-4" />
               <span>Concluir</span>
@@ -132,7 +131,7 @@ export const SearchAttendanceMarkingPage: React.FC<
         <div className="flex-1 overflow-y-auto px-5 pb-5">
           <div className="space-y-2">
             {displayedStudents.length === 0 && searchQuery.trim() !== "" ? (
-              <div className={`text-center py-8 ${theme.text.onPrimary}/80`}>
+              <div className={`text-center py-8 ${theme.text.neutral}`}>
                 Nenhum pré encontrado
               </div>
             ) : (
@@ -152,36 +151,27 @@ export const SearchAttendanceMarkingPage: React.FC<
                             handleMarkPresent(student);
                           }
                         }}
-                        className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
+                        className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 ${
                           isMarked
-                            ? `${theme.solids.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
-                            : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
+                            ? `${theme.backgrounds.success} border-2 ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer shadow-sm`
+                            : `${theme.backgrounds.white} border-2 ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all shadow-sm`
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          {isMarked && (
-                            <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.solids.activeItem}`}
-                            >
-                              <span className={`${theme.text.onPrimary} font-bold text-xs`}>
-                                {student.name.charAt(0)}
-                              </span>
-                            </div>
-                          )}
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <span
                                 className={`text-sm font-semibold ${
                                   isMarked
-                                    ? theme.text.primaryDarker
-                                    : theme.text.neutralDarker
+                                    ? 'text-green-800'
+                                    : theme.text.primary
                                 }`}
                               >
                                 {student.name}
                               </span>
                               {student.isVisitor && (
                                 <span
-                                  className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimary} text-xs font-bold rounded-full`}
+                                  className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimaryButton} text-xs font-bold rounded-full`}
                                 >
                                   Visitante
                                 </span>
@@ -191,10 +181,10 @@ export const SearchAttendanceMarkingPage: React.FC<
                         </div>
                         {isMarked && (
                           <div
-                            className={`${theme.backgrounds.primaryLight} rounded-full p-0.5`}
+                            className="bg-white rounded-full p-0.5"
                           >
                             <CheckCircle
-                              className={`w-4 h-4 ${theme.text.primary}`}
+                              className="w-4 h-4 text-green-600"
                             />
                           </div>
                         )}
@@ -203,7 +193,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                       {/* Absence Alert Overlay - Semi-transparent overlay that blocks clicks */}
                       {alert && !isMarked && (
                         <div
-                          className={`absolute inset-0 flex items-center justify-end px-3 ${theme.backgrounds.warningLight} rounded-xl z-10`}
+                          className="absolute inset-0 flex items-center justify-end px-3 bg-amber-50/40 rounded-xl z-10"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className={`flex items-center gap-2 ${theme.backgrounds.warning} border-l-4 ${theme.borders.success} rounded-lg px-3 py-1.5 shadow-lg`}>

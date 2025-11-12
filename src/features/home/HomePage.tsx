@@ -53,7 +53,7 @@ export function HomePage({
 
   return (
     <div
-      className={`min-h-screen ${theme.solids.background} ${theme.text.onPrimary} flex items-center justify-center p-4 relative`}
+      className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative"
       onTouchStart={logic.handleTouchStart}
       onTouchMove={logic.handleTouchMove}
       onTouchEnd={logic.handleTouchEnd}
@@ -62,7 +62,7 @@ export function HomePage({
       {import.meta.env.DEV && (
         <button
           onClick={() => logic.setShowDevTools(true)}
-          className={`fixed top-4 left-4 p-2 ${theme.text.onPrimary} hover:bg-white/10 rounded-lg transition-colors z-50`}
+          className={`fixed top-4 left-4 p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all z-50`}
           aria-label="Dev Tools"
           title="Dev Tools"
         >
@@ -74,7 +74,7 @@ export function HomePage({
       {teacher && (
         <button
           onClick={handleSignOut}
-          className={`fixed top-4 right-4 p-2 ${theme.text.onPrimary} hover:bg-white/10 rounded-lg transition-colors z-50`}
+          className={`fixed top-4 right-4 p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all z-50`}
           aria-label="Sair"
           title="Sair"
         >
@@ -116,9 +116,9 @@ export function HomePage({
         }}
       >
         <div className="text-center mb-6">
-          <h1 className={`text-3xl font-bold ${theme.text.onPrimary}`}>Pré-adolescentes</h1>
+          <h1 className={`text-3xl font-bold ${theme.text.primary}`}>Pré-adolescentes</h1>
           {teacher && (
-            <p className={`text-sm ${theme.text.onPrimary}/80 mt-2`}>
+            <p className={`text-sm ${theme.text.onLightSecondary} mt-2`}>
               Olá, {teacher.name.split(' ')[0]}!
             </p>
           )}
@@ -129,7 +129,7 @@ export function HomePage({
           // LESSON DAY LAYOUT - Quick attendance flow
           <div className="space-y-3">
             {/* Lesson Details Card */}
-            <div className="bg-white rounded-xl shadow-xl p-6">
+            <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-xl p-6 border-2 ${theme.borders.primaryLight}`}>
               <div className="flex items-center gap-3 mb-4">
                 <div className={`${theme.backgrounds.primaryLight} p-2 rounded-lg`}>
                   <Calendar className={`w-6 h-6 ${theme.text.primary}`} />
@@ -144,13 +144,13 @@ export function HomePage({
                         href={logic.todaySchedules[0].lesson.resource_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-base font-bold ${theme.text.primaryDark} hover:underline flex items-center gap-2`}
+                        className={`text-base font-bold ${theme.text.primary} hover:underline flex items-center gap-2`}
                       >
                         {logic.todaySchedules[0].lesson.name}
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     ) : (
-                      <p className={`text-base font-bold ${theme.text.primaryDark}`}>
+                      <p className={`text-base font-bold ${theme.text.primary}`}>
                         {logic.todaySchedules[0].lesson.name}
                       </p>
                     )
@@ -170,7 +170,7 @@ export function HomePage({
                     Escolher Horário
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex gap-3">
                   {logic.todaySchedules.map((schedule) => {
                     // Skip if service_time_id is null
                     if (!schedule.service_time_id) return null;
@@ -187,19 +187,19 @@ export function HomePage({
                       <button
                         key={schedule.service_time_id}
                         onClick={() => onQuickStart?.(logic.today, schedule.service_time_id!)}
-                        className={`px-3 py-2.5 ${buttonClasses.primary} text-sm flex flex-col items-center justify-center gap-2`}
+                        className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border-2 ${theme.borders.primary} ${theme.backgrounds.primaryLighter} hover:shadow-md ${theme.borders.primaryHover} transition-all cursor-pointer`}
                       >
                         {/* Top: Clock + Time */}
-                        <div className={`flex items-center gap-2 ${!hasAttendance ? 'text-xl' : ''}`}>
-                          <Clock className={!hasAttendance ? 'w-5 h-5' : 'w-4 h-4'} />
-                          <span className="font-bold">{schedule.serviceTimeTime.substring(0, 5)}</span>
+                        <div className={`flex items-center gap-2 ${!hasAttendance ? 'text-base' : 'text-sm'}`}>
+                          <Clock className="w-4 h-4" />
+                          <span className={`font-bold ${theme.text.primary}`}>{schedule.serviceTimeTime.substring(0, 5)}</span>
                         </div>
 
                         {/* Bottom: Attendance stats if available */}
                         {hasAttendance && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mt-2">
                             {/* Total count */}
-                            <span className="text-xl font-bold">
+                            <span className={`text-xl font-bold ${theme.text.primary}`}>
                               {totalPresent}
                             </span>
                             {/* Stats circles */}
@@ -216,17 +216,17 @@ export function HomePage({
             {/* Choose Another Date Button */}
             <button
               onClick={onNavigate}
-              className={`w-full px-5 py-3 ${buttonClasses.secondary} text-sm flex items-center justify-center gap-2`}
+              className={`w-full ${theme.backgrounds.primaryLighter} ${theme.text.primary} rounded-xl shadow-lg px-5 py-3 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border-2 ${theme.borders.primaryLight} text-sm`}
             >
               <Calendar className="w-4 h-4" />
-              Escolher Outra Data
+              <span className="font-semibold">Escolher Outra Data</span>
             </button>
           </div>
         ) : (
           // REGULAR LAYOUT - Date selection flow
           <button
             onClick={logic.handleStartClick}
-            className={`w-full bg-white ${theme.text.primary} rounded-xl shadow-xl p-8 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden`}
+            className={`w-full ${theme.backgrounds.primaryLighter} ${theme.text.primary} rounded-xl shadow-xl p-8 hover:scale-105 active:scale-95 transition-transform duration-200 group relative overflow-hidden border-2 ${theme.borders.primaryLight}`}
           >
             {/* Swipe indicator */}
             {logic.swipeOffset < 0 && !logic.isAnimatingSwipe && (
@@ -253,7 +253,7 @@ export function HomePage({
         {/* History Button */}
         <button
           onClick={onViewHistory}
-          className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
+          className={`w-full ${theme.backgrounds.primaryLighter} ${theme.text.primary} rounded-xl shadow-lg px-5 py-3 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border-2 ${theme.borders.primaryLight} mt-3`}
         >
           <History className="w-4 h-4" />
           <span className="font-semibold text-sm">Histórico de Presenças</span>
@@ -262,7 +262,7 @@ export function HomePage({
         {/* Manage Students Button */}
         <button
           onClick={onManageStudents}
-          className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
+          className={`w-full ${theme.backgrounds.primaryLighter} ${theme.text.primary} rounded-xl shadow-lg px-5 py-3 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border-2 ${theme.borders.primaryLight} mt-3`}
         >
           <Users className="w-4 h-4" />
           <span className="font-semibold text-sm">Gerir Prés</span>
@@ -272,7 +272,7 @@ export function HomePage({
         {!logic.isRunningInPWA && logic.canInstall && (
           <button
             onClick={logic.promptInstall}
-            className={`w-full bg-white/20 backdrop-blur-sm ${theme.text.onPrimary} rounded-lg shadow-lg px-5 py-3 hover:bg-white/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border border-white/30 mt-3`}
+            className={`w-full ${theme.backgrounds.primaryLighter} ${theme.text.primary} rounded-xl shadow-lg px-5 py-3 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 border-2 ${theme.borders.primaryLight} mt-3`}
           >
             <Download className="w-4 h-4" />
             <span className="font-semibold text-sm">

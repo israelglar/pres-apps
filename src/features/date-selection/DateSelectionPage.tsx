@@ -96,20 +96,20 @@ export function DateSelectionPage({
 
   return (
     <div
-      className={`min-h-screen ${theme.solids.background} flex flex-col p-4`}
+      className="min-h-screen bg-gray-50 flex flex-col p-4"
     >
       <div
         className="max-w-2xl w-full mx-auto flex flex-col"
         style={{ maxHeight: "calc(100vh - 2rem)" }}
       >
         <div className="text-center mb-6 flex-shrink-0">
-          <h1 className={`text-3xl font-bold ${theme.text.onPrimary}`}>Selecionar Data</h1>
+          <h1 className={`text-3xl font-bold ${theme.text.primary}`}>Selecionar Data</h1>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden flex-1 min-h-0">
+        <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl flex flex-col overflow-hidden flex-1 min-h-0 border-2 ${theme.borders.primaryLight}`}>
           <div className="flex-1 overflow-y-auto p-5">
             <div className="mb-5">
-              <label className="block text-gray-800 font-bold mb-3 text-xs">
+              <label className={`block ${theme.text.primary} font-bold mb-3 text-xs`}>
                 Data da Lição
               </label>
 
@@ -118,7 +118,7 @@ export function DateSelectionPage({
                 <button
                   type="button"
                   onClick={() => logic.setIsOpen(!logic.isOpen)}
-                  className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.solids.cardNeutral} ${theme.borders.primaryHover} ${theme.backgrounds.primaryHover} transition-all shadow-md hover:shadow-lg flex items-center justify-between`}
+                  className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.backgrounds.white} ${theme.borders.primaryHover} hover:shadow-lg transition-all shadow-md flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -160,7 +160,7 @@ export function DateSelectionPage({
                             logic.setSelectedDate(sunday);
                             logic.setIsOpen(false);
                           }}
-                          className={`w-full px-4 py-3 text-left hover:bg-cyan-50 transition-all flex items-center justify-between border-b ${theme.borders.neutralLight} last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
+                          className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center justify-between border-b ${theme.borders.neutralLight} last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
                             isSelected ? theme.solids.selectedItem : ""
                           }`}
                         >
@@ -226,10 +226,10 @@ export function DateSelectionPage({
                       <button
                         type="button"
                         onClick={() => logic.setShowFutureLessons(true)}
-                        className={`w-full px-4 py-3 text-left border-t-2 border-emerald-200 ${theme.backgrounds.secondaryLight50} ${theme.backgrounds.secondaryHover} transition-all flex items-center justify-center gap-2 last:rounded-b-xl`}
+                        className={`w-full px-4 py-3 text-left border-t-2 ${theme.borders.primaryLight} ${theme.backgrounds.primaryLighter} ${theme.backgrounds.primaryHover} transition-all flex items-center justify-center gap-2 last:rounded-b-xl`}
                       >
-                        <Eye className="w-4 h-4 text-blue-600" />
-                        <span className="font-bold text-sm text-blue-700">
+                        <Eye className={`w-4 h-4 ${theme.text.primary}`} />
+                        <span className={`font-bold text-sm ${theme.text.primary}`}>
                           Ver Lições Futuras
                         </span>
                       </button>
@@ -278,9 +278,9 @@ export function DateSelectionPage({
               </div>
 
               {/* Service Time Selector */}
-              <div className="border-t border-cyan-200 pt-4">
+              <div className={`border-t ${theme.borders.neutralLight} pt-4`}>
                 <label
-                  className={`block ${theme.text.primaryDark} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
+                  className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
                 >
                   <Clock className="w-4 h-4" />
                   Horário do Culto
@@ -291,8 +291,8 @@ export function DateSelectionPage({
                       key={serviceTime.id}
                       className={`flex-1 flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                         logic.selectedServiceTimeId === serviceTime.id
-                          ? `${theme.borders.primary} bg-white shadow-md`
-                          : "border-cyan-200 bg-white/50 hover:bg-white hover:border-cyan-300"
+                          ? `${theme.borders.primary} ${theme.backgrounds.white} shadow-md`
+                          : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
                       }`}
                     >
                       <input
@@ -320,9 +320,9 @@ export function DateSelectionPage({
               </div>
 
               {/* Method Selector */}
-              <div className="border-t border-cyan-200 pt-4 mt-4">
+              <div className={`border-t ${theme.borders.neutralLight} pt-4 mt-4`}>
                 <label
-                  className={`block ${theme.text.primaryDark} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
+                  className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
                 >
                   <Search className="w-4 h-4" />
                   Método de Registo
@@ -333,7 +333,7 @@ export function DateSelectionPage({
                     className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
                       logic.selectedMethod === "search"
                         ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
-                        : "border-cyan-200 bg-white/50"
+                        : `${theme.borders.primaryLight} ${theme.backgrounds.white}`
                     }`}
                   >
                     <label className="flex items-center flex-1 cursor-pointer">
@@ -362,9 +362,9 @@ export function DateSelectionPage({
                           logic.showMethodInfo === "search" ? null : "search"
                         );
                       }}
-                      className="ml-2 p-1 hover:bg-blue-100 rounded-full transition-colors relative"
+                      className={`ml-2 p-1 ${theme.backgrounds.primaryHover} rounded-full transition-colors relative`}
                     >
-                      <Info className="w-4 h-4 text-blue-600" />
+                      <Info className={`w-4 h-4 ${theme.text.secondary}`} />
                     </button>
                     {logic.showMethodInfo === "search" && (
                       <>
@@ -372,7 +372,7 @@ export function DateSelectionPage({
                           className="fixed inset-0 z-40"
                           onClick={() => logic.setShowMethodInfo(null)}
                         />
-                        <div className="absolute right-0 top-full mt-2 w-72 p-4 bg-white rounded-xl border-2 border-blue-200 shadow-2xl z-50 animate-fade-in">
+                        <div className={`absolute right-0 top-full mt-2 w-72 p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
                           <p className={`text-sm ${theme.text.neutral}`}>
                             Seleciona apenas os prés que estão presentes. Ideal para
                             registar pela ordem em que estão sentados.
@@ -387,7 +387,7 @@ export function DateSelectionPage({
                     className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
                       logic.selectedMethod === "swipe"
                         ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
-                        : "border-cyan-200 bg-white/50"
+                        : `${theme.borders.primaryLight} ${theme.backgrounds.white}`
                     }`}
                   >
                     <label className="flex items-center flex-1 cursor-pointer">
@@ -416,7 +416,7 @@ export function DateSelectionPage({
                           logic.showMethodInfo === "swipe" ? null : "swipe"
                         );
                       }}
-                      className="ml-2 p-1 hover:bg-cyan-100 rounded-full transition-colors relative"
+                      className={`ml-2 p-1 ${theme.backgrounds.primaryHover} rounded-full transition-colors relative`}
                     >
                       <Info className={`w-4 h-4 ${theme.text.primary}`} />
                     </button>
@@ -426,7 +426,7 @@ export function DateSelectionPage({
                           className="fixed inset-0 z-40"
                           onClick={() => logic.setShowMethodInfo(null)}
                         />
-                        <div className="absolute right-0 top-full mt-2 w-72 p-4 bg-white rounded-xl border-2 border-cyan-200 shadow-2xl z-50 animate-fade-in">
+                        <div className={`absolute right-0 top-full mt-2 w-72 p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
                           <p className={`text-sm ${theme.text.neutral}`}>
                             Percorre todos por ordem alfabética e desliza para
                             marcar presente ou falta.
@@ -441,7 +441,7 @@ export function DateSelectionPage({
           </div>
 
           {/* Fixed buttons at bottom */}
-          <div className="p-5 border-t border-gray-200 flex-shrink-0">
+          <div className={`p-5 border-t ${theme.borders.neutralLight} flex-shrink-0`}>
             <div className="flex gap-3">
               <button
                 onClick={onBack}

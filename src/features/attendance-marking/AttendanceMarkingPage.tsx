@@ -81,7 +81,7 @@ export const AttendanceMarkingPage = ({
     : formatDate(selectedDate);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       {/* Header Section */}
       <PageHeader
         onBack={onCancel || (() => {})}
@@ -99,7 +99,7 @@ export const AttendanceMarkingPage = ({
           <div className="flex-shrink-0 p-5 pb-3">
             <button
               onClick={visitorManagement.openVisitorDialog}
-              className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium ${theme.backgrounds.whiteTransparent90} transition-all shadow-lg flex items-center justify-center gap-2`}
+              className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium border-2 ${theme.borders.primary} hover:shadow-md transition-all flex items-center justify-center gap-2`}
             >
               <UserPlus className="w-4 h-4" />
               <span>Adicionar Visitante</span>
@@ -127,12 +127,12 @@ export const AttendanceMarkingPage = ({
                     disabled={!isMarked}
                     className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
                       isCurrent && !isMarked
-                        ? `${theme.backgrounds.secondaryLight100} border-2 ${theme.borders.secondary} shadow-md`
+                        ? `${theme.backgrounds.primaryLighter} border-2 ${theme.borders.primary} shadow-md`
                         : isMarked
                           ? record.status === "P"
-                            ? `${theme.solids.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
-                            : `${theme.backgrounds.errorLight} border-2 ${theme.borders.error} opacity-60 hover:shadow-md cursor-pointer`
-                          : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
+                            ? `${theme.backgrounds.success} border-2 ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
+                            : `${theme.backgrounds.errorLight} border-2 ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
+                          : `${theme.backgrounds.white} border-2 ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all`
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -140,16 +140,16 @@ export const AttendanceMarkingPage = ({
                         className={`text-sm font-semibold ${
                           isMarked
                             ? record.status === "P"
-                              ? theme.text.primaryDarker
+                              ? 'text-green-800'
                               : theme.status.absent.text
-                            : theme.text.neutralDarker
+                            : theme.text.primary
                         }`}
                       >
                         {student.name}
                       </span>
                       {student.isVisitor && (
                         <span
-                          className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimary} text-xs font-bold rounded-full`}
+                          className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimaryButton} text-xs font-bold rounded-full`}
                         >
                           Visitante
                         </span>
@@ -158,7 +158,7 @@ export const AttendanceMarkingPage = ({
                         <AlertTriangle className={`w-3 h-3 ${theme.text.warning}`} />
                       )}
                       {isCurrent && !isMarked && (
-                        <span className={`ml-1 w-2 h-2 ${theme.backgrounds.secondary} rounded-full animate-pulse`} />
+                        <span className={`ml-1 w-2 h-2 ${theme.backgrounds.primary} rounded-full animate-pulse`} />
                       )}
                     </div>
                   </button>
@@ -174,12 +174,12 @@ export const AttendanceMarkingPage = ({
             <div className="max-w-2xl mx-auto w-full">
               {/* Compact Progress Indicator */}
               <div className="flex items-center gap-2 mb-5">
-                <span className={`${theme.text.onPrimary}/90 text-xs font-medium`}>
+                <span className={`${theme.text.neutral} text-xs font-medium`}>
                   {completedCount} / {students.length}
                 </span>
-                <div className="flex-1 bg-white/20 rounded-full h-1.5 overflow-hidden">
+                <div className="flex-1 bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-white h-full transition-all duration-300"
+                    className={`${theme.solids.primaryButton} h-full transition-all duration-300`}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -187,7 +187,7 @@ export const AttendanceMarkingPage = ({
 
               {/* Swipe Card */}
               <div
-                className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8"
+                className={`${theme.backgrounds.primaryLighter} rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8 border-2 ${theme.borders.primaryLight}`}
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
@@ -197,14 +197,14 @@ export const AttendanceMarkingPage = ({
                   className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-l-3xl z-0"
                   style={{
                     background:
-                      "linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent)",
+                      "linear-gradient(to right, rgba(220, 38, 38, 0.08), transparent)",
                   }}
                 />
                 <div
                   className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none rounded-r-3xl z-0"
                   style={{
                     background:
-                      "linear-gradient(to left, rgba(16, 185, 129, 0.1), transparent)",
+                      "linear-gradient(to left, rgba(34, 197, 94, 0.08), transparent)",
                   }}
                 />
 
@@ -253,8 +253,8 @@ export const AttendanceMarkingPage = ({
                     style={{
                       background:
                         swipeOffset > 0
-                          ? "linear-gradient(to right, transparent, rgba(16, 185, 129, 0.2))"
-                          : "linear-gradient(to left, transparent, rgba(239, 68, 68, 0.2))",
+                          ? "linear-gradient(to right, transparent, rgba(34, 197, 94, 0.15))"
+                          : "linear-gradient(to left, transparent, rgba(220, 38, 38, 0.15))",
                       opacity: Math.abs(swipeOffset) / 150,
                     }}
                   />
@@ -296,42 +296,42 @@ export const AttendanceMarkingPage = ({
                 {/* Clickable areas overlaid */}
                 <button
                   onClick={() => handleMark("F")}
-                  className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/60 transition-colors rounded-l-3xl z-20 touch-none"
+                  className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/40 transition-colors rounded-l-3xl z-20 touch-none"
                   style={{
                     background:
-                      "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)",
+                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)",
                   }}
                   onPointerDown={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent)";
+                      "linear-gradient(to right, rgba(220, 38, 38, 0.25), transparent)";
                   }}
                   onPointerUp={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
                   }}
                   onPointerLeave={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to right, rgba(239, 68, 68, 0), transparent)";
+                      "linear-gradient(to right, rgba(220, 38, 38, 0), transparent)";
                   }}
                 />
                 <button
                   onClick={() => handleMark("P")}
-                  className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/60 transition-colors rounded-r-3xl z-20 touch-none"
+                  className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/40 transition-colors rounded-r-3xl z-20 touch-none"
                   style={{
                     background:
-                      "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)",
+                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)",
                   }}
                   onPointerDown={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(16, 185, 129, 0.3), transparent)";
+                      "linear-gradient(to left, rgba(34, 197, 94, 0.25), transparent)";
                   }}
                   onPointerUp={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
                   }}
                   onPointerLeave={(e) => {
                     e.currentTarget.style.background =
-                      "linear-gradient(to left, rgba(16, 185, 129, 0), transparent)";
+                      "linear-gradient(to left, rgba(34, 197, 94, 0), transparent)";
                   }}
                 />
               </div>

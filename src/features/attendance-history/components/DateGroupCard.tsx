@@ -60,7 +60,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
           <div className="flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
               <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
-              <h3 className={`text-base font-bold ${theme.text.neutralDarker}`}>
+              <h3 className={`text-base font-bold ${theme.text.primary}`}>
                 {formattedDate}
                 {isToday && (
                   <span

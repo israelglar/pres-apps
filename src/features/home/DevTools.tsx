@@ -23,27 +23,27 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
   const themes = themeManager.getThemes();
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-md w-full p-5 max-h-[90vh] overflow-y-auto`}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl max-w-md w-full p-5 max-h-[90vh] overflow-y-auto border-2 ${theme.borders.primaryLight} animate-scale-in`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between -m-5 mb-5 rounded-t-2xl`}>
           <div className="flex items-center gap-2">
-            <Code className={`w-5 h-5 ${theme.text.visitor}`} />
-            <h2 className={`text-xl font-bold ${theme.text.neutralDarker}`}>Dev Tools</h2>
+            <Code className={`w-5 h-5 ${theme.text.onPrimaryButton}`} />
+            <h2 className={`text-xl font-bold ${theme.text.onPrimaryButton}`}>Dev Tools</h2>
           </div>
           <button
             onClick={onClose}
-            className={`p-1 ${theme.backgrounds.neutralHover} rounded-lg transition-colors`}
+            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
           >
-            <X className={`w-5 h-5 ${theme.text.neutral}`} />
+            <X className={`w-5 h-5 ${theme.text.onPrimaryButton}`} />
           </button>
         </div>
 
         {/* Theme Switcher */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3">
-            <Palette className={`w-4 h-4 ${theme.text.visitor}`} />
-            <h3 className={`text-sm font-bold ${theme.text.neutralDark} uppercase tracking-wide`}>
+            <Palette className={`w-4 h-4 ${theme.text.primary}`} />
+            <h3 className={`text-sm font-bold ${theme.text.primary} uppercase tracking-wide`}>
               Color Theme
             </h3>
           </div>
@@ -52,10 +52,10 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
               <button
                 key={key}
                 onClick={() => themeManager.setTheme(key as any)}
-                className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all border-2 ${
+                className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all border-2 ${
                   currentTheme === key
-                    ? `${theme.backgrounds.visitor} ${theme.borders.visitor} ${theme.text.visitor}`
-                    : `${theme.backgrounds.neutralLight} ${theme.borders.neutralLight} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
+                    ? `${theme.solids.primaryButton} ${theme.borders.primary} ${theme.text.onPrimaryButton} shadow-md`
+                    : `${theme.backgrounds.white} ${theme.borders.primaryLight} ${theme.text.primary} hover:shadow-md ${theme.borders.primaryHover}`
                 }`}
               >
                 <div className="font-bold">{themeData.name}</div>
@@ -65,21 +65,21 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
               </button>
             ))}
           </div>
-          <p className={`text-xs ${theme.text.neutralMedium} mt-2`}>
+          <p className={`text-xs ${theme.text.neutral} mt-2`}>
             Page will reload when you select a theme
           </p>
         </div>
 
         {/* Dev Login */}
         <div className={`mb-4 pt-4 ${theme.borders.neutralLight} border-t`}>
-          <h3 className={`text-sm font-bold ${theme.text.neutralDark} mb-2 uppercase tracking-wide`}>
+          <h3 className={`text-sm font-bold ${theme.text.primary} mb-2 uppercase tracking-wide`}>
             Authentication
           </h3>
           <button
             onClick={() => {
               window.location.href = '/dev-login';
             }}
-            className={`w-full ${theme.backgrounds.warningLight} ${theme.text.warning} rounded-lg px-4 py-3 ${theme.backgrounds.warning} transition-all flex items-center justify-center gap-2 border-2 ${theme.borders.warning} border-opacity-30`}
+            className={`w-full ${theme.backgrounds.warningLight} ${theme.text.warning} rounded-xl px-4 py-3 hover:shadow-md transition-all flex items-center justify-center gap-2 border-2 ${theme.borders.warning}`}
           >
             <LogOut className="w-4 h-4" />
             <span className="font-semibold text-sm">Dev Login</span>
@@ -88,7 +88,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
 
         {/* Dev Date Override */}
         <div className={`${theme.borders.neutralLight} border-t pt-4`}>
-          <h3 className={`text-sm font-bold ${theme.text.neutralDark} mb-2 uppercase tracking-wide`}>
+          <h3 className={`text-sm font-bold ${theme.text.primary} mb-2 uppercase tracking-wide`}>
             Mock Today's Date
           </h3>
           <input
@@ -102,11 +102,11 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
               }
               window.location.reload();
             }}
-            className={`w-full px-4 py-3 rounded-lg text-sm ${theme.text.neutralDarker} border-2 ${theme.borders.visitor} ${theme.borders.visitorFocus} transition-all`}
+            className={`w-full px-4 py-3 rounded-xl text-sm ${theme.text.primary} ${theme.backgrounds.white} border-2 ${theme.borders.primary} focus:ring-4 ${theme.rings.primary} transition-all`}
           />
           {localStorage.getItem('devDate') && (
-            <div className={`mt-2 p-3 ${theme.backgrounds.visitorLight} rounded-lg border ${theme.borders.visitorLight}`}>
-              <p className={`text-xs ${theme.text.visitor} mb-2`}>
+            <div className={`mt-2 p-3 ${theme.backgrounds.primaryLighter} rounded-xl border-2 ${theme.borders.primary}`}>
+              <p className={`text-xs ${theme.text.primary} mb-2`}>
                 Currently mocking:{' '}
                 <strong>{localStorage.getItem('devDate')}</strong>
               </p>
@@ -115,7 +115,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
                   localStorage.removeItem('devDate');
                   window.location.reload();
                 }}
-                className={`w-full px-3 py-2 ${theme.backgrounds.visitor} ${theme.text.white} rounded-lg text-xs font-bold ${theme.backgrounds.visitorHover} transition-colors`}
+                className={`w-full px-3 py-2 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-lg text-xs font-bold hover:shadow-md transition-all`}
               >
                 Reset to Real Date
               </button>

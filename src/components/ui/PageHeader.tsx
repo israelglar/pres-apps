@@ -50,7 +50,7 @@ export function PageHeader({
         {/* Left: Back Button with "Voltar" text */}
         <button
           onClick={onBack}
-          className={`flex items-center gap-2 ${theme.text.onPrimary} ${theme.text.onPrimaryHover} transition-colors`}
+          className={`flex items-center gap-2 ${theme.text.onPrimaryButton} hover:opacity-80 transition-opacity`}
         >
           <svg
             className="w-5 h-5"
@@ -73,7 +73,7 @@ export function PageHeader({
           <button
             onClick={rightAction.onClick}
             disabled={rightAction.disabled}
-            className={`flex items-center gap-2 px-4 py-2 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`flex items-center gap-2 px-4 py-2 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.onPrimaryButton} rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {rightAction.icon}
             {rightAction.label && (
@@ -85,8 +85,8 @@ export function PageHeader({
 
       {/* Title Section */}
       <div className="px-4 pb-4">
-        <h1 className={`text-2xl font-bold ${theme.text.onPrimary} mb-1`}>{title}</h1>
-        <p className={`text-sm font-medium ${theme.text.onPrimary}/90`}>{subtitle}</p>
+        <h1 className={`text-2xl font-bold ${theme.text.onPrimaryButton} mb-1`}>{title}</h1>
+        <p className={`text-sm font-medium ${theme.text.onPrimaryButton} opacity-90`}>{subtitle}</p>
       </div>
     </header>
   );

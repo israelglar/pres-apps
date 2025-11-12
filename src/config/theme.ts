@@ -64,37 +64,37 @@ const themeVariants = {
     },
   },
 
-  // Option 1 - Light Sky (lighter, airier blue with darker backgrounds for contrast)
+  // Option 1 - Light Sky (white background with light blue accents)
   sky: {
     name: 'Light Sky',
-    description: 'Lighter sky and cyan tones',
+    description: 'Clean white with light blue tones',
     primary: {
       50: 'sky-50',
       100: 'sky-100',
       200: 'sky-200',
       300: 'sky-300',
       400: 'sky-400',
-      500: 'sky-600',     // Use darker shade for backgrounds
-      600: 'sky-700',     // Use darker shade for backgrounds
-      700: 'sky-800',
-      800: 'sky-900',
-      900: 'sky-950',
+      500: 'sky-500',     // Light blue for accents
+      600: 'sky-600',     // Medium blue for buttons
+      700: 'sky-700',
+      800: 'sky-800',
+      900: 'sky-900',
     },
     secondary: {
-      50: 'cyan-50',
-      100: 'cyan-100',
-      200: 'cyan-200',
-      300: 'cyan-300',
-      400: 'cyan-400',
-      500: 'cyan-600',    // Use darker shade for backgrounds
-      600: 'cyan-700',    // Use darker shade for backgrounds
-      700: 'cyan-800',
-      800: 'cyan-900',
-      900: 'cyan-950',
+      50: 'blue-50',
+      100: 'blue-100',
+      200: 'blue-200',
+      300: 'blue-300',
+      400: 'blue-400',
+      500: 'blue-500',    // Light blue for accents
+      600: 'blue-600',    // Medium blue for buttons
+      700: 'blue-700',
+      800: 'blue-800',
+      900: 'blue-900',
     },
     text: {
-      onPrimary: 'white',
-      onPrimaryHover: 'sky-50',
+      onPrimary: 'gray-900',
+      onPrimaryHover: 'sky-600',
       onSecondary: 'white',
       onLight: 'gray-900',
       onLightSecondary: 'gray-600',
@@ -185,6 +185,8 @@ const themeClasses = {
   ocean: {
     // Background colors
     bgPrimary: 'bg-cyan-600',
+    bgPrimaryButton: 'bg-cyan-600',
+    bgPrimaryButtonHover: 'hover:bg-cyan-700',
     bgPrimaryHover: 'hover:bg-cyan-700',
     bgPrimaryActive: 'hover:bg-cyan-700',
     bgPrimaryLight: 'bg-cyan-50',
@@ -208,6 +210,8 @@ const themeClasses = {
     textPrimaryLight: 'text-cyan-50',
     textSecondary: 'text-blue-600',
     textSecondaryDark: 'text-blue-700',
+    textOnPrimary: 'text-white',
+    textOnPrimaryButton: 'text-white',
     textOnPrimaryHover: 'hover:text-white',
 
     // Border colors
@@ -223,48 +227,54 @@ const themeClasses = {
     ringPrimary: 'focus:ring-cyan-400',
   },
   sky: {
-    // Background colors
-    bgPrimary: 'bg-sky-700',
-    bgPrimaryHover: 'hover:bg-sky-800',
-    bgPrimaryActive: 'hover:bg-sky-800',
-    bgPrimaryLight: 'bg-sky-50',
+    // Background colors - white base with light blue accents
+    bgPrimary: 'bg-white',
+    bgPrimaryButton: 'bg-sky-500',
+    bgPrimaryButtonHover: 'hover:bg-sky-600',
+    bgPrimaryHover: 'hover:bg-sky-50',
+    bgPrimaryActive: 'hover:bg-sky-100',
+    bgPrimaryLight: 'bg-white',
     bgPrimaryLighter: 'bg-sky-50',
     bgPrimary100: 'bg-sky-100',
     bgPrimary200: 'bg-sky-200',
     hoverBgPrimary: 'hover:bg-sky-50',
     hoverBgPrimaryLight: 'hover:bg-sky-50',
     devCardHover: 'hover:bg-sky-50',
-    bgSecondary: 'bg-cyan-700',
-    bgSecondary50: 'bg-cyan-50',
-    bgSecondary100: 'bg-cyan-100',
-    hoverBgSecondary: 'hover:bg-cyan-100',
-    bgPrimary500: 'bg-sky-600',
-    bgSecondary500: 'bg-cyan-600',
+    bgSecondary: 'bg-blue-500',
+    bgSecondary50: 'bg-blue-50',
+    bgSecondary100: 'bg-blue-100',
+    hoverBgSecondary: 'hover:bg-blue-50',
+    bgPrimary500: 'bg-sky-500',
+    bgSecondary500: 'bg-blue-500',
 
-    // Text colors
-    textPrimary: 'text-sky-700',
-    textPrimaryDark: 'text-sky-800',
-    textPrimaryDarker: 'text-sky-900',
+    // Text colors - darker for contrast on white
+    textPrimary: 'text-sky-600',
+    textPrimaryDark: 'text-sky-700',
+    textPrimaryDarker: 'text-sky-800',
     textPrimaryLight: 'text-sky-50',
-    textSecondary: 'text-cyan-700',
-    textSecondaryDark: 'text-cyan-800',
-    textOnPrimaryHover: 'hover:text-sky-50',
+    textSecondary: 'text-blue-600',
+    textSecondaryDark: 'text-blue-700',
+    textOnPrimary: 'text-gray-900',
+    textOnPrimaryButton: 'text-white',
+    textOnPrimaryHover: 'hover:text-sky-600',
 
-    // Border colors
+    // Border colors - light blue tones
     borderPrimary: 'border-sky-300',
     borderPrimaryLight: 'border-sky-200',
     borderPrimaryHover: 'hover:border-sky-400',
     borderPrimaryHoverLight: 'hover:border-sky-300',
     focusBorderPrimary: 'focus:border-sky-500',
-    borderSecondary: 'border-cyan-500',
-    borderSecondary300: 'border-cyan-300',
+    borderSecondary: 'border-blue-400',
+    borderSecondary300: 'border-blue-300',
 
     // Ring colors
-    ringPrimary: 'focus:ring-sky-400',
+    ringPrimary: 'focus:ring-sky-300',
   },
   deep: {
     // Background colors
     bgPrimary: 'bg-blue-800',
+    bgPrimaryButton: 'bg-blue-800',
+    bgPrimaryButtonHover: 'hover:bg-blue-900',
     bgPrimaryHover: 'hover:bg-blue-900',
     bgPrimaryActive: 'hover:bg-blue-900',
     bgPrimaryLight: 'bg-blue-50',
@@ -288,6 +298,8 @@ const themeClasses = {
     textPrimaryLight: 'text-blue-50',
     textSecondary: 'text-indigo-800',
     textSecondaryDark: 'text-indigo-900',
+    textOnPrimary: 'text-white',
+    textOnPrimaryButton: 'text-white',
     textOnPrimaryHover: 'hover:text-blue-50',
 
     // Border colors
@@ -305,6 +317,8 @@ const themeClasses = {
   tropical: {
     // Background colors
     bgPrimary: 'bg-teal-700',
+    bgPrimaryButton: 'bg-teal-700',
+    bgPrimaryButtonHover: 'hover:bg-teal-800',
     bgPrimaryHover: 'hover:bg-teal-800',
     bgPrimaryActive: 'hover:bg-teal-800',
     bgPrimaryLight: 'bg-teal-50',
@@ -328,6 +342,8 @@ const themeClasses = {
     textPrimaryLight: 'text-teal-50',
     textSecondary: 'text-cyan-700',
     textSecondaryDark: 'text-cyan-800',
+    textOnPrimary: 'text-white',
+    textOnPrimaryButton: 'text-white',
     textOnPrimaryHover: 'hover:text-teal-50',
 
     // Border colors
@@ -430,8 +446,8 @@ export const theme = {
     background: currentThemeClasses.bgPrimary,
 
     // Primary action button
-    primaryButton: currentThemeClasses.bgPrimary,
-    primaryButtonHover: currentThemeClasses.bgPrimaryHover,
+    primaryButton: currentThemeClasses.bgPrimaryButton,
+    primaryButtonHover: currentThemeClasses.bgPrimaryButtonHover,
 
     // Secondary/neutral button
     neutralButton: 'bg-gray-100',
@@ -476,7 +492,8 @@ export const theme = {
     whiteTransparent: 'text-white/90',
 
     // Theme-aware text colors (change with theme variant)
-    onPrimary: 'text-white',               // Text on primary backgrounds (all themes use white)
+    onPrimary: currentThemeClasses.textOnPrimary,  // Text on primary backgrounds (theme-specific)
+    onPrimaryButton: currentThemeClasses.textOnPrimaryButton,  // Text on buttons (always white)
     onPrimaryHover: currentThemeClasses.textOnPrimaryHover,
     onSecondary: 'text-white',           // Text on secondary backgrounds
     onLight: 'text-gray-900',                   // Text on light/card backgrounds
@@ -662,7 +679,7 @@ export const theme = {
  * Helper function to get complete button class string
  */
 export const buttonClasses = {
-  primary: `${theme.solids.primaryButton} ${theme.text.onPrimary} rounded-xl font-bold shadow-md ${theme.solids.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
+  primary: `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl font-bold shadow-md ${theme.solids.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 
   secondary: `${theme.solids.neutralButton} ${theme.text.onLight} rounded-xl font-bold ${theme.borders.neutral} border-2 ${theme.solids.neutralButtonHover} hover:shadow-md active:scale-95 transition-all`,
 

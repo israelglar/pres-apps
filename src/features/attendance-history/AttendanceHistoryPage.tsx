@@ -37,7 +37,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
   return (
     <div
-      className={`fixed inset-0 ${theme.solids.background} ${theme.text.onPrimary} overflow-y-auto`}
+      className="fixed inset-0 bg-gray-50 overflow-y-auto"
       onTouchStart={swipeGesture.handleTouchStart}
       onTouchMove={swipeGesture.handleTouchMove}
       onTouchEnd={swipeGesture.handleTouchEnd}
@@ -54,33 +54,24 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
         {/* Service Time Tabs */}
         <div className="mb-5">
-          <div className="flex gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg p-1 relative">
-            {/* Animated background slider */}
-            <div
-              className={`absolute top-1 bottom-1 rounded-md ${theme.backgrounds.white} shadow-md transition-all duration-300 ease-out`}
-              style={{
-                width: "calc(50% - 3px)",
-                left: selectedServiceTime === "09:00:00" ? "4px" : "calc(50% + 0px)",
-              }}
-            />
-
+          <div className={`flex gap-2 ${theme.backgrounds.primaryLighter} rounded-xl p-1.5 border-2 ${theme.borders.primaryLight}`}>
             {/* Tab buttons */}
             <button
               onClick={() => handleServiceTimeChange("09:00:00")}
-              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
+              className={`flex-1 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-200 ${
                 selectedServiceTime === "09:00:00"
-                  ? theme.text.primaryDark
-                  : `${theme.text.onPrimary} ${theme.backgrounds.whiteHover}`
+                  ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
+                  : `${theme.backgrounds.white} ${theme.text.primary} hover:shadow-sm`
               }`}
             >
               09:00
             </button>
             <button
               onClick={() => handleServiceTimeChange("11:00:00")}
-              className={`flex-1 px-5 py-3 rounded-md font-bold text-sm transition-colors duration-300 relative z-10 ${
+              className={`flex-1 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-200 ${
                 selectedServiceTime === "11:00:00"
-                  ? theme.text.primaryDark
-                  : `${theme.text.onPrimary} ${theme.backgrounds.whiteHover}`
+                  ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
+                  : `${theme.backgrounds.white} ${theme.text.primary} hover:shadow-sm`
               }`}
             >
               11:00
@@ -91,8 +82,8 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         {/* Loading State */}
         {isLoading && !history && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className={`w-16 h-16 ${theme.text.onPrimary} animate-spin mb-4`} />
-            <p className={`${theme.text.onPrimary} text-base font-semibold`}>
+            <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
+            <p className={`${theme.text.primary} text-base font-semibold`}>
               A carregar histórico...
             </p>
           </div>

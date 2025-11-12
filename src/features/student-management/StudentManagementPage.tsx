@@ -1,7 +1,8 @@
-import { Plus, Loader2, Search, X, Filter } from 'lucide-react';
+import { Plus, Loader2, Search, Filter } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useStudentManagement } from '../../hooks/useStudentManagement';
 import { PageHeader } from '../../components/ui/PageHeader';
+import { SearchBar } from '../../components/ui/SearchBar';
 import { StudentCard } from './StudentCard';
 import { StudentFormModal } from './StudentFormModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
@@ -114,7 +115,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
   };
 
   return (
-    <div className={`h-screen flex flex-col ${theme.solids.background} ${theme.text.onPrimary} overflow-hidden`}>
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
@@ -139,47 +140,35 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
             {/* Search Bar and Filter Button Row */}
             <div className="flex gap-2">
               {/* Search Bar */}
-              <div className="relative flex-1">
-                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${theme.text.onPrimary}/60`} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Procurar pré por nome..."
-                  className={`w-full pl-12 pr-12 py-3 rounded-xl text-sm bg-white/10 ${theme.text.onPrimary} placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30`}
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
-                  >
-                    <X className={`w-4 h-4 ${theme.text.onPrimary}/60`} />
-                  </button>
-                )}
-              </div>
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Procurar pré por nome..."
+                className="flex-1"
+              />
 
               {/* Filter Toggle Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors flex-shrink-0 ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all flex-shrink-0 ${
                   showFilters || statusFilter !== 'all' || visitorFilter !== 'all'
-                    ? `${theme.backgrounds.white} ${theme.text.primary}`
-                    : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
+                    ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
+                    : `${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:shadow-md`
                 }`}
               >
                 <Filter className="w-4 h-4" />
                 {(statusFilter !== 'all' || visitorFilter !== 'all') && (
-                  <span className={`w-2 h-2 ${theme.backgrounds.primary} rounded-full`} />
+                  <span className={`w-2 h-2 ${theme.backgrounds.white} rounded-full`} />
                 )}
               </button>
             </div>
 
             {/* Filter Options */}
             {showFilters && (
-              <div className="bg-white/10 rounded-xl p-4 space-y-4 border border-white/20">
+              <div className={`${theme.backgrounds.white} rounded-xl p-4 space-y-4 border-2 ${theme.borders.primaryLight} shadow-md`}>
                 {/* Status Filter */}
                 <div>
-                  <label className={`block text-xs font-bold ${theme.text.onPrimary} mb-2`}>
+                  <label className={`block text-xs font-bold ${theme.text.primary} mb-2`}>
                     Estado
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -193,10 +182,10 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       <button
                         key={option.value}
                         onClick={() => setStatusFilter(option.value as StatusFilter)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           statusFilter === option.value
-                            ? `${theme.backgrounds.white} ${theme.text.primary}`
-                            : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
+                            ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-sm`
+                            : `bg-gray-100 ${theme.text.neutral} hover:bg-gray-200`
                         }`}
                       >
                         {option.label}
@@ -207,7 +196,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
 
                 {/* Visitor Filter */}
                 <div>
-                  <label className={`block text-xs font-bold ${theme.text.onPrimary} mb-2`}>
+                  <label className={`block text-xs font-bold ${theme.text.primary} mb-2`}>
                     Visitantes
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -218,10 +207,10 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       <button
                         key={option.value}
                         onClick={() => setVisitorFilter(option.value as VisitorFilter)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           visitorFilter === option.value
-                            ? `${theme.backgrounds.white} ${theme.text.primary}`
-                            : `${theme.backgrounds.whiteTransparent} ${theme.text.white} ${theme.backgrounds.whiteHover}`
+                            ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-sm`
+                            : `bg-gray-100 ${theme.text.neutral} hover:bg-gray-200`
                         }`}
                       >
                         {option.label}
@@ -237,7 +226,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       setStatusFilter('all');
                       setVisitorFilter('all');
                     }}
-                    className={`w-full py-2 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.white} rounded-lg text-xs font-medium transition-colors`}
+                    className={`w-full py-2 ${theme.backgrounds.errorMedium} ${theme.text.white} rounded-lg text-xs font-medium hover:bg-red-600 transition-colors`}
                   >
                     Limpar Filtros
                   </button>
@@ -252,8 +241,8 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
           {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className={`w-16 h-16 ${theme.text.onPrimary} animate-spin mb-4`} />
-              <p className={`text-base ${theme.text.onPrimary}/90 font-medium`}>
+              <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
+              <p className={`text-base ${theme.text.neutral} font-medium`}>
                 A carregar prés...
               </p>
             </div>
@@ -262,15 +251,15 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
           {/* Error State */}
           {isError && (
             <div className={`${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-xl p-6`}>
-              <p className={`${theme.text.white} font-bold mb-2`}>
+              <p className={`${theme.text.error} font-bold mb-2`}>
                 Erro ao carregar prés
               </p>
-              <p className={`${theme.text.whiteTransparent} text-sm mb-4`}>
+              <p className={`${theme.text.neutral} text-sm mb-4`}>
                 {error instanceof Error ? error.message : 'Erro desconhecido'}
               </p>
               <button
                 onClick={() => refetch()}
-                className={`px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} ${theme.backgrounds.whiteTransparent90} rounded-xl text-sm font-medium transition-colors`}
+                className={`px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md transition-all`}
               >
                 Tentar novamente
               </button>
@@ -282,12 +271,12 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
           <>
             {students.length === 0 ? (
               <div className="text-center py-16">
-                <p className={`text-base ${theme.text.onPrimary}/90 font-medium mb-4`}>
+                <p className={`text-base ${theme.text.neutral} font-medium mb-4`}>
                   Nenhum pré encontrado
                 </p>
                 <button
                   onClick={handleAddStudent}
-                  className={`px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} ${theme.backgrounds.whiteTransparent90} rounded-xl text-sm font-medium inline-flex items-center transition-colors`}
+                  className={`px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium inline-flex items-center hover:shadow-md transition-all`}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Primeiro Pré
@@ -295,16 +284,16 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
               </div>
             ) : filteredStudents.length === 0 ? (
               <div className="text-center py-16">
-                <Search className={`w-16 h-16 ${theme.text.onPrimary}/60 mx-auto mb-4`} />
-                <p className={`text-base ${theme.text.onPrimary}/90 font-medium mb-2`}>
+                <Search className={`w-16 h-16 ${theme.text.neutralLight} mx-auto mb-4`} />
+                <p className={`text-base ${theme.text.neutral} font-medium mb-2`}>
                   Nenhum pré encontrado
                 </p>
-                <p className={`text-sm ${theme.text.onPrimary}/80`}>
+                <p className={`text-sm ${theme.text.neutralLight}`}>
                   Tenta procurar com outro nome
                 </p>
                 <button
                   onClick={() => setSearchQuery('')}
-                  className={`mt-4 px-5 py-3 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.white} rounded-xl text-sm font-medium transition-colors`}
+                  className={`mt-4 px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md transition-all`}
                 >
                   Limpar pesquisa
                 </button>
@@ -312,7 +301,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
             ) : (
               <>
                 <div className="mb-4 flex items-center justify-between">
-                  <p className={`text-sm ${theme.text.onPrimary}/90 font-medium`}>
+                  <p className={`text-sm ${theme.text.neutral} font-medium`}>
                     {searchQuery ? (
                       <>
                         A mostrar {filteredStudents.length} de {students.length} {students.length === 1 ? 'pré' : 'prés'}

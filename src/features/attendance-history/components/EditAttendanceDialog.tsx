@@ -84,14 +84,14 @@ export function EditAttendanceDialog({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scale-in">
         {/* Header */}
-        <div className={`${theme.solids.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
-          <h2 className="text-2xl font-bold text-white">Editar Presença</h2>
+        <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between sticky top-0 z-10 rounded-t-2xl`}>
+          <h2 className={`text-2xl font-bold ${theme.text.onPrimaryButton}`}>Editar Presença</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             disabled={isSubmitting}
           >
-            <X className="w-6 h-6 text-white" />
+            <X className={`w-6 h-6 ${theme.text.onPrimaryButton}`} />
           </button>
         </div>
 
