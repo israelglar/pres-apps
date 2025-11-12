@@ -204,7 +204,7 @@ View and edit past attendance records, with filtering by service time and pagina
 - **Offline Support:** Can load app with cached data (limited offline functionality)
 - **Auto-update:** Prompts user when new version available
 - **Manifest:**
-  - Name: "Prés-adolescentes - Registo de Presenças"
+  - Name: "Pré-adolescentes - Registo de Presenças"
   - Short name: "Prés App"
   - Theme color: Emerald green (#10b981)
   - Display: Standalone (full-screen app)

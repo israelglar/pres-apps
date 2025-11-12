@@ -82,11 +82,14 @@ export function DateSelectionPage({
     // Get status for each service time
     const statuses = serviceTimes.map((serviceTime) => {
       const schedule = getSchedule(dateStr, serviceTime.id);
+      const hasAttendance = schedule?.has_attendance || false;
+      const attendanceCount = schedule?.attendance_count || 0;
+
       return {
         serviceTimeId: serviceTime.id,
         serviceTimeName: serviceTime.name,
-        hasAttendance: schedule?.has_attendance || false,
-        attendanceCount: schedule?.attendance_count || 0,
+        hasAttendance,
+        attendanceCount,
         hasSchedule: !!schedule,
       };
     });
@@ -292,32 +295,46 @@ export function DateSelectionPage({
               Horário do Culto
             </label>
             <div className="flex gap-3">
-              {serviceTimes.map((serviceTime) => (
-                <button
-                  key={serviceTime.id}
-                  onClick={() => logic.setSelectedServiceTimeId(serviceTime.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all ${
-                    logic.selectedServiceTimeId === serviceTime.id
-                      ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
-                      : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
-                  }`}
-                >
-                  <Clock className={`w-4 h-4 ${
-                    logic.selectedServiceTimeId === serviceTime.id
-                      ? theme.text.primary
-                      : theme.text.neutral
-                  }`} />
-                  <span
-                    className={`font-bold text-sm ${
+              {serviceTimes.map((serviceTime) => {
+                // Get schedule for this service time to check attendance
+                const dateStr = logic.selectedDate.toISOString().split("T")[0];
+                const schedule = getSchedule(dateStr, serviceTime.id);
+
+                // Check if attendance has been marked
+                const hasAttendance = schedule?.has_attendance || false;
+
+                return (
+                  <button
+                    key={serviceTime.id}
+                    onClick={() => logic.setSelectedServiceTimeId(serviceTime.id)}
+                    className={`flex-1 flex flex-col items-center justify-center py-3 px-4 rounded-xl border-2 transition-all ${
                       logic.selectedServiceTimeId === serviceTime.id
-                        ? theme.text.primaryDarker
-                        : theme.text.neutralDarker
+                        ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
+                        : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
                     }`}
                   >
-                    {serviceTime.time.substring(0, 5)}
-                  </span>
-                </button>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <Clock className={`w-4 h-4 ${
+                        logic.selectedServiceTimeId === serviceTime.id
+                          ? theme.text.primary
+                          : theme.text.neutral
+                      }`} />
+                      <span
+                        className={`font-bold text-sm ${
+                          logic.selectedServiceTimeId === serviceTime.id
+                            ? theme.text.primaryDarker
+                            : theme.text.neutralDarker
+                        }`}
+                      >
+                        {serviceTime.time.substring(0, 5)}
+                      </span>
+                      {hasAttendance && (
+                        <CheckCircle2 className={`w-3 h-3 ${theme.text.success}`} />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
