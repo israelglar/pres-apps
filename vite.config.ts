@@ -22,10 +22,10 @@ VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['pre.svg', 'pre.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'Prés-adolescentes - Registo de Presenças',
-        short_name: 'Prés App',
+        name: 'Pré-adolescentes',
+        short_name: 'Prés',
         description: 'Aplicação para registo de presenças dos pré-adolescentes',
-        theme_color: '#0891b2',
+        theme_color: '#1192a3',
         background_color: '#ffffff',
         display: 'standalone',
         scope: '/',

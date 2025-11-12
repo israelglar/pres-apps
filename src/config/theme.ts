@@ -1,14 +1,18 @@
 /**
- * Centralized Theme Configuration - Professional Blue Palette
+ * Centralized Theme Configuration - Custom Blue Palette
  *
  * Color Palette:
- * - Primary: Blue-600 (#2563EB) - professional, clear action color
+ * - Primary: Blue-600 (#1192a3) - custom cyan-blue from #15b7cc base
  * - Background: Gray-50 (#F9FAFB) - clean neutral base
  * - Surface: White (#FFFFFF) - card backgrounds
  * - Borders: Gray-200 (#E5E7EB) - subtle separation
  * - Text: Gray-900 (#111827) for headings, Gray-600 (#6B7280) for secondary
  * - Success: Green-600 (#16A34A)
  * - Warning: Amber-700 (#B45309) on Amber-50 (#FFFBEB) background
+ *
+ * Custom Blue Scale (based on #15b7cc):
+ * - 50: #f0fcfd, 100: #d4f7fb, 200: #a9eff7, 300: #7de7f3, 400: #49d7e7
+ * - 500: #15b7cc (base), 600: #1192a3, 700: #0d6e7a, 800: #094a52, 900: #052729
  */
 
 // Theme object - all color tokens
@@ -265,15 +269,15 @@ export const inputClasses = `border-2 border-gray-300 rounded-xl focus:outline-n
  * Theme management stub (for backward compatibility)
  */
 export const themeManager = {
-  getCurrentTheme: () => 'professional' as const,
+  getCurrentTheme: () => 'custom' as const,
   getThemes: () => ({
-    professional: {
-      name: 'Professional Blue',
-      description: 'Clean blue-600 palette with neutral grays'
+    custom: {
+      name: 'Custom Blue',
+      description: 'Custom cyan-blue (#15b7cc) palette with neutral grays'
     }
   }),
   setTheme: (_variant: string) => {
-    // Theme is now fixed to professional palette
+    // Theme is now fixed to custom blue palette
     // This function exists for backward compatibility only
   },
 };

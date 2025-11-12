@@ -5,6 +5,18 @@
 @theme {
   --spacing-screen: 100dvh;
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Custom Blue Color Palette - Based on #15b7cc */
+  --color-blue-50: #f0fcfd;
+  --color-blue-100: #d4f7fb;
+  --color-blue-200: #a9eff7;
+  --color-blue-300: #7de7f3;
+  --color-blue-400: #49d7e7;
+  --color-blue-500: #15b7cc;
+  --color-blue-600: #1192a3;
+  --color-blue-700: #0d6e7a;
+  --color-blue-800: #094a52;
+  --color-blue-900: #052729;
 }
 
 html, body {
