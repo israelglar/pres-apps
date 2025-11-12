@@ -56,7 +56,7 @@ export function HomePage({
 
   return (
     <div
-      className="min-h-screen bg-gray-50 relative"
+      className={`min-h-screen ${theme.backgrounds.page} relative`}
       onTouchStart={logic.handleTouchStart}
       onTouchMove={logic.handleTouchMove}
       onTouchEnd={logic.handleTouchEnd}

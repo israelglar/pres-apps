@@ -22,7 +22,7 @@ export function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-5 bg-gray-50"
+      className={`min-h-screen flex items-center justify-center p-5 ${theme.backgrounds.page}`}
     >
       <div className={`w-full max-w-md ${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl p-8 border-2 ${theme.borders.primaryLight}`}>
         {/* Back button */}

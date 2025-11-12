@@ -80,7 +80,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     : formatDate(date);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+    <div className={`h-screen flex flex-col ${theme.backgrounds.page} overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel}

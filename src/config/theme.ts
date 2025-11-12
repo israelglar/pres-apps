@@ -21,7 +21,7 @@ export const theme = {
   backgrounds: {
     // Base backgrounds
     white: 'bg-white',
-    page: 'bg-gray-50',
+    page: 'bg-gray-100',
 
     // Primary action backgrounds
     primary: 'bg-blue-600',

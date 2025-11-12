@@ -88,7 +88,7 @@ export function StudentDetailPage({
   // Loading state
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center">
+      <div className={`fixed inset-0 ${theme.backgrounds.page} flex items-center justify-center`}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin`} />
           <p className={`${theme.text.neutralDarker} text-base font-semibold`}>
@@ -102,7 +102,7 @@ export function StudentDetailPage({
   // Error state
   if (isError || !student) {
     return (
-      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center p-5">
+      <div className={`fixed inset-0 ${theme.backgrounds.page} flex items-center justify-center p-5`}>
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
@@ -124,7 +124,7 @@ export function StudentDetailPage({
 
   return (
     <div
-      className="fixed inset-0 bg-gray-50 overflow-y-auto"
+      className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}
       onTouchStart={pullToRefresh.handleTouchStart}
       onTouchMove={pullToRefresh.handleTouchMove}
       onTouchEnd={pullToRefresh.handleTouchEnd}

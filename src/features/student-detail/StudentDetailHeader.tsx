@@ -110,7 +110,7 @@ export function StudentDetailHeader({
 
             <div className="grid grid-cols-3 gap-3">
               {/* Attendance Rate */}
-              <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <div className="text-center p-3 bg-gray-100 rounded-xl">
                 <div className={`text-2xl font-semibold ${theme.text.primaryDark} mb-1`}>
                   {stats.attendanceRate}%
                 </div>

@@ -37,7 +37,7 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-gray-50 overflow-y-auto"
+      className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}
       onTouchStart={swipeGesture.handleTouchStart}
       onTouchMove={swipeGesture.handleTouchMove}
       onTouchEnd={swipeGesture.handleTouchEnd}
