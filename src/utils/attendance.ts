@@ -10,6 +10,7 @@ export interface AttendanceStats {
   excused: number;
   visitors: number;
   total: number;
+  totalPresent: number;
 }
 
 /**
@@ -28,12 +29,16 @@ export function calculateStats(records: AttendanceRecordWithRelations[]): Attend
   // Count visitors separately (they can have any status)
   const visitors = records.filter(r => r.student?.is_visitor === true).length;
 
+  const totalPresent = present + late + excused + visitors;
+  const total = records.length;
   return {
     present,
     absent,
     late,
     excused,
     visitors,
-    total: records.length,
+    total,
+    totalPresent,
+
   };
 }

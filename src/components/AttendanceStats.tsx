@@ -6,6 +6,7 @@ interface AttendanceStatsProps {
   stats: AttendanceStatsType;
   mode?: 'inline' | 'compact' | 'detailed';
   showAbsent?: boolean;
+  showTotalPresent?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export function AttendanceStats({
   stats,
   mode = 'inline',
   showAbsent = true,
+  showTotalPresent = false,
 }: AttendanceStatsProps) {
   // Don't render if no data
   if (stats.total === 0) return null;
@@ -28,6 +30,11 @@ export function AttendanceStats({
   if (mode === 'inline') {
     return (
       <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs`}>
+        {showTotalPresent && (
+          <span className={`flex items-center gap-1 text-xl font-bold ${theme.text.primary}`}>
+            {stats.totalPresent}
+          </span>
+        )}
         <span className="flex items-center gap-1">
           <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}></span>
           {stats.present}
@@ -64,6 +71,11 @@ export function AttendanceStats({
   if (mode === 'compact') {
     return (
       <div className="flex items-center justify-center gap-2">
+        {showTotalPresent && (
+          <span className={`text-xl font-bold ${theme.text.primary}`}>
+            {stats.totalPresent}
+          </span>
+        )}
         {stats.present > 0 && (
           <span className={`flex items-center gap-1 text-xs ${theme.status.present.text}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}></span>

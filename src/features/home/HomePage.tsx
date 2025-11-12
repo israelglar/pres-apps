@@ -203,10 +203,6 @@ export function HomePage({
 
                       // Check if attendance has been recorded
                       const hasAttendance = schedule.stats && schedule.stats.total > 0;
-                      // Calculate total present (including visitors)
-                      const totalPresent = schedule.stats
-                        ? schedule.stats.present + schedule.stats.late + schedule.stats.excused + schedule.stats.visitors
-                        : 0;
 
                       return (
                         <button
@@ -223,12 +219,8 @@ export function HomePage({
                           {/* Bottom: Attendance stats if available */}
                           {hasAttendance && (
                             <div className="flex items-center gap-2 mt-2">
-                              {/* Total count */}
-                              <span className={`text-xl font-bold ${theme.text.primary}`}>
-                                {totalPresent}
-                              </span>
-                              {/* Stats circles */}
-                              <AttendanceStats stats={schedule.stats!} mode="compact" showAbsent={false} />
+                              {/* Stats with total */}
+                              <AttendanceStats stats={schedule.stats!} mode="compact" showAbsent={false} showTotalPresent={true} />
                             </div>
                           )}
                         </button>
