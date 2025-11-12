@@ -84,7 +84,7 @@ export function EditAttendanceDialog({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scale-in">
         {/* Header */}
-        <div className={`${theme.gradients.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
+        <div className={`${theme.solids.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
           <h2 className="text-2xl font-bold text-white">Editar Presença</h2>
           <button
             onClick={onClose}
@@ -98,7 +98,7 @@ export function EditAttendanceDialog({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-5 space-y-5">
           {/* Student Info */}
-          <div className={`p-4 rounded-xl ${theme.gradients.cardHighlight} border ${theme.borders.primary}`}>
+          <div className={`p-4 rounded-xl ${theme.solids.cardHighlight} border ${theme.borders.primary}`}>
             <p className={`text-sm font-semibold ${theme.text.neutralDark} mb-1`}>Pré</p>
             <p className={`text-lg font-bold ${theme.text.neutralDarker}`}>{record.student?.name || 'Unknown'}</p>
             <p className={`text-sm ${theme.text.neutral} mt-1`}>{formattedDate}</p>

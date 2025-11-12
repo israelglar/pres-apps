@@ -99,7 +99,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                             {visitor.name}
                           </span>
                           <span
-                            className={`px-2 py-0.5 ${theme.gradients.badge} ${theme.text.white} text-xs font-bold rounded-full`}
+                            className={`px-2 py-0.5 ${theme.solids.badge} ${theme.text.white} text-xs font-bold rounded-full`}
                           >
                             Visitante
                           </span>
@@ -120,7 +120,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
           {/* Selected Visitor Card */}
           {visitorManagement.selectedVisitor && (
             <div
-              className={`p-3 ${theme.gradients.cardPrimary} rounded-xl border-2 ${theme.borders.successLight}`}
+              className={`p-3 ${theme.solids.cardPrimary} rounded-xl border-2 ${theme.borders.successLight}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     }
                     className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                       visitorManagement.firstTimeAtChurch === "yes"
-                        ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                        ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                         : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                     }`}
                   >
@@ -183,7 +183,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     }
                     className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                       visitorManagement.firstTimeAtChurch === "no"
-                        ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                        ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                         : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                     }`}
                   >
@@ -206,7 +206,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       }
                       className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                         visitorManagement.willComeRegularly === "yes"
-                          ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                          ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                           : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                       }`}
                     >
@@ -219,7 +219,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       }
                       className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
                         visitorManagement.willComeRegularly === "no"
-                          ? `${theme.gradients.primaryButton} ${theme.text.white} border-transparent`
+                          ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                           : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
                       }`}
                     >

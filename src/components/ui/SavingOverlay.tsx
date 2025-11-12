@@ -21,7 +21,7 @@ export const SavingOverlay = ({ error, onRetry }: SavingOverlayProps) => {
             <p className={`${theme.text.neutral} mb-8`}>{error}</p>
             <button
               onClick={onRetry}
-              className={`w-full px-6 py-4 ${theme.gradients.activeItem} ${theme.text.white} rounded-xl font-semibold text-lg hover:shadow-lg active:scale-95 transition-all`}
+              className={`w-full px-6 py-4 ${theme.solids.activeItem} ${theme.text.white} rounded-xl font-semibold text-lg hover:shadow-lg active:scale-95 transition-all`}
             >
               Voltar ao Início
             </button>

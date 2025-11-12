@@ -22,7 +22,7 @@ export function LoginPage() {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-5 ${theme.gradients.background}`}
+      className={`min-h-screen flex items-center justify-center p-5 ${theme.solids.background}`}
     >
       <div className={`w-full max-w-md ${theme.backgrounds.white} rounded-2xl shadow-2xl p-8`}>
         {/* Back button */}

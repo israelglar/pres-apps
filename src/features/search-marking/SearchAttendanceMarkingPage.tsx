@@ -79,7 +79,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     : formatDate(date);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel}
@@ -154,14 +154,14 @@ export const SearchAttendanceMarkingPage: React.FC<
                         }}
                         className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
                           isMarked
-                            ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
+                            ? `${theme.solids.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
                             : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
                           {isMarked && (
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.gradients.activeItem}`}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${theme.solids.activeItem}`}
                             >
                               <span className="text-white font-bold text-xs">
                                 {student.name.charAt(0)}
@@ -181,7 +181,7 @@ export const SearchAttendanceMarkingPage: React.FC<
                               </span>
                               {student.isVisitor && (
                                 <span
-                                  className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
+                                  className={`px-1.5 py-0.5 ${theme.solids.badge} text-white text-xs font-bold rounded-full`}
                                 >
                                   Visitante
                                 </span>

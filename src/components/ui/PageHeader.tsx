@@ -43,7 +43,7 @@ export function PageHeader({
 
   return (
     <header
-      className={`${stickyClasses} ${theme.gradients.primaryButton} shadow-lg ${className}`.trim()}
+      className={`${stickyClasses} ${theme.solids.primaryButton} shadow-lg ${className}`.trim()}
     >
       {/* Top row: Back button + optional right action */}
       <div className="flex items-center justify-between px-4 pt-4 pb-2">

@@ -96,7 +96,7 @@ export function DateSelectionPage({
 
   return (
     <div
-      className={`min-h-screen ${theme.gradients.background} flex flex-col p-4`}
+      className={`min-h-screen ${theme.solids.background} flex flex-col p-4`}
     >
       <div
         className="max-w-2xl w-full mx-auto flex flex-col"
@@ -118,7 +118,7 @@ export function DateSelectionPage({
                 <button
                   type="button"
                   onClick={() => logic.setIsOpen(!logic.isOpen)}
-                  className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.gradients.cardNeutral} ${theme.borders.primaryHover} hover:from-cyan-50/50 hover:to-cyan-100/50 transition-all shadow-md hover:shadow-lg flex items-center justify-between`}
+                  className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.solids.cardNeutral} ${theme.borders.primaryHover} ${theme.backgrounds.primaryHover} transition-all shadow-md hover:shadow-lg flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -161,7 +161,7 @@ export function DateSelectionPage({
                             logic.setIsOpen(false);
                           }}
                           className={`w-full px-4 py-3 text-left hover:bg-cyan-50 transition-all flex items-center justify-between border-b ${theme.borders.neutralLight} last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
-                            isSelected ? theme.gradients.selectedItem : ""
+                            isSelected ? theme.solids.selectedItem : ""
                           }`}
                         >
                           <div className="flex items-center gap-3 flex-1">
@@ -174,7 +174,7 @@ export function DateSelectionPage({
                                 </span>
                                 {dateLabel && (
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-bold ${theme.gradients.badge} text-white rounded-full shadow-sm`}
+                                    className={`px-2 py-0.5 text-xs font-bold ${theme.solids.badge} text-white rounded-full shadow-sm`}
                                   >
                                     {dateLabel}
                                   </span>
@@ -185,7 +185,7 @@ export function DateSelectionPage({
                                     status.hasAttendance ? (
                                       <span
                                         key={status.serviceTimeId}
-                                        className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow-sm flex items-center gap-1"
+                                        className={`px-2 py-0.5 text-xs font-bold ${theme.solids.successButton} text-white rounded-full shadow-sm flex items-center gap-1`}
                                       >
                                         <CheckCircle2 className="w-3 h-3" />
                                         {status.serviceTimeName}
@@ -193,7 +193,7 @@ export function DateSelectionPage({
                                     ) : (
                                       <span
                                         key={status.serviceTimeId}
-                                        className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-sm flex items-center gap-1"
+                                        className={`px-2 py-0.5 text-xs font-bold ${theme.backgrounds.warningMedium} text-white rounded-full shadow-sm flex items-center gap-1`}
                                       >
                                         <AlertTriangle className="w-3 h-3" />
                                         {status.serviceTimeName}
@@ -226,7 +226,7 @@ export function DateSelectionPage({
                       <button
                         type="button"
                         onClick={() => logic.setShowFutureLessons(true)}
-                        className="w-full px-4 py-3 text-left border-t-2 border-emerald-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all flex items-center justify-center gap-2 last:rounded-b-xl"
+                        className={`w-full px-4 py-3 text-left border-t-2 border-emerald-200 ${theme.backgrounds.secondaryLight50} ${theme.backgrounds.secondaryHover} transition-all flex items-center justify-center gap-2 last:rounded-b-xl`}
                       >
                         <Eye className="w-4 h-4 text-blue-600" />
                         <span className="font-bold text-sm text-blue-700">
@@ -240,7 +240,7 @@ export function DateSelectionPage({
             </div>
 
             <div
-              className={`${theme.gradients.cardHighlight} border-2 ${theme.borders.primary} rounded-xl p-4 shadow-inner`}
+              className={`${theme.solids.cardHighlight} border-2 ${theme.borders.primary} rounded-xl p-4 shadow-inner`}
             >
               <div className="mb-4">
                 <label
@@ -332,7 +332,7 @@ export function DateSelectionPage({
                   <div
                     className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
                       logic.selectedMethod === "search"
-                        ? `${theme.borders.secondary} bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md`
+                        ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
                         : "border-cyan-200 bg-white/50"
                     }`}
                   >
@@ -386,7 +386,7 @@ export function DateSelectionPage({
                   <div
                     className={`flex items-center p-3 rounded-xl border-2 transition-all relative ${
                       logic.selectedMethod === "swipe"
-                        ? `${theme.borders.primary} bg-gradient-to-r from-cyan-50 to-blue-50 shadow-md`
+                        ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                         : "border-cyan-200 bg-white/50"
                     }`}
                   >

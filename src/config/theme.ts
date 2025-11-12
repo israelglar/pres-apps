@@ -2,9 +2,150 @@
  * Centralized Theme Configuration
  *
  * This file contains all color and styling tokens used throughout the app.
- * Update the `colors` object to change the entire app theme.
- * All other theme properties reference these base colors.
+ * Multiple theme variants are available - switch using setTheme().
+ * All theme properties reference the base colors.
  */
+
+// Theme type definition
+type ThemeVariant = 'ocean' | 'sky' | 'deep' | 'tropical';
+
+// Default theme variant
+const defaultTheme: ThemeVariant = 'ocean';
+
+// Get current theme from localStorage or default to defaultTheme
+const getCurrentTheme = (): ThemeVariant => {
+  if (typeof window === 'undefined') return defaultTheme;
+  const stored = localStorage.getItem('appTheme') as ThemeVariant | null;
+  return stored && ['ocean', 'sky', 'deep', 'tropical'].includes(stored)
+    ? stored
+    : defaultTheme;
+};
+
+// Theme variant configurations
+const themeVariants = {
+  // Original theme - Ocean Blue/Cyan
+  ocean: {
+    name: 'Ocean Blue',
+    description: 'Original cyan and blue theme',
+    primary: {
+      50: 'cyan-50',
+      100: 'cyan-100',
+      200: 'cyan-200',
+      300: 'cyan-300',
+      400: 'cyan-400',
+      500: 'cyan-500',
+      600: 'cyan-600',
+      700: 'cyan-700',
+      800: 'cyan-800',
+      900: 'cyan-900',
+    },
+    secondary: {
+      50: 'blue-50',
+      100: 'blue-100',
+      200: 'blue-200',
+      300: 'blue-300',
+      400: 'blue-400',
+      500: 'blue-500',
+      600: 'blue-600',
+      700: 'blue-700',
+      800: 'blue-800',
+      900: 'blue-900',
+    },
+  },
+
+  // Option 1 - Light Sky (lighter, airier blue with darker backgrounds for contrast)
+  sky: {
+    name: 'Light Sky',
+    description: 'Lighter sky and cyan tones',
+    primary: {
+      50: 'sky-50',
+      100: 'sky-100',
+      200: 'sky-200',
+      300: 'sky-300',
+      400: 'sky-400',
+      500: 'sky-600',     // Use darker shade for backgrounds
+      600: 'sky-700',     // Use darker shade for backgrounds
+      700: 'sky-800',
+      800: 'sky-900',
+      900: 'sky-950',
+    },
+    secondary: {
+      50: 'cyan-50',
+      100: 'cyan-100',
+      200: 'cyan-200',
+      300: 'cyan-300',
+      400: 'cyan-400',
+      500: 'cyan-600',    // Use darker shade for backgrounds
+      600: 'cyan-700',    // Use darker shade for backgrounds
+      700: 'cyan-800',
+      800: 'cyan-900',
+      900: 'cyan-950',
+    },
+  },
+
+  // Option 2 - Deep Waters (darker, richer blue)
+  deep: {
+    name: 'Deep Waters',
+    description: 'Deeper blue and indigo',
+    primary: {
+      50: 'blue-50',
+      100: 'blue-100',
+      200: 'blue-200',
+      300: 'blue-300',
+      400: 'blue-400',
+      500: 'blue-700',     // Use darker shade for backgrounds
+      600: 'blue-800',     // Use darker shade for backgrounds
+      700: 'blue-900',
+      800: 'blue-950',
+      900: 'blue-950',
+    },
+    secondary: {
+      50: 'indigo-50',
+      100: 'indigo-100',
+      200: 'indigo-200',
+      300: 'indigo-300',
+      400: 'indigo-400',
+      500: 'indigo-700',   // Use darker shade for backgrounds
+      600: 'indigo-800',   // Use darker shade for backgrounds
+      700: 'indigo-900',
+      800: 'indigo-950',
+      900: 'indigo-950',
+    },
+  },
+
+  // Option 3 - Tropical Sea (teal variation with darker backgrounds for contrast)
+  tropical: {
+    name: 'Tropical Sea',
+    description: 'Teal and cyan blend',
+    primary: {
+      50: 'teal-50',
+      100: 'teal-100',
+      200: 'teal-200',
+      300: 'teal-300',
+      400: 'teal-400',
+      500: 'teal-600',    // Use darker shade for backgrounds
+      600: 'teal-700',    // Use darker shade for backgrounds
+      700: 'teal-800',
+      800: 'teal-900',
+      900: 'teal-950',
+    },
+    secondary: {
+      50: 'cyan-50',
+      100: 'cyan-100',
+      200: 'cyan-200',
+      300: 'cyan-300',
+      400: 'cyan-400',
+      500: 'cyan-600',    // Use darker shade for backgrounds
+      600: 'cyan-700',    // Use darker shade for backgrounds
+      700: 'cyan-800',
+      800: 'cyan-900',
+      900: 'cyan-950',
+    },
+  },
+} as const;
+
+// Get active theme variant
+const activeTheme = themeVariants[getCurrentTheme()];
 
 // Base color definitions - SINGLE SOURCE OF TRUTH
 // Change colors here and they propagate throughout the entire theme
@@ -13,33 +154,11 @@ const colors = {
   white: 'white',
   black: 'black',
 
-  // Primary brand colors (cyan)
-  primary: {
-    50: 'cyan-50',
-    100: 'cyan-100',
-    200: 'cyan-200',
-    300: 'cyan-300',
-    400: 'cyan-400',
-    500: 'cyan-500',
-    600: 'cyan-600',
-    700: 'cyan-700',
-    800: 'cyan-800',
-    900: 'cyan-900',
-  },
+  // Primary brand colors (dynamic based on theme)
+  primary: activeTheme.primary,
 
-  // Secondary colors (blue)
-  secondary: {
-    50: 'blue-50',
-    100: 'blue-100',
-    200: 'blue-200',
-    300: 'blue-300',
-    400: 'blue-400',
-    500: 'blue-500',
-    600: 'blue-600',
-    700: 'blue-700',
-    800: 'blue-800',
-    900: 'blue-900',
-  },
+  // Secondary colors (dynamic based on theme)
+  secondary: activeTheme.secondary,
 
   // Success colors (green)
   success: {
@@ -95,15 +214,6 @@ const colors = {
     600: 'purple-600',
     700: 'purple-700',
   },
-
-  // Special colors for gradients
-  emerald: {
-    50: 'emerald-50',
-    500: 'emerald-500',
-  },
-  orange: {
-    500: 'orange-500',
-  },
 } as const;
 
 // Theme object - all properties reference the base colors above
@@ -111,48 +221,48 @@ export const theme = {
   // Export colors for direct access if needed
   colors,
 
-  // Gradient combinations
-  gradients: {
-    // Main app background gradient
-    background: `bg-gradient-to-br from-${colors.primary[500]} via-${colors.primary[600]} to-${colors.secondary[600]}`,
+  // Solid color combinations (NO GRADIENTS)
+  solids: {
+    // Main app background - solid color
+    background: `bg-${colors.primary[600]}`,
 
-    // Primary action button gradient
-    primaryButton: `bg-gradient-to-r from-${colors.primary[600]} to-${colors.secondary[600]}`,
-    primaryButtonHover: `hover:from-${colors.primary[700]} hover:to-${colors.secondary[700]}`,
+    // Primary action button - solid color
+    primaryButton: `bg-${colors.primary[600]}`,
+    primaryButtonHover: `hover:bg-${colors.primary[700]}`,
 
     // Secondary/neutral button
-    neutralButton: `bg-gradient-to-r from-${colors.neutral[100]} to-${colors.neutral[200]}`,
-    neutralButtonHover: `hover:from-${colors.neutral[200]} hover:to-${colors.neutral[300]}`,
+    neutralButton: `bg-${colors.neutral[100]}`,
+    neutralButtonHover: `hover:bg-${colors.neutral[200]}`,
 
     // Success button
-    successButton: `bg-gradient-to-r from-${colors.success[500]} to-${colors.success[600]}`,
-    successButtonHover: `hover:from-${colors.success[600]} hover:to-${colors.success[700]}`,
+    successButton: `bg-${colors.success[600]}`,
+    successButtonHover: `hover:bg-${colors.success[700]}`,
 
     // Error/danger button
-    errorButton: `bg-gradient-to-r from-${colors.error[500]} to-${colors.error[600]}`,
-    errorButtonHover: `hover:from-${colors.error[600]} hover:to-${colors.error[700]}`,
+    errorButton: `bg-${colors.error[600]}`,
+    errorButtonHover: `hover:bg-${colors.error[700]}`,
 
     // Card/surface backgrounds
-    cardPrimary: `bg-gradient-to-r from-${colors.primary[50]} to-${colors.primary[100]}`,
-    cardHighlight: `bg-gradient-to-br from-${colors.primary[50]} to-${colors.secondary[50]}`,
-    cardNeutral: `bg-gradient-to-r from-${colors.white} to-${colors.primary[50]}/30`,
+    cardPrimary: `bg-${colors.primary[50]}`,
+    cardHighlight: `bg-${colors.primary[50]}`,
+    cardNeutral: `bg-${colors.white}`,
 
     // Progress bar
-    progress: `bg-gradient-to-r from-${colors.primary[500]} via-${colors.primary[600]} to-${colors.secondary[600]}`,
+    progress: `bg-${colors.primary[600]}`,
 
     // Selected/active states
-    selectedItem: `bg-gradient-to-r from-${colors.primary[100]} to-${colors.primary[50]}`,
-    activeItem: `bg-gradient-to-br from-${colors.primary[500]} to-${colors.primary[600]}`,
+    selectedItem: `bg-${colors.primary[100]}`,
+    activeItem: `bg-${colors.primary[600]}`,
 
     // Badge
-    badge: `bg-gradient-to-r from-${colors.primary[500]} to-${colors.secondary[500]}`,
+    badge: `bg-${colors.primary[600]}`,
 
     // Lesson type badges
-    lessonRegular: `bg-gradient-to-r from-${colors.success[500]} to-${colors.emerald[500]}`,
-    lessonSpecial: `bg-gradient-to-r from-${colors.warning[500]} to-${colors.orange[500]}`,
+    lessonRegular: `bg-${colors.success[500]}`,
+    lessonSpecial: `bg-${colors.warning[500]}`,
 
     // Dev login hover
-    devCardHover: `hover:from-${colors.emerald[50]} hover:to-${colors.primary[50]}`,
+    devCardHover: `hover:bg-${colors.primary[50]}`,
   },
 
   // Text colors
@@ -210,6 +320,7 @@ export const theme = {
     success: `border-${colors.success[400]}`,
     successLight: `border-${colors.success[300]}`,
     error: `border-${colors.error[400]}`,
+    warning: `border-${colors.warning[300]}`,
 
     // Visitor colors
     visitor: `border-${colors.visitor[300]}`,
@@ -341,16 +452,33 @@ export const theme = {
  * Helper function to get complete button class string
  */
 export const buttonClasses = {
-  primary: `${theme.gradients.primaryButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.gradients.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
+  primary: `${theme.solids.primaryButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.solids.primaryButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 
-  secondary: `${theme.gradients.neutralButton} ${theme.text.neutralDark} rounded-xl font-bold ${theme.borders.neutral} border-2 ${theme.gradients.neutralButtonHover} hover:shadow-md active:scale-95 transition-all`,
+  secondary: `${theme.solids.neutralButton} ${theme.text.neutralDark} rounded-xl font-bold ${theme.borders.neutral} border-2 ${theme.solids.neutralButtonHover} hover:shadow-md active:scale-95 transition-all`,
 
-  success: `${theme.gradients.successButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.gradients.successButtonHover} hover:shadow-lg active:scale-95 transition-all`,
+  success: `${theme.solids.successButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.solids.successButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 
-  danger: `${theme.gradients.errorButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.gradients.errorButtonHover} hover:shadow-lg active:scale-95 transition-all`,
+  danger: `${theme.solids.errorButton} ${theme.text.white} rounded-xl font-bold shadow-md ${theme.solids.errorButtonHover} hover:shadow-lg active:scale-95 transition-all`,
 } as const;
 
 /**
  * Helper function to get complete input class string
  */
-export const inputClasses = `border-2 ${theme.borders.primary} rounded-xl focus:outline-none focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} ${theme.gradients.cardNeutral} shadow-md ${theme.text.neutralDarkest}`;
+export const inputClasses = `border-2 ${theme.borders.primary} rounded-xl focus:outline-none focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} ${theme.solids.cardNeutral} shadow-md ${theme.text.neutralDarkest}`;
+
+/**
+ * Theme management functions
+ */
+export const themeManager = {
+  // Get all available themes
+  getThemes: () => themeVariants,
+
+  // Get current theme key
+  getCurrentTheme: getCurrentTheme,
+
+  // Set theme and reload page to apply
+  setTheme: (variant: ThemeVariant) => {
+    localStorage.setItem('appTheme', variant);
+    window.location.reload();
+  },
+};

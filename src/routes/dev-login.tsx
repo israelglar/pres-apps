@@ -55,7 +55,7 @@ function DevLoginPage() {
 
   if (!isDev) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-500 to-red-700 p-5">
+      <div className={`min-h-screen flex items-center justify-center ${theme.backgrounds.errorDark} p-5`}>
         <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md w-full text-center`}>
           <AlertCircle className={`w-16 h-16 mx-auto mb-4 ${theme.text.error}`} />
           <h1 className={`text-2xl font-bold ${theme.text.neutralDarkest} mb-2`}>
@@ -85,7 +85,7 @@ function DevLoginPage() {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center ${theme.gradients.background} p-5`}>
+    <div className={`min-h-screen flex items-center justify-center ${theme.solids.background} p-5`}>
       <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md w-full`}>
         {/* Back button */}
         <button
@@ -98,7 +98,7 @@ function DevLoginPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-16 h-16 ${theme.gradients.background} rounded-full mb-4`}>
+          <div className={`inline-flex items-center justify-center w-16 h-16 ${theme.solids.background} rounded-full mb-4`}>
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className={`text-3xl font-bold ${theme.text.neutralDarkest} mb-2`}>
@@ -124,7 +124,7 @@ function DevLoginPage() {
               key={user.email}
               onClick={() => handleQuickLogin(user.email, user.password)}
               disabled={loading !== null}
-              className={`w-full p-5 ${theme.gradients.neutralButton} ${theme.gradients.devCardHover} border-2 ${theme.borders.neutralLight} ${theme.borders.primaryHover} rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left`}
+              className={`w-full p-5 ${theme.solids.neutralButton} ${theme.solids.devCardHover} border-2 ${theme.borders.neutralLight} ${theme.borders.primaryHover} rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left`}
             >
               <div className="flex items-start gap-4">
                 <div className="text-3xl flex-shrink-0">{user.icon}</div>

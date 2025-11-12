@@ -81,7 +81,7 @@ export const AttendanceMarkingPage = ({
     : formatDate(selectedDate);
 
   return (
-    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onCancel || (() => {})}
@@ -127,11 +127,11 @@ export const AttendanceMarkingPage = ({
                     disabled={!isMarked}
                     className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
                       isCurrent && !isMarked
-                        ? `bg-gradient-to-r from-blue-100 to-blue-50 border-2 ${theme.borders.secondary} shadow-md`
+                        ? `${theme.backgrounds.secondaryLight100} border-2 ${theme.borders.secondary} shadow-md`
                         : isMarked
                           ? record.status === "P"
-                            ? `${theme.gradients.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
-                            : `bg-gradient-to-r from-red-50 to-red-100/50 border-2 ${theme.borders.error} opacity-60 hover:shadow-md cursor-pointer`
+                            ? `${theme.solids.cardPrimary} border-2 ${theme.borders.success} opacity-60 hover:shadow-md cursor-pointer`
+                            : `${theme.backgrounds.errorLight} border-2 ${theme.borders.error} opacity-60 hover:shadow-md cursor-pointer`
                           : `bg-white border-2 ${theme.borders.neutralLight}/60 ${theme.borders.primaryHover} hover:shadow-lg active:scale-98 transition-all`
                     }`}
                   >
@@ -149,7 +149,7 @@ export const AttendanceMarkingPage = ({
                       </span>
                       {student.isVisitor && (
                         <span
-                          className={`px-1.5 py-0.5 ${theme.gradients.badge} text-white text-xs font-bold rounded-full`}
+                          className={`px-1.5 py-0.5 ${theme.solids.badge} text-white text-xs font-bold rounded-full`}
                         >
                           Visitante
                         </span>
@@ -339,7 +339,7 @@ export const AttendanceMarkingPage = ({
               <div className="hidden md:grid grid-cols-2 gap-4">
                 <button
                   onClick={() => handleMark("F")}
-                  className={`${theme.gradients.errorButton} ${theme.gradients.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
+                  className={`${theme.solids.errorButton} ${theme.solids.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
                 >
                   <div className="text-center">
                     <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>
@@ -351,7 +351,7 @@ export const AttendanceMarkingPage = ({
 
                 <button
                   onClick={() => handleMark("P")}
-                  className={`${theme.gradients.activeItem} hover:from-cyan-600 hover:to-cyan-700 rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
+                  className={`${theme.solids.activeItem} ${theme.solids.primaryButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
                 >
                   <div className="text-center">
                     <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>

@@ -4,6 +4,7 @@
  */
 
 import { AlertTriangle, X } from 'lucide-react';
+import { theme } from '../../config/theme';
 import type { AbsenceAlertBannerProps } from '../../types/absence-alerts.types';
 
 /**
@@ -26,8 +27,8 @@ export function AbsenceAlertBanner({
     <div
       className={`
         flex items-center gap-2
-        bg-gradient-to-r from-amber-100 to-orange-100
-        border-l-4 border-orange-500
+        ${theme.backgrounds.warning}
+        border-l-4 ${theme.borders.warning}
         rounded-lg
         p-3
         ${className}
@@ -35,15 +36,15 @@ export function AbsenceAlertBanner({
     >
       {/* Warning Icon */}
       <div className="flex-shrink-0">
-        <AlertTriangle className="w-4 h-4 text-orange-600" />
+        <AlertTriangle className={`w-4 h-4 ${theme.text.warning}`} />
       </div>
 
       {/* Alert Text */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-orange-900">
+        <p className={`text-xs font-medium ${theme.text.warning}`}>
           {absenceCount} faltas recentes
         </p>
-        <p className="text-xs text-orange-700 mt-0.5">
+        <p className={`text-xs ${theme.text.warning} mt-0.5`}>
           Considera falar com ele/ela
         </p>
       </div>
@@ -54,19 +55,19 @@ export function AbsenceAlertBanner({
           e.stopPropagation(); // Prevent triggering parent click handlers
           onDismiss();
         }}
-        className="
+        className={`
           flex-shrink-0
           p-1
           rounded
-          hover:bg-orange-200
+          ${theme.backgrounds.warningLight}
           transition-colors
           focus:outline-none
           focus:ring-2
-          focus:ring-orange-400
-        "
+          focus:ring-amber-400
+        `}
         aria-label="Dispensar alerta"
       >
-        <X className="w-4 h-4 text-orange-600" />
+        <X className={`w-4 h-4 ${theme.text.warning}`} />
       </button>
     </div>
   );

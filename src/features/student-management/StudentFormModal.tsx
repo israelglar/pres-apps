@@ -94,7 +94,7 @@ export function StudentFormModal({
       <div className="flex items-start justify-center py-8 px-4 min-h-screen">
         <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in`}>
         {/* Header */}
-        <div className={`${theme.gradients.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
+        <div className={`${theme.solids.background} p-5 flex items-center justify-between sticky top-0 z-10`}>
           <h2 className="text-2xl font-bold text-white">
             {isEditMode ? 'Editar Pré' : 'Adicionar Pré'}
           </h2>

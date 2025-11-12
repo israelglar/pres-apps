@@ -120,7 +120,7 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
           {/* Summary Stats - Detailed view when expanded */}
           {records.length > 0 && (
             <div
-              className={`${theme.gradients.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}
+              className={`${theme.solids.cardHighlight} p-5 border-t ${theme.borders.neutralLight}`}
             >
               <AttendanceStats stats={stats} mode="detailed" showAbsent={true} />
             </div>

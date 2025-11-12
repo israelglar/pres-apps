@@ -114,7 +114,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
   };
 
   return (
-    <div className={`h-screen flex flex-col ${theme.gradients.background} text-white overflow-hidden`}>
+    <div className={`h-screen flex flex-col ${theme.solids.background} text-white overflow-hidden`}>
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
