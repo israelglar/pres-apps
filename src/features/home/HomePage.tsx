@@ -109,17 +109,10 @@ export function HomePage({
           }}
         >
           {/* Header Section */}
-          <div className="text-center relative">
-            <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>Pré-adolescentes</h1>
+          <div className="space-y-4">
+            {/* User Menu Button Row */}
             {teacher && (
-              <p className={`text-base ${theme.text.neutral}`}>
-                Olá, {teacher.name.split(' ')[0]}!
-              </p>
-            )}
-
-            {/* User Menu Button */}
-            {teacher && (
-              <div className="absolute top-0 right-0">
+              <div className="flex justify-end relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
@@ -151,6 +144,16 @@ export function HomePage({
                 )}
               </div>
             )}
+
+            {/* Title and Greeting */}
+            <div className="text-center">
+              <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>Pré-adolescentes</h1>
+              {teacher && (
+                <p className={`text-base ${theme.text.neutral}`}>
+                  Olá, {teacher.name.split(' ')[0]}!
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Conditional rendering based on whether today is a lesson day */}
