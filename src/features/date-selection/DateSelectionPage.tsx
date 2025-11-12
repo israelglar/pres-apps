@@ -99,9 +99,8 @@ export function DateSelectionPage({
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
-        title="Selecionar Data"
-        subtitle="Escolhe a data e método de registo"
-        sticky={false}
+        variant="minimal"
+        sticky={true}
         className="flex-shrink-0"
       />
 
@@ -297,13 +296,13 @@ export function DateSelectionPage({
                 <button
                   key={serviceTime.id}
                   onClick={() => logic.setSelectedServiceTimeId(serviceTime.id)}
-                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all ${
                     logic.selectedServiceTimeId === serviceTime.id
                       ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                       : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
                   }`}
                 >
-                  <Clock className={`w-5 h-5 mb-2 ${
+                  <Clock className={`w-4 h-4 ${
                     logic.selectedServiceTimeId === serviceTime.id
                       ? theme.text.primary
                       : theme.text.neutral
@@ -336,7 +335,7 @@ export function DateSelectionPage({
                 <button
                   type="button"
                   onClick={() => logic.setSelectedMethod("search")}
-                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full p-3 rounded-xl border-2 transition-all ${
                     logic.selectedMethod === "search"
                       ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
                       : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
@@ -345,11 +344,8 @@ export function DateSelectionPage({
                   <UserCheck className={`w-6 h-6 mx-auto mb-2 ${
                     logic.selectedMethod === "search" ? "text-blue-600" : theme.text.neutral
                   }`} />
-                  <p className={`font-bold text-sm mb-1 ${theme.text.neutralDarker}`}>
+                  <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
                     Só Presentes
-                  </p>
-                  <p className={`text-xs ${theme.text.neutral}`}>
-                    Seleciona presentes
                   </p>
                 </button>
                 <button
@@ -370,10 +366,9 @@ export function DateSelectionPage({
                       className="fixed inset-0 z-40"
                       onClick={() => logic.setShowMethodInfo(null)}
                     />
-                    <div className={`absolute right-0 top-full mt-2 w-72 p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
+                    <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
                       <p className={`text-sm ${theme.text.neutral}`}>
-                        Seleciona apenas os prés que estão presentes. Ideal para
-                        registar pela ordem em que estão sentados.
+                        Ideal para registar pela ordem em que estão sentados.
                       </p>
                     </div>
                   </>
@@ -385,7 +380,7 @@ export function DateSelectionPage({
                 <button
                   type="button"
                   onClick={() => logic.setSelectedMethod("swipe")}
-                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full p-3 rounded-xl border-2 transition-all ${
                     logic.selectedMethod === "swipe"
                       ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                       : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
@@ -394,11 +389,8 @@ export function DateSelectionPage({
                   <ArrowDownAZ className={`w-6 h-6 mx-auto mb-2 ${
                     logic.selectedMethod === "swipe" ? theme.text.primary : theme.text.neutral
                   }`} />
-                  <p className={`font-bold text-sm mb-1 ${theme.text.neutralDarker}`}>
+                  <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
                     Ordem Alfabética
-                  </p>
-                  <p className={`text-xs ${theme.text.neutral}`}>
-                    Desliza para marcar
                   </p>
                 </button>
                 <button
@@ -419,10 +411,9 @@ export function DateSelectionPage({
                       className="fixed inset-0 z-40"
                       onClick={() => logic.setShowMethodInfo(null)}
                     />
-                    <div className={`absolute right-0 top-full mt-2 w-72 p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
+                    <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
                       <p className={`text-sm ${theme.text.neutral}`}>
-                        Percorre todos por ordem alfabética e desliza para
-                        marcar presente ou falta.
+                        Percorre todos para marcar presente ou falta.
                       </p>
                     </div>
                   </>
