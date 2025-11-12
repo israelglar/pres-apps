@@ -1,5 +1,4 @@
 import {
-  Calendar,
   ChevronDown,
   ChevronUp,
   ExternalLink,
@@ -31,16 +30,13 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
     setIsExpanded(!isExpanded);
   };
 
-  // Format date for display
-  const formattedDate = new Date(schedule.date).toLocaleDateString("pt-PT", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  // Check if it's today
-  const today = new Date().toISOString().split("T")[0];
-  const isToday = schedule.date === today;
+  // Format date for display (short format: "10 nov 2025")
+  const date = new Date(schedule.date);
+  const day = date.getDate();
+  const monthNames = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  const formattedDate = `${day} ${month} ${year}`;
 
   // Sort students alphabetically
   const sortedRecords = [...records].sort((a, b) => {
@@ -50,53 +46,35 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
   });
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/50">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden">
       {/* Header - Clickable to expand/collapse */}
       <button
         onClick={toggleExpand}
         className={`${theme.backgrounds.white} p-5 w-full text-left ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99]`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
-              <h3 className={`text-base font-bold ${theme.text.primary}`}>
-                {formattedDate}
-                {isToday && (
-                  <span
-                    className={`ml-1.5 text-xs font-semibold ${theme.backgrounds.primary} ${theme.text.white} px-1.5 py-0.5 rounded-full`}
-                  >
-                    Hoje
-                  </span>
-                )}
-              </h3>
-            </div>
-
-            {/* Lesson Name */}
-            {schedule.lesson?.name && (
-              <p className={`${theme.text.neutral} text-sm mt-0.5`}>
-                {schedule.lesson.name}
-              </p>
-            )}
-
-            {/* Summary Stats - Show when collapsed */}
-            {!isExpanded && records.length > 0 && (
-              <div className="mt-1.5">
-                <AttendanceStats stats={stats} mode="inline" showAbsent={true} />
-              </div>
-            )}
-          </div>
-
-          {/* Right side: Expand/Collapse Icon */}
-          <div className="flex items-center">
-            {/* Expand/Collapse Icon */}
-            {isExpanded ? (
-              <ChevronUp className={`w-5 h-5 ${theme.text.primary}`} />
-            ) : (
-              <ChevronDown className={`w-5 h-5 ${theme.text.primary}`} />
-            )}
-          </div>
+        {/* Lesson Name as Title with chevron */}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className={`text-base font-normal ${theme.text.onLight} leading-tight flex-1`}>
+            {schedule.lesson?.name || "Sem lição"}
+          </h3>
+          {isExpanded ? (
+            <ChevronUp className={`w-4 h-4 ${theme.text.neutral} flex-shrink-0`} />
+          ) : (
+            <ChevronDown className={`w-4 h-4 ${theme.text.neutral} flex-shrink-0`} />
+          )}
         </div>
+
+        {/* Summary Stats - Show when collapsed */}
+        {!isExpanded && records.length > 0 && (
+          <div className="flex items-center justify-between">
+            <AttendanceStats stats={stats} mode="inline" showAbsent={true} />
+
+            {/* Date in bottom right corner */}
+            <span className={`${theme.text.onLightSecondary} text-xs whitespace-nowrap`}>
+              {formattedDate}
+            </span>
+          </div>
+        )}
       </button>
 
       {/* Expanded Content - Only show when expanded */}

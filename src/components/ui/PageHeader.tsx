@@ -6,7 +6,7 @@ interface PageHeaderProps {
 
   // Content
   title: string;
-  subtitle: string;
+  subtitle?: string;
 
   // Right-side action (optional)
   rightAction?: {
@@ -34,7 +34,7 @@ interface PageHeaderProps {
 export function PageHeader({
   onBack,
   title,
-  subtitle,
+  subtitle = "",
   rightAction,
   sticky = true,
   className = "",

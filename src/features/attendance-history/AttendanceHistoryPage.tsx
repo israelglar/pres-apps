@@ -46,7 +46,6 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
       <PageHeader
         onBack={onBack}
         title="Histórico de Presenças"
-        subtitle="Ver e editar registos anteriores"
         sticky={true}
       />
 
