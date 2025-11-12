@@ -244,10 +244,10 @@ export function HomePage({
             </div>
           ) : (
             // REGULAR LAYOUT - Date selection flow
-            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight} relative overflow-hidden`}>
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
               <button
                 onClick={logic.handleStartClick}
-                className={`w-full p-8 ${theme.backgrounds.primaryHover} rounded-xl transition-all group`}
+                className={`w-full px-5 py-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-3`}
               >
                 {/* Swipe indicator */}
                 {logic.swipeOffset < 0 && !logic.isAnimatingSwipe && (
@@ -261,36 +261,33 @@ export function HomePage({
                   </div>
                 )}
 
-                <Calendar className={`w-16 h-16 mx-auto mb-4 ${theme.text.primary}`} />
-                <h2 className={`text-2xl font-bold mb-2 ${theme.text.primary}`}>Registar Presenças</h2>
-                <p className={`${theme.text.neutral} text-sm`}>
-                  Marcar presenças para a lição de hoje
-                </p>
+                <Calendar className={`w-5 h-5 ${theme.text.primary}`} />
+                <span className={`font-semibold text-sm ${theme.text.primary}`}>Registar presenças</span>
               </button>
             </div>
           )}
 
           {/* Action Cards Grid */}
           <div className="grid grid-cols-2 gap-3">
-            {/* History Button */}
-            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
-              <button
-                onClick={onViewHistory}
-                className={`w-full p-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-2`}
-              >
-                <History className={`w-6 h-6 ${theme.text.primary}`} />
-                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Histórico</span>
-              </button>
-            </div>
-
             {/* Manage Students Button */}
             <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
               <button
                 onClick={onManageStudents}
-                className={`w-full p-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-2`}
+                className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-1.5`}
               >
-                <Users className={`w-6 h-6 ${theme.text.primary}`} />
-                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Gerir Prés</span>
+                <Users className={`w-5 h-5 ${theme.text.primary}`} />
+                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Prés</span>
+              </button>
+            </div>
+
+            {/* History Button */}
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
+              <button
+                onClick={onViewHistory}
+                className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-1.5`}
+              >
+                <History className={`w-5 h-5 ${theme.text.primary}`} />
+                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Histórico</span>
               </button>
             </div>
 
@@ -299,9 +296,9 @@ export function HomePage({
               <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight} col-span-2`}>
                 <button
                   onClick={logic.promptInstall}
-                  className={`w-full p-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-3`}
+                  className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-2`}
                 >
-                  <Download className={`w-5 h-5 ${theme.text.primary}`} />
+                  <Download className={`w-4 h-4 ${theme.text.primary}`} />
                   <span className={`font-semibold text-sm ${theme.text.primary}`}>
                     Instalar Aplicação
                   </span>
