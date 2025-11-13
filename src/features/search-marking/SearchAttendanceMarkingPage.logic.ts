@@ -129,6 +129,39 @@ export const useSearchAttendanceMarkingLogic = ({
     setAttendanceRecords(newRecords);
   };
 
+  const handleUpdateNote = (studentId: string, note: string, isMarked: boolean) => {
+    selectionTap(); // Haptic feedback on save
+
+    if (isMarked) {
+      // Student already marked - just update the note
+      const existingRecord = attendanceRecords[studentId];
+      setAttendanceRecords({
+        ...attendanceRecords,
+        [studentId]: {
+          ...existingRecord,
+          notes: note || undefined, // Clear note if empty string
+        },
+      });
+    } else {
+      // Student not marked yet - mark as Present and add note
+      const student = allStudents.find(s => s.id === studentId);
+      if (student) {
+        setAttendanceRecords({
+          ...attendanceRecords,
+          [studentId]: {
+            studentId: student.id,
+            studentName: student.name,
+            status: "P" as const,
+            timestamp: new Date(),
+            notes: note || undefined,
+          },
+        });
+        setSearchQuery(""); // Clear search after marking
+        searchInputRef.current?.focus(); // Refocus search input
+      }
+    }
+  };
+
   const handleAddVisitor = async () => {
     const result = await coreHandleAddVisitor();
 
@@ -219,6 +252,7 @@ export const useSearchAttendanceMarkingLogic = ({
     // Handlers
     handleMarkPresent,
     handleUnmark,
+    handleUpdateNote,
     handleComplete,
     handleConfirmComplete,
     handleGoBack,

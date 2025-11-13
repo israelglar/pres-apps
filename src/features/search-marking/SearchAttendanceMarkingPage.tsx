@@ -39,6 +39,7 @@ export const SearchAttendanceMarkingPage: React.FC<
     dismissAbsenceAlert,
     handleMarkPresent,
     handleUnmark,
+    handleUpdateNote,
     handleComplete,
     handleConfirmComplete,
     handleGoBack,
@@ -137,6 +138,7 @@ export const SearchAttendanceMarkingPage: React.FC<
             }
           }}
           onDismissAlert={dismissAbsenceAlert}
+          onUpdateNote={handleUpdateNote}
         />
       </div>
 

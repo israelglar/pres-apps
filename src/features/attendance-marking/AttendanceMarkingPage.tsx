@@ -41,6 +41,7 @@ export const AttendanceMarkingPage = ({
     dismissAbsenceAlert,
     handleMark,
     handleClickHistory,
+    handleUpdateNote,
     handleConfirmLeave,
     handleCancelLeave,
     handleAddVisitor,
@@ -120,6 +121,7 @@ export const AttendanceMarkingPage = ({
             }}
             onDismissAlert={dismissAbsenceAlert}
             studentRefs={studentRefs}
+            onUpdateNote={handleUpdateNote}
           />
         </div>
 
