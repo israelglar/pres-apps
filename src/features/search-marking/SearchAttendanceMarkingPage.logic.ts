@@ -30,6 +30,7 @@ export const useSearchAttendanceMarkingLogic = ({
   // Search-specific state
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [addedVisitors, setAddedVisitors] = useState<Student[]>([]); // Track visitors added during session
 
   // Use shared attendance core logic
   const {
@@ -59,12 +60,17 @@ export const useSearchAttendanceMarkingLogic = ({
     searchInputRef.current?.focus();
   }, []);
 
+  // Merge regular students with added visitors
+  const allStudents = useMemo(() => {
+    return [...students, ...addedVisitors];
+  }, [students, addedVisitors]);
+
   // Separate students into marked and unmarked, with marked at the bottom
   const { unmarkedStudents, markedStudents } = useMemo(() => {
     const unmarked: Student[] = [];
     const marked: Student[] = [];
 
-    students.forEach((student) => {
+    allStudents.forEach((student) => {
       if (attendanceRecords[student.id]) {
         marked.push(student);
       } else {
@@ -73,7 +79,7 @@ export const useSearchAttendanceMarkingLogic = ({
     });
 
     return { unmarkedStudents: unmarked, markedStudents: marked };
-  }, [students, attendanceRecords]);
+  }, [allStudents, attendanceRecords]);
 
   // Setup Fuse.js for fuzzy search on unmarked students
   const fuse = useMemo(() => {
@@ -127,6 +133,9 @@ export const useSearchAttendanceMarkingLogic = ({
     const result = await coreHandleAddVisitor();
 
     if (result) {
+      // Add visitor to local list
+      setAddedVisitors(prev => [...prev, result]);
+
       // Search-specific: clear search and refocus
       setSearchQuery("");
       searchInputRef.current?.focus();
@@ -141,7 +150,7 @@ export const useSearchAttendanceMarkingLogic = ({
       ...attendanceRecords,
     };
 
-    students.forEach((student) => {
+    allStudents.forEach((student) => {
       if (!finalRecords[student.id]) {
         finalRecords[student.id] = {
           studentId: student.id,
@@ -185,7 +194,7 @@ export const useSearchAttendanceMarkingLogic = ({
   const presentCount = Object.values(attendanceRecords).filter(
     (r) => r.status === "P"
   ).length;
-  const totalCount = students.length;
+  const totalCount = allStudents.length;
 
   return {
     // State

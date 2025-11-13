@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { selectionTap, successVibration } from "../../utils/haptics";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
@@ -29,6 +29,7 @@ export const useAttendanceMarkingLogic = ({
   // Swipe/sequential-specific state
   const [currentIndex, setCurrentIndex] = useState(0);
   const studentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [addedVisitors, setAddedVisitors] = useState<Student[]>([]); // Track visitors added during session
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -62,10 +63,15 @@ export const useAttendanceMarkingLogic = ({
     currentDate: selectedDate.toISOString().split('T')[0], // Exclude current date from absence count
   });
 
+  // Merge regular students with added visitors
+  const allStudents = useMemo(() => {
+    return [...students, ...addedVisitors];
+  }, [students, addedVisitors]);
+
   // Derived values
-  const currentStudent = students[currentIndex];
+  const currentStudent = allStudents[currentIndex];
   const completedCount = Object.keys(attendanceRecords).length;
-  const progress = (completedCount / students.length) * 100;
+  const progress = (completedCount / allStudents.length) * 100;
 
   // Auto-scroll to current student in side panel
   useEffect(() => {
@@ -80,14 +86,14 @@ export const useAttendanceMarkingLogic = ({
   }, [currentIndex, currentStudent.id]);
 
   const findNextUnmarked = (records: Record<string, AttendanceRecord>) => {
-    for (let i = currentIndex + 1; i < students.length; i++) {
-      if (!records[students[i].id]) {
+    for (let i = currentIndex + 1; i < allStudents.length; i++) {
+      if (!records[allStudents[i].id]) {
         setCurrentIndex(i);
         return;
       }
     }
     for (let i = 0; i < currentIndex; i++) {
-      if (!records[students[i].id]) {
+      if (!records[allStudents[i].id]) {
         setCurrentIndex(i);
         return;
       }
@@ -110,7 +116,7 @@ export const useAttendanceMarkingLogic = ({
 
     setAttendanceRecords(newRecords);
 
-    if (Object.keys(newRecords).length === students.length) {
+    if (Object.keys(newRecords).length === allStudents.length) {
       // Success vibration when completing all students
       successVibration();
       setIsComplete(true);
@@ -122,7 +128,7 @@ export const useAttendanceMarkingLogic = ({
   };
 
   const handleClickHistory = (studentId: string) => {
-    const index = students.findIndex((s) => s.id === studentId);
+    const index = allStudents.findIndex((s) => s.id === studentId);
     if (index !== -1) {
       setCurrentIndex(index);
     }
@@ -200,8 +206,16 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
-  // Use core visitor handler directly (no additional logic needed for swipe marking)
-  const handleAddVisitor = coreHandleAddVisitor;
+  const handleAddVisitor = async () => {
+    const result = await coreHandleAddVisitor();
+
+    if (result) {
+      // Add visitor to local list
+      setAddedVisitors(prev => [...prev, result]);
+    }
+
+    return result;
+  };
 
   const handleComplete = async () => {
     setIsLoading(true);
@@ -230,6 +244,7 @@ export const useAttendanceMarkingLogic = ({
     completedCount,
     progress,
     blockerStatus,
+    allStudents, // Export merged students list
 
     // Visitor management
     visitorManagement,

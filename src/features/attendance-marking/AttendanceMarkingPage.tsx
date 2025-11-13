@@ -35,6 +35,7 @@ export const AttendanceMarkingPage = ({
     completedCount,
     progress,
     blockerStatus,
+    allStudents,
     visitorManagement,
     absenceAlerts,
     dismissAbsenceAlert,
@@ -108,7 +109,7 @@ export const AttendanceMarkingPage = ({
 
           {/* Scrollable Student List - Takes remaining space */}
           <StudentList
-            students={students}
+            students={allStudents}
             attendanceRecords={attendanceRecords}
             absenceAlerts={absenceAlerts}
             currentStudentId={currentStudent.id}
