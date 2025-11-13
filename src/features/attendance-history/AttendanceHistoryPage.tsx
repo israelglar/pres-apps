@@ -6,7 +6,7 @@ import { buttonClasses, theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { useAttendanceHistoryLogic } from "./AttendanceHistoryPage.logic";
 import { DateGroupCard } from "./components/DateGroupCard";
-import { EditAttendanceDialog } from "./components/EditAttendanceDialog";
+import { NotesDialog } from "./components/NotesDialog";
 
 interface AttendanceHistoryPageProps {
   onBack: () => void;
@@ -21,16 +21,17 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
     history,
     isLoading,
     error,
-    isDialogOpen,
-    selectedRecord,
     isEditing,
+    isNotesDialogOpen,
+    selectedRecordForNotes,
     canLoadMore,
     selectedServiceTime,
     handleServiceTimeChange,
     swipeGesture,
-    handleOpenEdit,
-    handleCloseEdit,
-    handleSubmitEdit,
+    handleQuickStatusChange,
+    handleOpenNotes,
+    handleCloseNotes,
+    handleSubmitNotes,
     handleLoadMore,
     handleRefresh,
   } = useAttendanceHistoryLogic();
@@ -124,7 +125,8 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
               <DateGroupCard
                 key={group.schedule.id}
                 group={group}
-                onEditRecord={handleOpenEdit}
+                onQuickStatusChange={handleQuickStatusChange}
+                onOpenNotes={handleOpenNotes}
               />
             ))}
 
@@ -157,12 +159,12 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
         )}
       </div>
 
-      {/* Edit Dialog */}
-      {isDialogOpen && selectedRecord && (
-        <EditAttendanceDialog
-          record={selectedRecord}
-          onClose={handleCloseEdit}
-          onSubmit={handleSubmitEdit}
+      {/* Notes Dialog */}
+      {isNotesDialogOpen && selectedRecordForNotes && (
+        <NotesDialog
+          record={selectedRecordForNotes}
+          onClose={handleCloseNotes}
+          onSubmit={handleSubmitNotes}
           isSubmitting={isEditing}
         />
       )}

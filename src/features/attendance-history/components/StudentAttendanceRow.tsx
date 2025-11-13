@@ -1,16 +1,47 @@
 import { Check, X, Clock, FileText } from 'lucide-react';
 import type { AttendanceRecordWithRelations } from '../../../types/database.types';
 import { theme } from '../../../config/theme';
+import { selectionTap } from '../../../utils/haptics';
+import { QuickEditMenu } from './QuickEditMenu';
 
 interface StudentAttendanceRowProps {
   record: AttendanceRecordWithRelations;
-  onEdit: (record: AttendanceRecordWithRelations) => void;
+  onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
+  onOpenNotes: (record: AttendanceRecordWithRelations) => void;
 }
 
 /**
- * Single student row showing attendance status with edit button
+ * Single student row showing attendance status with tap-to-cycle and quick edit menu
+ * - Tap row: Cycles between Present ↔ Absent
+ * - Menu icon: Access Late, Excused, or full edit dialog
  */
-export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowProps) {
+export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes }: StudentAttendanceRowProps) {
+  /**
+   * Handle tap on row - cycles between Present and Absent
+   * If status is Late or Excused, tapping changes to Present
+   */
+  const handleRowTap = () => {
+    selectionTap(); // Haptic feedback
+
+    let newStatus: 'present' | 'absent';
+
+    if (record.status === 'present') {
+      newStatus = 'absent';
+    } else {
+      // For absent, late, or excused - cycle to present
+      newStatus = 'present';
+    }
+
+    onQuickStatusChange(record.id, newStatus);
+  };
+
+  /**
+   * Handle quick status change from menu
+   */
+  const handleMenuStatusChange = (status: 'late' | 'excused') => {
+    selectionTap(); // Haptic feedback
+    onQuickStatusChange(record.id, status);
+  };
   // Status icon and color mapping
   const statusConfig = {
     present: {
@@ -43,7 +74,8 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
 
   return (
     <div
-      className={`flex items-center justify-between p-3 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 transition-all hover:shadow-md`}
+      onClick={handleRowTap}
+      className={`flex items-center justify-between p-3 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 transition-all hover:shadow-md cursor-pointer active:scale-98`}
     >
       <div className="flex items-center gap-3 flex-1">
         {/* Status Icon */}
@@ -76,13 +108,13 @@ export function StudentAttendanceRow({ record, onEdit }: StudentAttendanceRowPro
         </div>
       </div>
 
-      {/* Edit Button */}
-      <button
-        onClick={() => onEdit(record)}
-        className={`ml-3 px-3 py-2 text-sm font-semibold ${theme.text.primary} ${theme.borders.primary} border rounded-lg hover:bg-cyan-50 active:scale-95 transition-all flex-shrink-0`}
-      >
-        Editar
-      </button>
+      {/* Quick Edit Menu */}
+      <div className="ml-3 flex-shrink-0">
+        <QuickEditMenu
+          onSelectStatus={handleMenuStatusChange}
+          onOpenNotesDialog={() => onOpenNotes(record)}
+        />
+      </div>
     </div>
   );
 }

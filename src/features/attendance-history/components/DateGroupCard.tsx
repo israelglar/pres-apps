@@ -13,7 +13,8 @@ import { AttendanceStats } from "../../../components/AttendanceStats";
 
 interface DateGroupCardProps {
   group: AttendanceHistoryGroup;
-  onEditRecord: (record: AttendanceRecordWithRelations) => void;
+  onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
+  onOpenNotes: (record: AttendanceRecordWithRelations) => void;
 }
 
 /**
@@ -21,7 +22,7 @@ interface DateGroupCardProps {
  * Includes lesson info, service time, student list, and summary stats
  * Starts collapsed, expands when clicked
  */
-export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
+export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes }: DateGroupCardProps) {
   const { schedule, records, stats } = group;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -111,7 +112,8 @@ export function DateGroupCard({ group, onEditRecord }: DateGroupCardProps) {
                 <StudentAttendanceRow
                   key={record.id}
                   record={record}
-                  onEdit={onEditRecord}
+                  onQuickStatusChange={onQuickStatusChange}
+                  onOpenNotes={onOpenNotes}
                 />
               ))}
             </div>

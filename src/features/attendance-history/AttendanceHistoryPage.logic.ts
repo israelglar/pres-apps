@@ -25,6 +25,10 @@ export function useAttendanceHistoryLogic() {
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordWithRelations | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // Notes dialog state
+  const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+
   /**
    * Open edit dialog for a specific attendance record
    */
@@ -58,6 +62,64 @@ export function useAttendanceHistoryLogic() {
       handleCloseEdit();
     } catch (error) {
       console.error('Failed to edit attendance:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
+
+  /**
+   * Quick status change (no dialog) - used by tap-to-cycle and quick menu
+   * Auto-saves immediately with optimistic updates
+   */
+  const handleQuickStatusChange = async (
+    recordId: number,
+    newStatus: 'present' | 'absent' | 'excused' | 'late'
+  ) => {
+    try {
+      await editAttendance({ recordId, status: newStatus });
+      successVibration();
+    } catch (error) {
+      console.error('Failed to quick-edit attendance:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
+
+  /**
+   * Open notes dialog for a specific attendance record
+   */
+  const handleOpenNotes = (record: AttendanceRecordWithRelations) => {
+    lightTap();
+    setSelectedRecordForNotes(record);
+    setIsNotesDialogOpen(true);
+  };
+
+  /**
+   * Close notes dialog
+   */
+  const handleCloseNotes = () => {
+    lightTap();
+    setIsNotesDialogOpen(false);
+    // Don't clear selectedRecordForNotes immediately to prevent flash during close animation
+    setTimeout(() => setSelectedRecordForNotes(null), 300);
+  };
+
+  /**
+   * Submit notes changes (keeps current status)
+   */
+  const handleSubmitNotes = async (recordId: number, notes: string) => {
+    try {
+      // Get the current record to preserve its status
+      const currentRecord = selectedRecordForNotes;
+      if (!currentRecord) return;
+
+      await editAttendance({
+        recordId,
+        status: currentRecord.status,
+        notes: notes || undefined,
+      });
+      successVibration();
+      handleCloseNotes();
+    } catch (error) {
+      console.error('Failed to edit notes:', error);
       // Error handling is done by the mutation hook
     }
   };
@@ -118,6 +180,10 @@ export function useAttendanceHistoryLogic() {
     selectedRecord,
     isEditing,
 
+    // Notes dialog state
+    isNotesDialogOpen,
+    selectedRecordForNotes,
+
     // Service time tab state
     selectedServiceTime,
     handleServiceTimeChange,
@@ -133,6 +199,10 @@ export function useAttendanceHistoryLogic() {
     handleOpenEdit,
     handleCloseEdit,
     handleSubmitEdit,
+    handleQuickStatusChange,
+    handleOpenNotes,
+    handleCloseNotes,
+    handleSubmitNotes,
     handleLoadMore,
     handleRefresh,
   };
