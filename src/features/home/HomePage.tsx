@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Calendar,
   Clock,
-  Code2,
   Download,
   ExternalLink,
   History,
@@ -18,7 +17,6 @@ import { buttonClasses, theme } from "../../config/theme";
 import { useHomePageLogic } from "./HomePage.logic";
 import { useAuth } from "../../contexts/AuthContext";
 import { AttendanceStats } from "../../components/AttendanceStats";
-import { DevTools } from "./DevTools";
 
 interface HomePageProps {
   onNavigate: () => void;
@@ -61,18 +59,6 @@ export function HomePage({
       onTouchMove={logic.handleTouchMove}
       onTouchEnd={logic.handleTouchEnd}
     >
-      {/* Dev Tools Button - Fixed top left - Only show in development mode */}
-      {import.meta.env.DEV && (
-        <button
-          onClick={() => logic.setShowDevTools(true)}
-          className={`fixed top-4 left-4 p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all z-50`}
-          aria-label="Dev Tools"
-          title="Dev Tools"
-        >
-          <Code2 className="w-5 h-5" />
-        </button>
-      )}
-
       {/* Pull-to-refresh indicator */}
       {(logic.pullDistance > 0 || logic.isRefreshing) && (
         <div
@@ -305,14 +291,6 @@ export function HomePage({
           </div>
         </div>
       </div>
-
-      {/* Dev Tools Modal - Only show in development mode */}
-      {import.meta.env.DEV && (
-        <DevTools
-          isOpen={logic.showDevTools}
-          onClose={() => logic.setShowDevTools(false)}
-        />
-      )}
 
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}
       {logic.waitingForData && (

@@ -267,6 +267,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('[AuthContext] Sign out error:', error);
         throw error;
       }
+
+      // Redirect to login page after successful sign out
+      window.location.href = '/login';
     } catch (error) {
       const authError = error as AuthError;
       console.error('[AuthContext] Sign out error:', authError);

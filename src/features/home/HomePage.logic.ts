@@ -102,7 +102,6 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
   }, [todaySchedules, todayAttendanceData]);
 
   const [waitingForData, setWaitingForData] = useState(false);
-  const [showDevTools, setShowDevTools] = useState(false);
 
   // Auto-navigate when data becomes ready while waiting
   useEffect(() => {
@@ -181,8 +180,6 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
     // UI states
     waitingForData,
-    showDevTools,
-    setShowDevTools,
     pullDistance: pullToRefresh.pullDistance,
     swipeOffset: swipeGesture.swipeOffset,
     isAnimatingSwipe: swipeGesture.isAnimating,

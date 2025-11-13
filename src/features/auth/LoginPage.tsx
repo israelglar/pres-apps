@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { buttonClasses, theme } from '@/config/theme';
-import { LogIn, Loader2, ArrowLeft } from 'lucide-react';
+import { LogIn, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export function LoginPage() {
@@ -24,21 +24,7 @@ export function LoginPage() {
     <div
       className={`min-h-screen flex items-center justify-center p-5 ${theme.backgrounds.page}`}
     >
-      <div className="w-full max-w-md space-y-3">
-        {/* Back button */}
-        <div className="flex justify-start">
-          <button
-            onClick={() => {
-              // Use window.location to clear history and bypass auth redirect
-              window.location.href = '/';
-            }}
-            className={`flex items-center gap-2 px-5 py-3 ${theme.backgrounds.white} border-2 ${theme.borders.primaryLight} rounded-xl text-sm font-semibold ${theme.text.primary} hover:shadow-md ${theme.borders.primaryHover} transition-all shadow-sm`}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Voltar</span>
-          </button>
-        </div>
-
+      <div className="w-full max-w-md">
         {/* Login Card */}
         <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-5 border-2 ${theme.borders.primaryLight}`}>
           {/* Header */}
