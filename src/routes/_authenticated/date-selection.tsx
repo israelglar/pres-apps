@@ -5,6 +5,7 @@ import { getAttendanceBySchedule } from '../../api/supabase/attendance'
 import { calculateStats } from '../../utils/attendance'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { queryKeys } from '../../lib/queryKeys'
 
 export const Route = createFileRoute('/_authenticated/date-selection')({
   component: DateSelectionRoute,
@@ -25,7 +26,7 @@ function DateSelectionRoute() {
 
   // Fetch attendance records when schedule has attendance
   const { data: attendanceStats } = useQuery({
-    queryKey: ['attendance-stats', selectedSchedule?.id],
+    queryKey: selectedSchedule?.id ? queryKeys.attendanceStats(selectedSchedule.id) : ['attendance-stats', null],
     queryFn: async () => {
       if (!selectedSchedule?.id || !selectedSchedule.has_attendance) {
         return null

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, User, AuthError } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { Teacher } from '@/types/database.types';
 
@@ -31,6 +32,7 @@ const mockDevTeacher: Teacher = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [teacher, setTeacher] = useState<Teacher | null>(null);
@@ -262,6 +264,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Clear all cached queries before signing out
+      // This ensures fresh data is loaded when a different user logs in
+      queryClient.clear();
+
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('[AuthContext] Sign out error:', error);

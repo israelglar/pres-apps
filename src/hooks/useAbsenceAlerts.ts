@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useCallback, useMemo } from 'react';
 import { getAbsenceAlertsForSchedule } from '../api/supabase/absence-alerts';
 import type { AbsenceAlert, AbsenceAlertsMap } from '../types/absence-alerts.types';
+import { queryKeys } from '../lib/queryKeys';
 
 interface UseAbsenceAlertsOptions {
   /** Number of consecutive absences to trigger alert (default: 3) */
@@ -77,7 +78,7 @@ export function useAbsenceAlerts({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['absence-alerts', threshold, currentDate],
+    queryKey: queryKeys.absenceAlerts(threshold, currentDate),
     queryFn: async () => {
       return await getAbsenceAlertsForSchedule(threshold, currentDate);
     },

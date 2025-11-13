@@ -8,11 +8,6 @@ import { useServiceTimes } from './useServiceTimes';
 import { useScheduleDates } from './useScheduleDates';
 
 /**
- * Query key for attendance data (kept for backward compatibility)
- */
-export const ATTENDANCE_QUERY_KEY = ['attendance'] as const;
-
-/**
  * Custom hook to fetch and manage attendance data using TanStack Query
  *
  * Features:
@@ -79,11 +74,16 @@ export function useAttendanceData() {
         notes?: string;
       }>;
     }) => bulkUpdateAttendance(date, serviceTimeId, records),
-    onSuccess: () => {
+    onSuccess: async () => {
       // Invalidate relevant caches after successful save
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
-      queryClient.invalidateQueries({ queryKey: ['attendance-history'] });
-      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      // Using Promise.all ensures all invalidations complete before mutation resolves
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
+        queryClient.invalidateQueries({ queryKey: ['attendance-history'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
+      ]);
       // Note: No need to invalidate students or service times as they don't change
     },
   });

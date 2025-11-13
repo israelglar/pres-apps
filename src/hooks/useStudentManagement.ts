@@ -13,6 +13,7 @@ import {
 } from '../api/supabase/students';
 import { getAbsenceAlertsForSchedule } from '../api/supabase/absence-alerts';
 import type { Student, StudentInsert, StudentUpdate } from '../types/database.types';
+import { queryKeys } from '../lib/queryKeys';
 
 /**
  * Extended student type with alert information
@@ -33,7 +34,7 @@ export function useStudents(
   alertThreshold: number = 3
 ) {
   return useQuery({
-    queryKey: ['students', filter, includeAlerts, alertThreshold],
+    queryKey: queryKeys.students(filter, includeAlerts, alertThreshold),
     queryFn: async () => {
       const students = await (filter === 'active' ? getActiveStudents() : getAllStudents());
 
@@ -68,7 +69,7 @@ export function useCreateStudent() {
   return useMutation({
     mutationFn: (student: StudentInsert) => createStudent(student),
     onSuccess: () => {
-      // Invalidate all student queries (both 'all' and 'active' filters)
+      // Invalidate all student queries (prefix match catches all filter variations)
       queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });

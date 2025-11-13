@@ -7,6 +7,7 @@ import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { getAttendanceBySchedule } from '../../api/supabase/attendance';
 import { calculateStats, type AttendanceStats } from '../../utils/attendance';
 import type { Schedule } from '../../schemas/attendance.schema';
+import { queryKeys } from '../../lib/queryKeys';
 
 export interface UseHomePageLogicProps {
   onNavigate: () => void;
@@ -76,7 +77,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
   // Fetch attendance data for today's schedules
   // Always fetch fresh data - no caching
   const { data: todayAttendanceData } = useQuery({
-    queryKey: ['today-attendance', todaySchedules.map(s => s.id)],
+    queryKey: queryKeys.todayAttendance(todaySchedules.map(s => s.id)),
     queryFn: async () => {
       const results = await Promise.all(
         todaySchedules.map(schedule => getAttendanceBySchedule(schedule.id))

@@ -5,13 +5,14 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getActiveServiceTimes } from '../api/supabase/service-times';
+import { queryKeys } from '../lib/queryKeys';
 
 /**
  * Fetch all active service times
  */
 export function useServiceTimes() {
   return useQuery({
-    queryKey: ['service-times'],
+    queryKey: queryKeys.serviceTimes(),
     queryFn: getActiveServiceTimes,
   });
 }

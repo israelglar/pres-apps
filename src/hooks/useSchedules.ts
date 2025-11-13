@@ -5,6 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getAllSchedules } from '../api/supabase/schedules';
+import { queryKeys } from '../lib/queryKeys';
 
 /**
  * Fetch all schedules with relations
@@ -12,7 +13,7 @@ import { getAllSchedules } from '../api/supabase/schedules';
  */
 export function useSchedules() {
   return useQuery({
-    queryKey: ['schedules'],
+    queryKey: queryKeys.schedules(),
     queryFn: getAllSchedules,
   });
 }

@@ -5,13 +5,14 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getScheduleDates } from '../api/supabase/schedules';
+import { queryKeys } from '../lib/queryKeys';
 
 /**
  * Fetch all unique dates that have schedules
  */
 export function useScheduleDates() {
   return useQuery({
-    queryKey: ['schedule-dates'],
+    queryKey: queryKeys.scheduleDates(),
     queryFn: getScheduleDates,
   });
 }

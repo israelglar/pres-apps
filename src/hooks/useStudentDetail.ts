@@ -10,6 +10,7 @@ import {
   type AttendanceStats,
   type SundayAttendanceRecord,
 } from '../features/student-detail/student-detail.logic'
+import { queryKeys } from '../lib/queryKeys'
 
 interface UseStudentDetailOptions {
   studentId: number
@@ -50,7 +51,7 @@ export function useStudentDetail({
     error: errorStudent,
     refetch: refetchStudent,
   } = useQuery({
-    queryKey: ['student', studentId],
+    queryKey: queryKeys.student(studentId),
     queryFn: () => getStudentById(studentId),
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
@@ -63,7 +64,7 @@ export function useStudentDetail({
     error: errorAttendance,
     refetch: refetchAttendance,
   } = useQuery({
-    queryKey: ['student-attendance', studentId],
+    queryKey: queryKeys.studentAttendance(studentId),
     queryFn: () => getAttendanceByStudent(studentId),
     staleTime: 1000 * 60 * 2, // 2 minutes
   })

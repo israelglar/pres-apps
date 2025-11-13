@@ -144,10 +144,16 @@ export function useEditAttendance() {
     },
 
     // Always refetch after success or error
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ['schedules'] }); // Invalidate schedules cache
-      queryClient.invalidateQueries({ queryKey: ['today-attendance'] }); // Invalidate today's attendance
+    onSettled: async () => {
+      // Invalidate all related queries to ensure fresh data everywhere
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
+      ]);
     },
   });
 
@@ -244,10 +250,16 @@ export function useAddAttendance() {
     },
 
     // Always refetch after success or error
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
-      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+    onSettled: async () => {
+      // Invalidate all related queries to ensure fresh data everywhere
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
+      ]);
     },
   });
 
@@ -308,10 +320,16 @@ export function useDeleteAttendance() {
     },
 
     // Always refetch after success or error
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
-      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+    onSettled: async () => {
+      // Invalidate all related queries to ensure fresh data everywhere
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
+      ]);
     },
   });
 

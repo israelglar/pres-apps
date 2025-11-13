@@ -7,7 +7,6 @@ import { useState, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import Fuse from 'fuse.js';
 import { addVisitor } from '../api/supabase/students';
-import { ATTENDANCE_QUERY_KEY } from './useAttendanceData';
 import { selectionTap } from '../utils/haptics';
 
 // Minimal Student interface for visitor management
@@ -150,7 +149,6 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
       selectionTap();
 
       // Invalidate React Query caches to refetch data
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['students'] }); // Invalidate students cache
 
       // Close dialog and reset form
