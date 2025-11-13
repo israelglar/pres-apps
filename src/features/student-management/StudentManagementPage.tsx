@@ -1,6 +1,7 @@
 import { Plus, Loader2, Search, Filter } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useStudentManagement } from '../../hooks/useStudentManagement';
+import { useAbsenceAlerts } from '../../hooks/useAbsenceAlerts';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { StudentCard } from './StudentCard';
@@ -41,6 +42,11 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
     isUpdating,
     isDeleting,
   } = useStudentManagement();
+
+  // Fetch absence alerts for students
+  const { alerts: absenceAlerts } = useAbsenceAlerts({
+    threshold: 3,
+  });
 
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -319,6 +325,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       key={student.id}
                       student={student}
                       onClick={onStudentClick || (() => {})}
+                      hasAlert={absenceAlerts.has(student.id)}
                     />
                   ))}
                 </div>

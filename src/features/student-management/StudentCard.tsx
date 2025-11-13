@@ -1,10 +1,11 @@
-import { User, ChevronRight } from 'lucide-react';
+import { ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Student } from '../../types/database.types';
 import { theme } from '../../config/theme';
 
 interface StudentCardProps {
   student: Student;
   onClick: (student: Student) => void;
+  hasAlert?: boolean;
 }
 
 /**
@@ -12,11 +13,12 @@ interface StudentCardProps {
  *
  * Shows:
  * - Student name
+ * - Alert icon (if student has consecutive absences)
  * - Status badge (active, inactive, aged-out, moved)
  * - Visitor badge (if applicable)
  * - Clickable to navigate to student detail page
  */
-export function StudentCard({ student, onClick }: StudentCardProps) {
+export function StudentCard({ student, onClick, hasAlert = false }: StudentCardProps) {
   const getStatusBadge = (status: Student['status']) => {
     const statusConfig = {
       active: {
@@ -56,11 +58,6 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
       <div className="flex items-center justify-between gap-2">
         {/* Student Info */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          {/* Avatar */}
-          <div className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg flex-shrink-0`}>
-            <User className={`w-4 h-4 ${theme.text.primary}`} />
-          </div>
-
           {/* Details */}
           <div className="flex-1 min-w-0">
             {/* Name, Status, and Visitor Badge */}
@@ -84,6 +81,13 @@ export function StudentCard({ student, onClick }: StudentCardProps) {
             )}
           </div>
         </div>
+
+        {/* Alert Icon - Far right, separate from name */}
+        {hasAlert && (
+          <div className="flex-shrink-0">
+            <AlertTriangle className="w-4 h-4 text-red-600" />
+          </div>
+        )}
 
         {/* Right Arrow Icon */}
         <div className="flex-shrink-0">
