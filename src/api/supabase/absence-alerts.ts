@@ -32,7 +32,15 @@ export async function getStudentsWithRecentAbsences(
   currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
   try {
+    console.log('[ABSENCE ALERTS] Starting calculation', {
+      studentIdsCount: studentIds.length,
+      threshold,
+      lookbackSundays,
+      currentDateToExclude,
+    });
+
     if (studentIds.length === 0) {
+      console.log('[ABSENCE ALERTS] No student IDs provided, returning empty');
       return [];
     }
 
@@ -45,6 +53,7 @@ export async function getStudentsWithRecentAbsences(
 
     if (schedulesError) throw schedulesError;
     if (!schedules || schedules.length === 0) {
+      console.log('[ABSENCE ALERTS] No schedules found');
       return [];
     }
 
@@ -52,19 +61,44 @@ export async function getStudentsWithRecentAbsences(
     const allDates = schedules.map(s => s.date);
     let uniqueDates = [...new Set(allDates)];
 
+    console.log('[ABSENCE ALERTS] Schedules loaded', {
+      totalSchedules: schedules.length,
+      allDatesCount: allDates.length,
+      uniqueDatesCount: uniqueDates.length,
+      uniqueDates: uniqueDates.slice(0, 5), // Show first 5
+    });
+
     // Exclude current date and future dates (to only count PAST absences)
-    if (currentDateToExclude) {
-      uniqueDates = uniqueDates.filter(date => date < currentDateToExclude);
-    }
+    // Always filter out future dates - use current date if not provided
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const filterDate = currentDateToExclude || today;
+
+    const beforeFilter = uniqueDates.length;
+    uniqueDates = uniqueDates.filter(date => date < filterDate);
+    console.log('[ABSENCE ALERTS] Filtered out current/future dates', {
+      filterDate,
+      today,
+      currentDateToExclude,
+      beforeFilter,
+      afterFilter: uniqueDates.length,
+      excluded: beforeFilter - uniqueDates.length,
+      remainingDates: uniqueDates.slice(0, 5),
+    });
 
     uniqueDates = uniqueDates.slice(0, lookbackSundays);
+    console.log('[ABSENCE ALERTS] Limited to lookback window', {
+      lookbackSundays,
+      uniqueDatesCount: uniqueDates.length,
+    });
 
     if (uniqueDates.length === 0) {
+      console.log('[ABSENCE ALERTS] No dates in range, returning empty');
       return [];
     }
 
     const oldestDate = uniqueDates[uniqueDates.length - 1];
     const newestDate = uniqueDates[0];
+    console.log('[ABSENCE ALERTS] Date range', { oldestDate, newestDate });
 
     // 2. Get attendance records for these students, with date from schedules
     const { data: attendanceRecords, error: attendanceError } = await supabase
@@ -79,6 +113,15 @@ export async function getStudentsWithRecentAbsences(
       .lte('schedules.date', newestDate);
 
     if (attendanceError) throw attendanceError;
+
+    console.log('[ABSENCE ALERTS] Attendance records loaded', {
+      recordsCount: attendanceRecords?.length || 0,
+      sampleRecords: attendanceRecords?.slice(0, 3).map(r => ({
+        student_id: r.student_id,
+        status: r.status,
+        date: (r as any).schedule.date,
+      })),
+    });
 
     // 3. Build a map of presence by student and date
     // If student came to ANY service on that date → Add to Set
@@ -98,11 +141,25 @@ export async function getStudentsWithRecentAbsences(
       }
     });
 
+    console.log('[ABSENCE ALERTS] Presence map built', {
+      studentsWithRecords: presenceByStudentAndDate.size,
+      samplePresence: Array.from(presenceByStudentAndDate.entries()).slice(0, 2).map(([id, dates]) => ({
+        studentId: id,
+        presentDatesCount: dates.size,
+        presentDates: Array.from(dates).slice(0, 3),
+      })),
+    });
+
     // 4. Calculate consecutive absences by Sunday for each student
     const alerts: AbsenceAlert[] = [];
 
     for (const studentId of studentIds) {
       const studentPresenceDates = presenceByStudentAndDate.get(studentId) || new Set();
+
+      console.log(`[ABSENCE ALERTS] Checking student ${studentId}`, {
+        presentDatesCount: studentPresenceDates.size,
+        presentDates: Array.from(studentPresenceDates),
+      });
 
       let consecutiveAbsences = 0;
       const absenceDates: string[] = [];
@@ -112,6 +169,11 @@ export async function getStudentsWithRecentAbsences(
       // Iterate through Sundays from most recent to oldest
       for (const date of uniqueDates) {
         const wasPresentOnThisSunday = studentPresenceDates.has(date);
+
+        console.log(`[ABSENCE ALERTS] Student ${studentId} on ${date}:`, {
+          wasPresentOnThisSunday,
+          consecutiveAbsences,
+        });
 
         if (!wasPresentOnThisSunday) {
           // Absent on this Sunday (didn't come to ANY service)
@@ -124,12 +186,18 @@ export async function getStudentsWithRecentAbsences(
           lastAbsenceDate = date;
         } else {
           // Present on this Sunday (came to at least one service) → stop counting
+          console.log(`[ABSENCE ALERTS] Student ${studentId} was present on ${date}, stopping count`);
           break;
         }
       }
 
       // If threshold met, create alert
       if (consecutiveAbsences >= threshold && firstAbsenceDate && lastAbsenceDate) {
+        console.log(`[ABSENCE ALERTS] ALERT TRIGGERED for student ${studentId}`, {
+          consecutiveAbsences,
+          threshold,
+          absenceDates,
+        });
         alerts.push({
           studentId,
           absenceCount: consecutiveAbsences,
@@ -137,8 +205,19 @@ export async function getStudentsWithRecentAbsences(
           firstAbsenceDate: lastAbsenceDate, // lastAbsenceDate is the oldest (we iterated DESC)
           lastAbsenceDate: firstAbsenceDate, // firstAbsenceDate is the newest
         });
+      } else {
+        console.log(`[ABSENCE ALERTS] No alert for student ${studentId}`, {
+          consecutiveAbsences,
+          threshold,
+          meetsThreshold: consecutiveAbsences >= threshold,
+        });
       }
     }
+
+    console.log('[ABSENCE ALERTS] Final result', {
+      totalAlerts: alerts.length,
+      alertedStudentIds: alerts.map(a => a.studentId),
+    });
 
     return alerts;
   } catch (error) {

@@ -1,13 +1,11 @@
 import { Plus, Loader2, Search, Filter } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { useStudentManagement } from '../../hooks/useStudentManagement';
-import { useAbsenceAlerts } from '../../hooks/useAbsenceAlerts';
+import { useStudentManagement, type StudentWithAlert } from '../../hooks/useStudentManagement';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { StudentCard } from './StudentCard';
 import { StudentFormModal } from './StudentFormModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
-import type { Student } from '../../types/database.types';
 import { theme } from '../../config/theme';
 
 type StatusFilter = 'all' | 'active' | 'inactive' | 'aged-out' | 'moved';
@@ -15,7 +13,7 @@ type VisitorFilter = 'all' | 'visitors';
 
 interface StudentManagementPageProps {
   onBack: () => void;
-  onStudentClick?: (student: Student) => void;
+  onStudentClick?: (student: StudentWithAlert) => void;
 }
 
 /**
@@ -41,17 +39,12 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
     isCreating,
     isUpdating,
     isDeleting,
-  } = useStudentManagement();
-
-  // Fetch absence alerts for students
-  const { alerts: absenceAlerts } = useAbsenceAlerts({
-    threshold: 3,
-  });
+  } = useStudentManagement(true, 3); // Include alerts with threshold of 3
 
   const [showFormModal, setShowFormModal] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [editingStudent, setEditingStudent] = useState<StudentWithAlert | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [deletingStudent, setDeletingStudent] = useState<StudentWithAlert | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [visitorFilter, setVisitorFilter] = useState<VisitorFilter>('all');
@@ -82,7 +75,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
     // Sort by status (active first) then by name
     return filtered.sort((a, b) => {
       // Status priority: active = 0, others = 1
-      const statusPriority = (status: Student['status']) => {
+      const statusPriority = (status: StudentWithAlert['status']) => {
         return status === 'active' ? 0 : 1;
       };
 
@@ -325,7 +318,7 @@ export function StudentManagementPage({ onBack, onStudentClick }: StudentManagem
                       key={student.id}
                       student={student}
                       onClick={onStudentClick || (() => {})}
-                      hasAlert={absenceAlerts.has(student.id)}
+                      hasAlert={student.hasAlert}
                     />
                   ))}
                 </div>

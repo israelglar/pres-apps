@@ -1,10 +1,11 @@
 import { ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Student } from '../../types/database.types';
+import type { StudentWithAlert } from '../../hooks/useStudentManagement';
 import { theme } from '../../config/theme';
 
 interface StudentCardProps {
-  student: Student;
-  onClick: (student: Student) => void;
+  student: StudentWithAlert;
+  onClick: (student: StudentWithAlert) => void;
   hasAlert?: boolean;
 }
 
