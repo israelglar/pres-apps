@@ -8,17 +8,22 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock,
+  Edit3,
   ExternalLink,
   Eye,
   Info,
   Search,
   UserCheck,
+  UserX,
+  Users,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import type { Schedule } from "../../schemas/attendance.schema";
 import { formatDate } from "../../utils/helperFunctions";
 import { useDateSelectionLogic } from "./DateSelectionPage.logic";
+import type { AttendanceStats } from "../../utils/attendance";
+import { useEffect } from "react";
 
 interface DateSelectionPageProps {
   onDateSelected: (
@@ -27,12 +32,16 @@ interface DateSelectionPageProps {
     serviceTimeId: number
   ) => void;
   onBack: () => void;
+  onViewHistory?: () => void;
   serviceTimes: Array<{ id: number; name: string; time: string }>;
   getSchedule: (
     date: string,
     serviceTimeId: number | null
   ) => Schedule | undefined;
   getAvailableDates: (serviceTimeId?: number | null) => Date[];
+  attendanceStats?: AttendanceStats;
+  onDateChange?: (date: Date) => void;
+  onServiceTimeChange?: (serviceTimeId: number) => void;
 }
 
 /**
@@ -47,9 +56,13 @@ interface DateSelectionPageProps {
 export function DateSelectionPage({
   onDateSelected,
   onBack,
+  onViewHistory,
   serviceTimes,
   getSchedule,
   getAvailableDates,
+  attendanceStats,
+  onDateChange,
+  onServiceTimeChange,
 }: DateSelectionPageProps) {
   const logic = useDateSelectionLogic({ getAvailableDates });
 
@@ -58,6 +71,19 @@ export function DateSelectionPage({
     logic.selectedDate.toISOString().split("T")[0],
     logic.selectedServiceTimeId
   );
+
+  // Notify parent when date or service time changes
+  useEffect(() => {
+    if (onDateChange) {
+      onDateChange(logic.selectedDate);
+    }
+  }, [logic.selectedDate, onDateChange]);
+
+  useEffect(() => {
+    if (onServiceTimeChange) {
+      onServiceTimeChange(logic.selectedServiceTimeId);
+    }
+  }, [logic.selectedServiceTimeId, onServiceTimeChange]);
 
   // Get lesson info for a specific date and current service time (for dropdown)
   const getLessonForDate = (date: Date) => {
@@ -338,123 +364,238 @@ export function DateSelectionPage({
             </div>
           </div>
 
-          {/* Method Selection Card */}
-          <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-4`}>
-            <label
-              className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
-            >
-              <Search className="w-4 h-4" />
-              Método de Registo
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {/* Search Method - DEFAULT */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => logic.setSelectedMethod("search")}
-                  className={`w-full p-3 rounded-xl border-2 transition-all ${
-                    logic.selectedMethod === "search"
-                      ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
-                      : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
-                  }`}
-                >
-                  <UserCheck className={`w-6 h-6 mx-auto mb-2 ${
-                    logic.selectedMethod === "search" ? "text-blue-600" : theme.text.neutral
-                  }`} />
-                  <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
-                    Só Presentes
+          {/* Conditional: Method Selection OR Attendance Summary */}
+          {selectedSchedule?.has_attendance && attendanceStats ? (
+            /* Attendance Summary Card - When attendance is already marked */
+            <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-4`}>
+              <label
+                className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
+              >
+                <Users className="w-4 h-4" />
+                Resumo de Presenças
+              </label>
+
+              {/* Main Stats Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Total Present */}
+                <div className={`${theme.backgrounds.successLight} border-2 ${theme.borders.success} rounded-xl p-3 text-center`}>
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <CheckCircle2 className={`w-5 h-5 ${theme.text.success}`} />
+                    <span className={`text-2xl font-bold ${theme.text.success}`}>
+                      {attendanceStats.totalPresent}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-semibold ${theme.text.success}`}>
+                    Presentes (total)
                   </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    logic.setShowMethodInfo(
-                      logic.showMethodInfo === "search" ? null : "search"
-                    );
-                  }}
-                  className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
-                >
-                  <Info className="w-4 h-4 text-blue-600" />
-                </button>
-                {logic.showMethodInfo === "search" && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => logic.setShowMethodInfo(null)}
-                    />
-                    <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
-                      <p className={`text-sm ${theme.text.neutral}`}>
-                        Ideal para registar pela ordem em que estão sentados.
-                      </p>
+                </div>
+
+                {/* Total Absent */}
+                <div className={`${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-xl p-3 text-center`}>
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <UserX className={`w-5 h-5 ${theme.text.error}`} />
+                    <span className={`text-2xl font-bold ${theme.text.error}`}>
+                      {attendanceStats.absent}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-semibold ${theme.text.error}`}>
+                    Faltas
+                  </p>
+                </div>
+              </div>
+
+              {/* Detailed Breakdown */}
+              <div className={`${theme.backgrounds.neutralLight} rounded-xl p-3 space-y-2`}>
+                <p className={`text-xs font-bold ${theme.text.neutralDarker} uppercase tracking-wide mb-2`}>
+                  Detalhes
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${theme.indicators.present}`} />
+                    <span className={`text-sm ${theme.text.neutralDarker}`}>Presentes</span>
+                  </div>
+                  <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>
+                    {attendanceStats.present}
+                  </span>
+                </div>
+
+                {attendanceStats.late > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${theme.indicators.late}`} />
+                      <span className={`text-sm ${theme.text.neutralDarker}`}>Atrasados</span>
                     </div>
-                  </>
+                    <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>
+                      {attendanceStats.late}
+                    </span>
+                  </div>
+                )}
+
+                {attendanceStats.excused > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${theme.indicators.excused}`} />
+                      <span className={`text-sm ${theme.text.neutralDarker}`}>Justificadas</span>
+                    </div>
+                    <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>
+                      {attendanceStats.excused}
+                    </span>
+                  </div>
+                )}
+
+                {attendanceStats.visitors > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${theme.indicators.visitor}`} />
+                      <span className={`text-sm ${theme.text.neutralDarker}`}>Visitantes</span>
+                    </div>
+                    <span className={`text-sm font-bold ${theme.text.neutralDarker}`}>
+                      {attendanceStats.visitors}
+                    </span>
+                  </div>
                 )}
               </div>
 
-              {/* Swipe Method */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => logic.setSelectedMethod("swipe")}
-                  className={`w-full p-3 rounded-xl border-2 transition-all ${
-                    logic.selectedMethod === "swipe"
-                      ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
-                      : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
-                  }`}
-                >
-                  <ArrowDownAZ className={`w-6 h-6 mx-auto mb-2 ${
-                    logic.selectedMethod === "swipe" ? theme.text.primary : theme.text.neutral
-                  }`} />
-                  <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
-                    Ordem Alfabética
-                  </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    logic.setShowMethodInfo(
-                      logic.showMethodInfo === "swipe" ? null : "swipe"
-                    );
-                  }}
-                  className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
-                >
-                  <Info className={`w-4 h-4 ${theme.text.primary}`} />
-                </button>
-                {logic.showMethodInfo === "swipe" && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => logic.setShowMethodInfo(null)}
-                    />
-                    <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
-                      <p className={`text-sm ${theme.text.neutral}`}>
-                        Percorre todos para marcar presente ou falta.
-                      </p>
-                    </div>
-                  </>
-                )}
+              {/* Info Message */}
+              <div className={`mt-4 flex items-start gap-2 ${theme.backgrounds.primaryLighter} border ${theme.borders.primaryLight} rounded-xl p-3`}>
+                <Info className={`w-4 h-4 ${theme.text.primary} flex-shrink-0 mt-0.5`} />
+                <p className={`text-xs ${theme.text.primaryDark}`}>
+                  Presenças já registadas. Para editar, clique no botão abaixo.
+                </p>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Method Selection Card - When attendance NOT marked */
+            <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-4`}>
+              <label
+                className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
+              >
+                <Search className="w-4 h-4" />
+                Método de Registo
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Search Method - DEFAULT */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => logic.setSelectedMethod("search")}
+                    className={`w-full p-3 rounded-xl border-2 transition-all ${
+                      logic.selectedMethod === "search"
+                        ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
+                        : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
+                    }`}
+                  >
+                    <UserCheck className={`w-6 h-6 mx-auto mb-2 ${
+                      logic.selectedMethod === "search" ? "text-blue-600" : theme.text.neutral
+                    }`} />
+                    <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
+                      Só Presentes
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      logic.setShowMethodInfo(
+                        logic.showMethodInfo === "search" ? null : "search"
+                      );
+                    }}
+                    className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
+                  >
+                    <Info className="w-4 h-4 text-blue-600" />
+                  </button>
+                  {logic.showMethodInfo === "search" && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => logic.setShowMethodInfo(null)}
+                      />
+                      <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
+                        <p className={`text-sm ${theme.text.neutral}`}>
+                          Ideal para registar pela ordem em que estão sentados.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Swipe Method */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => logic.setSelectedMethod("swipe")}
+                    className={`w-full p-3 rounded-xl border-2 transition-all ${
+                      logic.selectedMethod === "swipe"
+                        ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
+                        : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
+                    }`}
+                  >
+                    <ArrowDownAZ className={`w-6 h-6 mx-auto mb-2 ${
+                      logic.selectedMethod === "swipe" ? theme.text.primary : theme.text.neutral
+                    }`} />
+                    <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
+                      Ordem Alfabética
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      logic.setShowMethodInfo(
+                        logic.showMethodInfo === "swipe" ? null : "swipe"
+                      );
+                    }}
+                    className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
+                  >
+                    <Info className={`w-4 h-4 ${theme.text.primary}`} />
+                  </button>
+                  {logic.showMethodInfo === "swipe" && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => logic.setShowMethodInfo(null)}
+                      />
+                      <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
+                        <p className={`text-sm ${theme.text.neutral}`}>
+                          Percorre todos para marcar presente ou falta.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Fixed button at bottom */}
         <div className={`flex-shrink-0 p-5 border-t ${theme.borders.neutralLight} ${theme.backgrounds.white}`}>
-          <button
-            onClick={() =>
-              onDateSelected(
-                logic.selectedDate,
-                logic.selectedMethod,
-                logic.selectedServiceTimeId
-              )
-            }
-            className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
-          >
-            Continuar
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </button>
+          {selectedSchedule?.has_attendance && attendanceStats ? (
+            /* View/Edit Button - When attendance is marked */
+            <button
+              onClick={onViewHistory}
+              className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
+            >
+              Ver/Editar Presenças
+              <Edit3 className="w-4 h-4" />
+            </button>
+          ) : (
+            /* Continue Button - When attendance NOT marked */
+            <button
+              onClick={() =>
+                onDateSelected(
+                  logic.selectedDate,
+                  logic.selectedMethod,
+                  logic.selectedServiceTimeId
+                )
+              }
+              className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
+            >
+              Continuar
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

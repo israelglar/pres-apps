@@ -138,7 +138,7 @@ export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) =>
       await editAttendance({
         recordId,
         status: currentRecord.status,
-        notes: notes || undefined,
+        notes: notes ? notes : null, // Use null to clear, not undefined
       });
       successVibration();
       handleCloseNotes();

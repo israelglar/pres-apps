@@ -91,7 +91,7 @@ export function useEditAttendance() {
     }: {
       recordId: number;
       status: 'present' | 'absent' | 'excused' | 'late';
-      notes?: string;
+      notes?: string | null;
     }) => {
       return updateAttendanceRecord(recordId, { status, notes });
     },
@@ -114,7 +114,11 @@ export function useEditAttendance() {
             ...group,
             records: group.records.map(record =>
               record.id === variables.recordId
-                ? { ...record, status: variables.status, notes: variables.notes }
+                ? {
+                    ...record,
+                    status: variables.status,
+                    notes: variables.notes ?? null, // Ensure null is used, not undefined
+                  }
                 : record
             ),
             stats: calculateStats(

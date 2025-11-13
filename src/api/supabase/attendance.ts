@@ -112,7 +112,7 @@ export async function updateAttendanceRecord(
   id: number,
   updates: {
     status?: 'present' | 'absent' | 'excused' | 'late';
-    notes?: string;
+    notes?: string | null;
   }
 ): Promise<AttendanceRecord> {
   try {
