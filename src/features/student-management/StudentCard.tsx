@@ -31,7 +31,7 @@ export function StudentCard({ student, onClick, hasAlert = false }: StudentCardP
         className: `${theme.studentStatus.inactive.bg} ${theme.studentStatus.inactive.text} ${theme.studentStatus.inactive.border}`,
       },
       'aged-out': {
-        label: 'Saiu',
+        label: 'Passou',
         className: `${theme.studentStatus['aged-out'].bg} ${theme.studentStatus['aged-out'].text} ${theme.studentStatus['aged-out'].border}`,
       },
       moved: {

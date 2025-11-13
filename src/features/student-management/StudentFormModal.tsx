@@ -170,7 +170,7 @@ export function StudentFormModal({
             >
               <option value="active">Ativo</option>
               <option value="inactive">Inativo</option>
-              <option value="aged-out">Saiu</option>
+              <option value="aged-out">Passou</option>
               <option value="moved">Mudou</option>
             </select>
           </div>

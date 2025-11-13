@@ -25,7 +25,7 @@ export function StudentDetailHeader({
   const statusConfig = {
     active: { label: 'Ativo', color: `${theme.studentStatus.active.bg} ${theme.studentStatus.active.text} ${theme.studentStatus.active.border}` },
     inactive: { label: 'Inativo', color: `${theme.studentStatus.inactive.bg} ${theme.studentStatus.inactive.text} ${theme.studentStatus.inactive.border}` },
-    aged_out: { label: 'Crescido', color: `${theme.studentStatus['aged-out'].bg} ${theme.studentStatus['aged-out'].text} ${theme.studentStatus['aged-out'].border}` },
+    'aged-out': { label: 'Passou', color: `${theme.studentStatus['aged-out'].bg} ${theme.studentStatus['aged-out'].text} ${theme.studentStatus['aged-out'].border}` },
     moved: { label: 'Mudou', color: `${theme.studentStatus.moved.bg} ${theme.studentStatus.moved.text} ${theme.studentStatus.moved.border}` },
   }
 
