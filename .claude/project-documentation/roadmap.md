@@ -9,6 +9,8 @@ The following features were previously planned and are now **fully implemented**
 3. **✅ Student Management** - Complete CRUD interface with visitor tracking and status management
 4. **✅ Attendance History** - View past records with service time filtering and pagination
 5. **✅ Google OAuth Authentication** - Secure login with email whitelist
+6. **✅ Absence Alert System** - Shows alerts during attendance marking when students miss 3+ consecutive Sundays, with dismissible warnings
+7. **✅ Quick Visitor Addition** - Add visitors directly during attendance marking flow with smart search and auto-present marking
 
 ---
 
@@ -25,33 +27,11 @@ The following features were previously planned and are now **fully implemented**
 - Currently only available when editing past records
 - Would allow capturing observations at time of marking
 
-### 2. Absence Alert System
-
-**Design:** Show alerts during attendance marking
-
-- When marking student who missed 2-3 recent lessons, show alert
-- Alert shows: Absence count + suggested action
-- Example: "⚠️ Faltou às últimas 3 aulas - Considera falar com ele/ela"
-- Prompts teacher to check in with student
-- Configurable threshold (2-3 lessons, adjustable)
-
-### 3. Quick Visitor Addition
-
-**Status:** **Partially Implemented** - Visitors can be added via Student Management, but not during marking
-
-**Remaining Work:** Add visitor during attendance marking flow
-
-- "+ Adicionar Visitante" button in marking interface
-- Simple name input field within marking page
-- Marks visitor as Present immediately
-- Currently must go to Student Management to add visitors first
-- Would streamline workflow for unexpected visitors during class
-
 ---
 
 ## Medium Priority (Next 3-6 Months)
 
-### 4. Carers List Widget
+### 2. Carers List Widget
 
 **Design:** Show on home page
 
@@ -62,7 +42,7 @@ The following features were previously planned and are now **fully implemented**
 - Admin interface to assign carers to students
 - Currently managed in separate Excel file (needs integration)
 
-### 5. Lesson History & Resources
+### 3. Lesson History & Resources
 
 **Design:** New section accessible from navigation menu
 
@@ -75,7 +55,7 @@ The following features were previously planned and are now **fully implemented**
 - Rich text editor for lesson notes
 - File attachments support
 
-### 6. Reports & Analytics Section
+### 4. Reports & Analytics Section
 
 **Design:** Separate reports page (not cluttering home page)
 
@@ -93,7 +73,7 @@ The following features were previously planned and are now **fully implemented**
   - Export to Excel/CSV
   - Share reports via email
 
-### 7. Role-Based Permissions (Future Enhancement)
+### 5. Role-Based Permissions (Future Enhancement)
 
 **Status:** Authentication implemented, but all teachers have equal access
 
@@ -114,7 +94,7 @@ The following features were previously planned and are now **fully implemented**
 
 ## Low Priority (Future Ideas)
 
-### 8. Enhanced Database Features
+### 6. Enhanced Database Features
 
 **Status:** **Database migration complete** - Now using Supabase PostgreSQL
 
@@ -126,7 +106,7 @@ The following features were previously planned and are now **fully implemented**
 - Add database-level validation and constraints
 - Implement audit trails for data changes
 
-### 9. Additional Ministry Features (Exploration Phase)
+### 7. Additional Ministry Features (Exploration Phase)
 
 - Communication with parents (announcements, updates)
 - Event planning (camps, trips, special events)
@@ -141,7 +121,7 @@ The following features were previously planned and are now **fully implemented**
 
 - **Current Version:** MVP (0.2.0)
 - **Status:** Active development
-- **Last Updated:** 2025-11-03
+- **Last Updated:** 2025-11-13
 - **Deployment:** Vercel (production)
 - **Repository:** Git repository with recent commits showing active development
 
@@ -154,3 +134,5 @@ The following features were previously planned and are now **fully implemented**
 - ✅ **Enhanced Attendance:** 4 status types (present/absent/late/excused) with notes
 - ✅ **PWA Install Prompt:** Install button on home page
 - ✅ **Google OAuth Authentication:** Secure login with teacher email whitelist
+- ✅ **Absence Alert System:** Shows alerts when students miss 3+ consecutive Sundays
+- ✅ **Quick Visitor Addition:** Add visitors directly during attendance marking flow
