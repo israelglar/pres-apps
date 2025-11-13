@@ -12,5 +12,9 @@ function AttendanceHistoryRoute() {
     navigate({ to: '/' });
   };
 
-  return <AttendanceHistoryPage onBack={handleBack} />;
+  const handleViewStudent = (studentId: number) => {
+    navigate({ to: '/students/$studentId', params: { studentId: studentId.toString() } });
+  };
+
+  return <AttendanceHistoryPage onBack={handleBack} onViewStudent={handleViewStudent} />;
 }

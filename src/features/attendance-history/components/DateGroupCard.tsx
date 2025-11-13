@@ -2,6 +2,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  UserPlus,
 } from "lucide-react";
 import { useState } from "react";
 import { theme } from "../../../config/theme";
@@ -15,6 +16,9 @@ interface DateGroupCardProps {
   group: AttendanceHistoryGroup;
   onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
   onOpenNotes: (record: AttendanceRecordWithRelations) => void;
+  onOpenAddDialog: () => void;
+  onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
+  onViewStudent: (studentId: number) => void;
 }
 
 /**
@@ -22,7 +26,7 @@ interface DateGroupCardProps {
  * Includes lesson info, service time, student list, and summary stats
  * Starts collapsed, expands when clicked
  */
-export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes }: DateGroupCardProps) {
+export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenAddDialog, onOpenDeleteDialog, onViewStudent }: DateGroupCardProps) {
   const { schedule, records, stats } = group;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -96,6 +100,22 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes }: DateG
               </a>
             </div>
           )}
+
+          {/* Add Student Button */}
+          <div className="px-5 pb-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                lightTap();
+                onOpenAddDialog();
+              }}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md active:scale-[0.99] transition-all`}
+            >
+              <UserPlus className="w-4 h-4" />
+              Adicionar Pré
+            </button>
+          </div>
+
           {/* Summary Stats - Detailed view when expanded */}
           {records.length > 0 && (
             <div
@@ -114,6 +134,8 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes }: DateG
                   record={record}
                   onQuickStatusChange={onQuickStatusChange}
                   onOpenNotes={onOpenNotes}
+                  onOpenDeleteDialog={onOpenDeleteDialog}
+                  onViewStudent={onViewStudent}
                 />
               ))}
             </div>

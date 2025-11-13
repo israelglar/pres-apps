@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllSchedules } from '../../../api/supabase/schedules';
-import { getAttendanceBySchedule, updateAttendanceRecord } from '../../../api/supabase/attendance';
+import {
+  getAttendanceBySchedule,
+  updateAttendanceRecord,
+  createAttendanceRecord,
+  deleteAttendanceRecord,
+} from '../../../api/supabase/attendance';
 import type { ScheduleWithRelations, AttendanceRecordWithRelations } from '../../../types/database.types';
 import { calculateStats, type AttendanceStats } from '../../../utils/attendance';
 
@@ -146,6 +151,170 @@ export function useEditAttendance() {
     editAttendance: editMutation.mutateAsync,
     isEditing: editMutation.isPending,
     editError: editMutation.error,
+  };
+}
+
+/**
+ * Hook to handle adding a new attendance record
+ * Includes optimistic updates for instant UI feedback
+ */
+export function useAddAttendance() {
+  const queryClient = useQueryClient();
+
+  const addMutation = useMutation({
+    mutationFn: async ({
+      studentId,
+      scheduleId,
+      status,
+      serviceTimeId,
+      notes,
+    }: {
+      studentId: number;
+      scheduleId: number;
+      status: 'present' | 'absent' | 'excused' | 'late';
+      serviceTimeId?: number;
+      notes?: string;
+    }) => {
+      return createAttendanceRecord({
+        student_id: studentId,
+        schedule_id: scheduleId,
+        status,
+        service_time_id: serviceTimeId,
+        notes,
+      });
+    },
+
+    // Optimistic update - instantly add to UI before server responds
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+
+      // Snapshot previous value
+      const previousHistory = queryClient.getQueryData(ATTENDANCE_HISTORY_QUERY_KEY);
+
+      // Optimistically update the cache
+      queryClient.setQueriesData(
+        { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
+        (old: AttendanceHistoryGroup[] | undefined) => {
+          if (!old) return old;
+
+          return old.map(group => {
+            if (group.schedule.id !== variables.scheduleId) return group;
+
+            // Create temporary optimistic record
+            const optimisticRecord: AttendanceRecordWithRelations = {
+              id: Date.now(), // Temporary ID
+              student_id: variables.studentId,
+              schedule_id: variables.scheduleId,
+              status: variables.status,
+              service_time_id: variables.serviceTimeId || null,
+              notes: variables.notes || null,
+              marked_by: null,
+              marked_at: new Date().toISOString(),
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              student: undefined, // Will be populated on server response
+              schedule: group.schedule,
+            };
+
+            const newRecords = [...group.records, optimisticRecord];
+
+            return {
+              ...group,
+              records: newRecords,
+              stats: calculateStats(newRecords),
+            };
+          });
+        }
+      );
+
+      // Return rollback context
+      return { previousHistory };
+    },
+
+    // Rollback on error
+    onError: (_err, _variables, context) => {
+      if (context?.previousHistory) {
+        queryClient.setQueryData(ATTENDANCE_HISTORY_QUERY_KEY, context.previousHistory);
+      }
+    },
+
+    // Always refetch after success or error
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+    },
+  });
+
+  return {
+    addAttendance: addMutation.mutateAsync,
+    isAdding: addMutation.isPending,
+    addError: addMutation.error,
+  };
+}
+
+/**
+ * Hook to handle deleting an attendance record
+ * Includes optimistic updates for instant UI feedback
+ */
+export function useDeleteAttendance() {
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: async ({ recordId }: { recordId: number }) => {
+      return deleteAttendanceRecord(recordId);
+    },
+
+    // Optimistic update - instantly remove from UI before server responds
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+
+      // Snapshot previous value
+      const previousHistory = queryClient.getQueryData(ATTENDANCE_HISTORY_QUERY_KEY);
+
+      // Optimistically update the cache
+      queryClient.setQueriesData(
+        { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
+        (old: AttendanceHistoryGroup[] | undefined) => {
+          if (!old) return old;
+
+          return old.map(group => {
+            const newRecords = group.records.filter(record => record.id !== variables.recordId);
+
+            return {
+              ...group,
+              records: newRecords,
+              stats: calculateStats(newRecords),
+            };
+          });
+        }
+      );
+
+      // Return rollback context
+      return { previousHistory };
+    },
+
+    // Rollback on error
+    onError: (_err, _variables, context) => {
+      if (context?.previousHistory) {
+        queryClient.setQueryData(ATTENDANCE_HISTORY_QUERY_KEY, context.previousHistory);
+      }
+    },
+
+    // Always refetch after success or error
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+    },
+  });
+
+  return {
+    deleteAttendance: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
+    deleteError: deleteMutation.error,
   };
 }
 

@@ -1,14 +1,18 @@
 import { useState, useCallback } from 'react';
-import { useAttendanceHistory, useEditAttendance } from './hooks/useAttendanceHistory';
+import { useAttendanceHistory, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useAttendanceHistory';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { useSwipeGesture } from '../../hooks/useSwipeGesture';
+import { addVisitor } from '../../api/supabase/students';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Business logic for Attendance History Page
  * Handles state management, pagination, and edit operations
  */
-export function useAttendanceHistoryLogic() {
+export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) => void) {
+  const queryClient = useQueryClient();
+
   // Service time tab state - default to 11:00 (11h service)
   const [selectedServiceTime, setSelectedServiceTime] = useState<'09:00:00' | '11:00:00'>('11:00:00');
 
@@ -21,6 +25,12 @@ export function useAttendanceHistoryLogic() {
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
 
+  // Add attendance mutation
+  const { addAttendance, isAdding } = useAddAttendance();
+
+  // Delete attendance mutation
+  const { deleteAttendance, isDeleting } = useDeleteAttendance();
+
   // Dialog state
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordWithRelations | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -28,6 +38,20 @@ export function useAttendanceHistoryLogic() {
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+
+  // Add student dialog state
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [addDialogScheduleId, setAddDialogScheduleId] = useState<number | null>(null);
+  const [addDialogServiceTimeId, setAddDialogServiceTimeId] = useState<number | null>(null);
+
+  // Delete confirmation dialog state
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<AttendanceRecordWithRelations | null>(null);
+
+  // Create visitor dialog state
+  const [isCreateVisitorDialogOpen, setIsCreateVisitorDialogOpen] = useState(false);
+  const [isCreatingVisitor, setIsCreatingVisitor] = useState(false);
+  const [visitorInitialName, setVisitorInitialName] = useState('');
 
   /**
    * Open edit dialog for a specific attendance record
@@ -125,6 +149,138 @@ export function useAttendanceHistoryLogic() {
   };
 
   /**
+   * Open add student dialog for a specific schedule
+   */
+  const handleOpenAddDialog = (scheduleId: number, serviceTimeId: number | null) => {
+    lightTap();
+    setAddDialogScheduleId(scheduleId);
+    setAddDialogServiceTimeId(serviceTimeId);
+    setIsAddDialogOpen(true);
+  };
+
+  /**
+   * Close add student dialog
+   */
+  const handleCloseAddDialog = () => {
+    lightTap();
+    setIsAddDialogOpen(false);
+    // Clear state after animation
+    setTimeout(() => {
+      setAddDialogScheduleId(null);
+      setAddDialogServiceTimeId(null);
+    }, 300);
+  };
+
+  /**
+   * Add student to attendance (as Present)
+   */
+  const handleAddStudent = async (studentId: number) => {
+    if (!addDialogScheduleId) return;
+
+    try {
+      await addAttendance({
+        studentId,
+        scheduleId: addDialogScheduleId,
+        status: 'present',
+        serviceTimeId: addDialogServiceTimeId || undefined,
+      });
+      successVibration();
+      handleCloseAddDialog();
+    } catch (error) {
+      console.error('Failed to add attendance:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
+
+  /**
+   * Open delete confirmation dialog for a specific record
+   */
+  const handleOpenDeleteDialog = (record: AttendanceRecordWithRelations) => {
+    lightTap();
+    setRecordToDelete(record);
+    setIsDeleteDialogOpen(true);
+  };
+
+  /**
+   * Close delete confirmation dialog
+   */
+  const handleCloseDeleteDialog = () => {
+    lightTap();
+    setIsDeleteDialogOpen(false);
+    // Clear state after animation
+    setTimeout(() => setRecordToDelete(null), 300);
+  };
+
+  /**
+   * Confirm delete attendance record
+   */
+  const handleConfirmDelete = async () => {
+    if (!recordToDelete) return;
+
+    try {
+      await deleteAttendance({ recordId: recordToDelete.id });
+      successVibration();
+      handleCloseDeleteDialog();
+    } catch (error) {
+      console.error('Failed to delete attendance:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
+
+  /**
+   * Open create visitor dialog
+   */
+  const handleOpenCreateVisitorDialog = (searchQuery: string) => {
+    lightTap();
+    setVisitorInitialName(searchQuery);
+    setIsCreateVisitorDialogOpen(true);
+  };
+
+  /**
+   * Close create visitor dialog
+   */
+  const handleCloseCreateVisitorDialog = () => {
+    lightTap();
+    setIsCreateVisitorDialogOpen(false);
+    // Clear initial name after animation
+    setTimeout(() => setVisitorInitialName(''), 300);
+  };
+
+  /**
+   * Create visitor and add to attendance
+   */
+  const handleCreateVisitor = async (visitorName: string) => {
+    if (!addDialogScheduleId) return;
+
+    setIsCreatingVisitor(true);
+
+    try {
+      // First, create the visitor student
+      const newVisitor = await addVisitor(visitorName);
+
+      // Invalidate students cache to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+
+      // Then add them to attendance as Present
+      await addAttendance({
+        studentId: newVisitor.id,
+        scheduleId: addDialogScheduleId,
+        status: 'present',
+        serviceTimeId: addDialogServiceTimeId || undefined,
+      });
+
+      successVibration();
+      handleCloseCreateVisitorDialog();
+      handleCloseAddDialog(); // Also close the add dialog
+    } catch (error) {
+      console.error('Failed to create visitor and add attendance:', error);
+      // Error will be shown by mutation hooks or thrown
+    } finally {
+      setIsCreatingVisitor(false);
+    }
+  };
+
+  /**
    * Load more history dates (pagination)
    */
   const handleLoadMore = () => {
@@ -138,6 +294,16 @@ export function useAttendanceHistoryLogic() {
   const handleRefresh = async () => {
     lightTap();
     await refetch();
+  };
+
+  /**
+   * View student detail page
+   */
+  const handleViewStudent = (studentId: number) => {
+    lightTap();
+    if (onViewStudent) {
+      onViewStudent(studentId);
+    }
   };
 
   /**
@@ -184,6 +350,22 @@ export function useAttendanceHistoryLogic() {
     isNotesDialogOpen,
     selectedRecordForNotes,
 
+    // Add student dialog state
+    isAddDialogOpen,
+    addDialogScheduleId,
+    addDialogServiceTimeId,
+    isAdding,
+
+    // Delete confirmation dialog state
+    isDeleteDialogOpen,
+    recordToDelete,
+    isDeleting,
+
+    // Create visitor dialog state
+    isCreateVisitorDialogOpen,
+    isCreatingVisitor,
+    visitorInitialName,
+
     // Service time tab state
     selectedServiceTime,
     handleServiceTimeChange,
@@ -203,6 +385,16 @@ export function useAttendanceHistoryLogic() {
     handleOpenNotes,
     handleCloseNotes,
     handleSubmitNotes,
+    handleOpenAddDialog,
+    handleCloseAddDialog,
+    handleAddStudent,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
+    handleOpenCreateVisitorDialog,
+    handleCloseCreateVisitorDialog,
+    handleCreateVisitor,
+    handleViewStudent,
     handleLoadMore,
     handleRefresh,
   };

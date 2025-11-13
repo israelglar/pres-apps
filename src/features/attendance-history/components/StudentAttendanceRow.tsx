@@ -1,4 +1,4 @@
-import { Check, X, Clock, FileText } from 'lucide-react';
+import { Check, X, Clock, FileText, User } from 'lucide-react';
 import type { AttendanceRecordWithRelations } from '../../../types/database.types';
 import { theme } from '../../../config/theme';
 import { selectionTap } from '../../../utils/haptics';
@@ -8,14 +8,17 @@ interface StudentAttendanceRowProps {
   record: AttendanceRecordWithRelations;
   onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
   onOpenNotes: (record: AttendanceRecordWithRelations) => void;
+  onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
+  onViewStudent: (studentId: number) => void;
 }
 
 /**
  * Single student row showing attendance status with tap-to-cycle and quick edit menu
  * - Tap row: Cycles between Present ↔ Absent
  * - Menu icon: Access Late, Excused, or full edit dialog
+ * - User icon: View student detail page
  */
-export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes }: StudentAttendanceRowProps) {
+export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes, onOpenDeleteDialog, onViewStudent }: StudentAttendanceRowProps) {
   /**
    * Handle tap on row - cycles between Present and Absent
    * If status is Late or Excused, tapping changes to Present
@@ -108,11 +111,26 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes 
         </div>
       </div>
 
-      {/* Quick Edit Menu */}
-      <div className="ml-3 flex-shrink-0">
+      {/* Action Buttons */}
+      <div className="ml-3 flex items-center gap-1 flex-shrink-0">
+        {/* View Student Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent row tap event
+            selectionTap();
+            onViewStudent(record.student_id);
+          }}
+          className={`p-2 rounded-lg ${theme.text.primary} hover:bg-gray-100 active:scale-95 transition-all`}
+          aria-label="Ver detalhes do pré"
+        >
+          <User className="w-4 h-4" />
+        </button>
+
+        {/* Quick Edit Menu */}
         <QuickEditMenu
           onSelectStatus={handleMenuStatusChange}
           onOpenNotesDialog={() => onOpenNotes(record)}
+          onOpenDeleteDialog={() => onOpenDeleteDialog(record)}
         />
       </div>
     </div>

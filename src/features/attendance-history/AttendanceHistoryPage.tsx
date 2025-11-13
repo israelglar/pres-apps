@@ -7,16 +7,20 @@ import { PageHeader } from "../../components/ui/PageHeader";
 import { useAttendanceHistoryLogic } from "./AttendanceHistoryPage.logic";
 import { DateGroupCard } from "./components/DateGroupCard";
 import { NotesDialog } from "./components/NotesDialog";
+import { AddStudentDialog } from "./components/AddStudentDialog";
+import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
+import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 
 interface AttendanceHistoryPageProps {
   onBack: () => void;
+  onViewStudent?: (studentId: number) => void;
 }
 
 /**
  * Attendance History Page
  * View and edit past attendance records
  */
-export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
+export function AttendanceHistoryPage({ onBack, onViewStudent }: AttendanceHistoryPageProps) {
   const {
     history,
     isLoading,
@@ -24,6 +28,16 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
     isEditing,
     isNotesDialogOpen,
     selectedRecordForNotes,
+    isAddDialogOpen,
+    addDialogScheduleId,
+    addDialogServiceTimeId,
+    isAdding,
+    isDeleteDialogOpen,
+    recordToDelete,
+    isDeleting,
+    isCreateVisitorDialogOpen,
+    isCreatingVisitor,
+    visitorInitialName,
     canLoadMore,
     selectedServiceTime,
     handleServiceTimeChange,
@@ -32,9 +46,19 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
     handleOpenNotes,
     handleCloseNotes,
     handleSubmitNotes,
+    handleOpenAddDialog,
+    handleCloseAddDialog,
+    handleAddStudent,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
+    handleOpenCreateVisitorDialog,
+    handleCloseCreateVisitorDialog,
+    handleCreateVisitor,
+    handleViewStudent,
     handleLoadMore,
     handleRefresh,
-  } = useAttendanceHistoryLogic();
+  } = useAttendanceHistoryLogic(onViewStudent);
 
   return (
     <div
@@ -127,6 +151,9 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
                 group={group}
                 onQuickStatusChange={handleQuickStatusChange}
                 onOpenNotes={handleOpenNotes}
+                onOpenAddDialog={() => handleOpenAddDialog(group.schedule.id, group.schedule.service_time_id)}
+                onOpenDeleteDialog={handleOpenDeleteDialog}
+                onViewStudent={handleViewStudent}
               />
             ))}
 
@@ -166,6 +193,39 @@ export function AttendanceHistoryPage({ onBack }: AttendanceHistoryPageProps) {
           onClose={handleCloseNotes}
           onSubmit={handleSubmitNotes}
           isSubmitting={isEditing}
+        />
+      )}
+
+      {/* Add Student Dialog */}
+      {isAddDialogOpen && addDialogScheduleId && (
+        <AddStudentDialog
+          scheduleId={addDialogScheduleId}
+          serviceTimeId={addDialogServiceTimeId || 0}
+          currentRecords={history?.find(g => g.schedule.id === addDialogScheduleId)?.records || []}
+          onAdd={handleAddStudent}
+          onClose={handleCloseAddDialog}
+          isAdding={isAdding}
+          onCreateVisitor={handleOpenCreateVisitorDialog}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && recordToDelete && (
+        <DeleteAttendanceDialog
+          studentName={recordToDelete.student?.name || "Estudante"}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCloseDeleteDialog}
+          isDeleting={isDeleting}
+        />
+      )}
+
+      {/* Create Visitor Dialog */}
+      {isCreateVisitorDialogOpen && (
+        <CreateVisitorDialog
+          onConfirm={handleCreateVisitor}
+          onCancel={handleCloseCreateVisitorDialog}
+          isCreating={isCreatingVisitor}
+          initialName={visitorInitialName}
         />
       )}
     </div>

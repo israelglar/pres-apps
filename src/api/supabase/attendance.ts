@@ -130,3 +130,63 @@ export async function updateAttendanceRecord(
   }
 }
 
+/**
+ * Create a single attendance record
+ * Used when adding a student to past attendance in history view
+ */
+export async function createAttendanceRecord(record: {
+  student_id: number;
+  schedule_id: number;
+  status: 'present' | 'absent' | 'excused' | 'late';
+  service_time_id?: number;
+  notes?: string;
+}): Promise<AttendanceRecordWithRelations> {
+  try {
+    const recordToInsert: AttendanceRecordInsert = {
+      schedule_id: record.schedule_id,
+      student_id: record.student_id,
+      status: record.status,
+      service_time_id: record.service_time_id || null,
+      notes: record.notes || null,
+      marked_by: null, // TODO: Add teacher ID when auth is implemented
+      marked_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from('attendance_records')
+      .insert(recordToInsert)
+      .select(`
+        *,
+        student:students(*),
+        schedule:schedules(
+          *,
+          lesson:lessons(*),
+          service_time:service_times(*)
+        )
+      `)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
+ * Delete a single attendance record
+ * Used when removing a student from past attendance in history view
+ */
+export async function deleteAttendanceRecord(id: number): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('attendance_records')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
