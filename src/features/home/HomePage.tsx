@@ -174,18 +174,18 @@ export function HomePage({
                         href={logic.todaySchedules[0].lesson.resource_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-base font-bold ${theme.text.primaryDark} hover:underline flex items-center gap-2`}
+                        className={`text-sm font-bold ${theme.text.primaryDark} hover:underline flex items-center gap-2`}
                       >
                         {logic.todaySchedules[0].lesson.name}
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     ) : (
-                      <p className={`text-base font-bold ${theme.text.primaryDark}`}>
+                      <p className={`text-sm font-bold ${theme.text.primaryDark}`}>
                         {logic.todaySchedules[0].lesson.name}
                       </p>
                     )
                   ) : (
-                    <p className="text-base font-bold text-amber-600">
+                    <p className="text-sm font-bold text-amber-600">
                       Sem lição agendada
                     </p>
                   )}
@@ -209,17 +209,17 @@ export function HomePage({
                         <button
                           key={schedule.service_time_id}
                           onClick={() => onQuickStart?.(logic.today, schedule.service_time_id!)}
-                          className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border-2 ${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover} transition-all cursor-pointer`}
+                          className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border-2 ${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover} transition-all cursor-pointer`}
                         >
                           {/* Top: Clock + Time */}
-                          <div className={`flex items-center gap-2 ${!hasAttendance ? 'text-base' : 'text-sm'}`}>
-                            <Clock className={`w-4 h-4 ${theme.text.primary}`} />
+                          <div className="flex items-center gap-1.5 text-xs">
+                            <Clock className={`w-3.5 h-3.5 ${theme.text.primary}`} />
                             <span className={`font-bold ${theme.text.primaryDarker}`}>{schedule.serviceTimeTime.substring(0, 5)}</span>
                           </div>
 
                           {/* Bottom: Attendance stats if available */}
                           {hasAttendance && (
-                            <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-2 mt-1.5">
                               {/* Stats with total */}
                               <AttendanceStats stats={schedule.stats!} mode="compact" showAbsent={false} showTotalPresent={true} />
                             </div>
@@ -235,7 +235,7 @@ export function HomePage({
               <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
                 <button
                   onClick={onNavigate}
-                  className={`w-full px-5 py-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-3`}
+                  className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-2`}
                 >
                   <Calendar className={`w-5 h-5 ${theme.text.primary}`} />
                   <span className={`font-semibold text-sm ${theme.text.primary}`}>Escolher Outra Data</span>

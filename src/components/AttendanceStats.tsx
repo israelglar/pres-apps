@@ -31,7 +31,7 @@ export function AttendanceStats({
     return (
       <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs`}>
         {showTotalPresent && (
-          <span className={`flex items-center gap-1 text-xl font-bold ${theme.text.primary}`}>
+          <span className={`flex items-center gap-1 text-m font-bold ${theme.text.primary}`}>
             {stats.totalPresent}
           </span>
         )}
@@ -72,7 +72,7 @@ export function AttendanceStats({
     return (
       <div className="flex items-center justify-center gap-2">
         {showTotalPresent && (
-          <span className={`text-xl font-bold ${theme.text.primary}`}>
+          <span className={`text-m font-bold ${theme.text.primary}`}>
             {stats.totalPresent}
           </span>
         )}

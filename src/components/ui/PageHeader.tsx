@@ -50,14 +50,14 @@ export function PageHeader({
       <header
         className={`${stickyClasses} bg-white border-b ${theme.borders.neutralLight} ${className}`.trim()}
       >
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-2">
           {/* Left: Simple iOS Back Button */}
           <button
             onClick={onBack}
             className={`flex items-center gap-1 ${theme.text.primary} hover:opacity-70 transition-opacity`}
           >
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -69,7 +69,7 @@ export function PageHeader({
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            <span className="text-base font-normal">Voltar</span>
+            <span className="text-sm font-normal">Voltar</span>
           </button>
 
           {/* Right: Optional Action Button */}
@@ -81,7 +81,7 @@ export function PageHeader({
             >
               {rightAction.icon}
               {rightAction.label && (
-                <span className="text-base font-normal">{rightAction.label}</span>
+                <span className="text-sm font-normal">{rightAction.label}</span>
               )}
             </button>
           )}
@@ -96,14 +96,14 @@ export function PageHeader({
       className={`${stickyClasses} ${theme.solids.primaryButton} shadow-lg ${className}`.trim()}
     >
       {/* Top row: Back button + optional right action */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <div className="flex items-center justify-between px-4 pt-3 pb-2">
         {/* Left: Back Button with "Voltar" text */}
         <button
           onClick={onBack}
-          className={`flex items-center gap-2 ${theme.text.onPrimaryButton} hover:opacity-80 transition-opacity`}
+          className={`flex items-center gap-1.5 ${theme.text.onPrimaryButton} hover:opacity-80 transition-opacity`}
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -115,7 +115,7 @@ export function PageHeader({
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <span className="text-base font-medium">Voltar</span>
+          <span className="text-sm font-medium">Voltar</span>
         </button>
 
         {/* Right: Optional Action Button */}
@@ -123,11 +123,11 @@ export function PageHeader({
           <button
             onClick={rightAction.onClick}
             disabled={rightAction.disabled}
-            className={`flex items-center gap-2 px-4 py-2 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.onPrimaryButton} rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`flex items-center gap-2 px-3 py-1.5 ${theme.backgrounds.whiteTransparent} ${theme.backgrounds.whiteHover} ${theme.text.onPrimaryButton} rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {rightAction.icon}
             {rightAction.label && (
-              <span className="text-sm font-medium">{rightAction.label}</span>
+              <span className="text-xs font-medium">{rightAction.label}</span>
             )}
           </button>
         )}
@@ -135,10 +135,10 @@ export function PageHeader({
 
       {/* Title Section */}
       {title && (
-        <div className="px-4 pb-4">
-          <h1 className={`text-2xl font-semibold ${theme.text.onPrimaryButton} mb-1 leading-relaxed`}>{title}</h1>
+        <div className="px-4 pb-3">
+          <h1 className={`text-xl font-semibold ${theme.text.onPrimaryButton} mb-0.5 leading-snug`}>{title}</h1>
           {subtitle && (
-            <p className={`text-base ${theme.text.onPrimaryButton} opacity-90 leading-relaxed`}>{subtitle}</p>
+            <p className={`text-sm ${theme.text.onPrimaryButton} opacity-90 leading-snug`}>{subtitle}</p>
           )}
         </div>
       )}
