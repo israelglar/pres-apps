@@ -19,16 +19,16 @@ export function AttendanceTimelineList({
   // Empty state
   if (!isLoading && records.length === 0) {
     return (
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-8 text-center`}>
-        <div className="flex flex-col items-center gap-4">
-          <div className={`w-16 h-16 rounded-full ${theme.backgrounds.neutral} flex items-center justify-center`}>
-            <CalendarX className={`w-8 h-8 ${theme.text.neutralLight}`} />
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-5 text-center`}>
+        <div className="flex flex-col items-center gap-3">
+          <div className={`w-12 h-12 rounded-full ${theme.backgrounds.neutral} flex items-center justify-center`}>
+            <CalendarX className={`w-6 h-6 ${theme.text.neutralLight}`} />
           </div>
           <div>
-            <h3 className={`text-xl font-semibold ${theme.text.neutralDarker} mb-2 leading-relaxed`}>
+            <h3 className={`text-base font-semibold ${theme.text.neutralDarker} mb-1`}>
               Sem registos de presença
             </h3>
-            <p className={`text-base ${theme.text.neutral} leading-relaxed`}>
+            <p className={`text-sm ${theme.text.neutral}`}>
               Este pré ainda não tem presenças registadas
             </p>
           </div>
@@ -38,15 +38,15 @@ export function AttendanceTimelineList({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Section Header */}
       <div className="flex items-center gap-2 px-1">
-        <History className={`w-5 h-5 ${theme.text.primary}`} />
-        <h2 className={`text-xl font-semibold ${theme.text.neutralDarker} leading-relaxed`}>
+        <History className={`w-4 h-4 ${theme.text.primary}`} />
+        <h2 className={`text-base font-semibold ${theme.text.neutralDarker}`}>
           Histórico de Presenças
         </h2>
         {records.length > 0 && (
-          <span className={`ml-auto text-base ${theme.text.neutral} font-medium`}>
+          <span className={`ml-auto text-sm ${theme.text.neutral} font-medium`}>
             {records.length} {records.length === 1 ? 'registo' : 'registos'}
           </span>
         )}

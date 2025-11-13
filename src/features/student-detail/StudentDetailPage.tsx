@@ -89,9 +89,9 @@ export function StudentDetailPage({
   if (isLoading) {
     return (
       <div className={`fixed inset-0 ${theme.backgrounds.page} flex items-center justify-center`}>
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin`} />
-          <p className={`${theme.text.neutralDarker} text-base font-semibold`}>
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className={`w-12 h-12 ${theme.text.primary} animate-spin`} />
+          <p className={`${theme.text.neutralDarker} text-sm font-semibold`}>
             A carregar dados do pré...
           </p>
         </div>
@@ -103,17 +103,17 @@ export function StudentDetailPage({
   if (isError || !student) {
     return (
       <div className={`fixed inset-0 ${theme.backgrounds.page} flex items-center justify-center p-5`}>
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
+        <div className="bg-white rounded-2xl shadow-2xl p-5 max-w-md text-center">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+          <h2 className="text-base font-semibold text-gray-900 mb-2">
             Erro ao carregar dados
           </h2>
-          <p className="text-base text-gray-600 mb-5 leading-relaxed">
+          <p className="text-sm text-gray-600 mb-5">
             {error?.message || 'Não foi possível carregar os dados do pré'}
           </p>
           <button
             onClick={onBack}
-            className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             Voltar
           </button>
@@ -153,7 +153,7 @@ export function StudentDetailPage({
         variant='minimal'
       />
 
-      <div className="max-w-4xl mx-auto p-5 pb-20 space-y-5">
+      <div className="max-w-4xl mx-auto p-3 pb-20 space-y-3">
         {/* Student Info and Stats */}
         <StudentDetailHeader
           student={student}
@@ -165,13 +165,13 @@ export function StudentDetailPage({
 
         {/* Absence Alert */}
         {hasAbsenceAlert && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-start gap-3 shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
-            <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 flex items-start gap-3 shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-base font-semibold text-red-900 mb-1 leading-relaxed">
+              <h3 className="text-sm font-semibold text-red-900 mb-1">
                 Alerta de Faltas
               </h3>
-              <p className="text-base text-red-800 leading-relaxed">
+              <p className="text-sm text-red-800">
                 Este pré tem <strong>{consecutiveAbsences} faltas consecutivas</strong>.
               </p>
             </div>

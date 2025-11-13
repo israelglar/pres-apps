@@ -25,7 +25,7 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
-          <span className={`text-base font-semibold ${theme.text.neutralDarker}`}>{dateDisplay}</span>
+          <span className={`text-sm font-semibold ${theme.text.neutralDarker}`}>{dateDisplay}</span>
         </div>
         {/* Service Time Badges */}
         {serviceTimes.length > 0 && (

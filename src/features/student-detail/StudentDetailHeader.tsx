@@ -34,12 +34,12 @@ export function StudentDetailHeader({
   return (
     <div className="space-y-3">
       {/* Student Info Card */}
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-4 hover:shadow-xl transition-shadow`}>
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-5 hover:shadow-xl transition-shadow`}>
         {/* Header with Name and Action Icons */}
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Name and Badges */}
           <div className="flex-1 min-w-0">
-            <h1 className={`text-3xl font-semibold ${theme.text.neutralDarkest} mb-2 break-words leading-relaxed`}>
+            <h1 className={`text-2xl font-semibold ${theme.text.neutralDarkest} mb-2 break-words`}>
               {student.name}
             </h1>
 
@@ -72,21 +72,21 @@ export function StudentDetailHeader({
               className={`p-2 rounded-lg ${theme.backgrounds.neutral} ${theme.backgrounds.neutralHover} ${theme.text.neutralDark} transition-colors`}
               aria-label="Editar"
             >
-              <Edit2 className="w-5 h-5" />
+              <Edit2 className="w-4 h-4" />
             </button>
             <button
               onClick={onDelete}
               className={`p-2 rounded-lg ${theme.backgrounds.error} ${theme.backgrounds.errorLight} ${theme.text.error} transition-colors`}
               aria-label="Eliminar"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Age */}
         {age !== null && (
-          <div className={`mb-2 text-base ${theme.text.neutralDark} leading-relaxed`}>
+          <div className={`mb-2 text-sm ${theme.text.neutralDark}`}>
             <span className="font-semibold">Idade:</span> {age} anos
           </div>
         )}
@@ -94,7 +94,7 @@ export function StudentDetailHeader({
         {/* Notes */}
         {student.notes && (
           <div className={`${theme.backgrounds.neutralLight} rounded-lg p-3 border ${theme.borders.neutralLight}`}>
-            <p className={`text-base ${theme.text.neutralDark} leading-relaxed`}>
+            <p className={`text-sm ${theme.text.neutralDark}`}>
               <span className="font-semibold">Notas:</span> {student.notes}
             </p>
           </div>
@@ -111,7 +111,7 @@ export function StudentDetailHeader({
             <div className="grid grid-cols-3 gap-3">
               {/* Attendance Rate */}
               <div className="text-center p-3 bg-gray-100 rounded-xl">
-                <div className={`text-2xl font-semibold ${theme.text.primaryDark} mb-1`}>
+                <div className={`text-xl font-semibold ${theme.text.primaryDark} mb-1`}>
                   {stats.attendanceRate}%
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Taxa</div>
@@ -119,7 +119,7 @@ export function StudentDetailHeader({
 
               {/* Present Count */}
               <div className="text-center p-3 bg-green-50 rounded-xl">
-                <div className={`text-2xl font-semibold ${theme.text.success} mb-1`}>
+                <div className={`text-xl font-semibold ${theme.text.success} mb-1`}>
                   {stats.present}
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Presenças</div>
@@ -127,7 +127,7 @@ export function StudentDetailHeader({
 
               {/* Absent Count */}
               <div className="text-center p-3 bg-red-50 rounded-xl">
-                <div className={`text-2xl font-semibold ${theme.text.error} mb-1`}>
+                <div className={`text-xl font-semibold ${theme.text.error} mb-1`}>
                   {stats.absent}
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Faltas</div>
@@ -138,7 +138,7 @@ export function StudentDetailHeader({
             {stats.excused > 0 && (
               <div className={`flex justify-center mt-3 pt-3 border-t ${theme.borders.neutralLight}`}>
                 <div className="text-center p-3 bg-blue-50 rounded-xl">
-                  <span className={`text-xl font-semibold ${theme.text.secondary}`}>{stats.excused}</span>
+                  <span className={`text-base font-semibold ${theme.text.secondary}`}>{stats.excused}</span>
                   <span className={`text-sm ${theme.text.neutral} ml-2 font-medium`}>Justificadas</span>
                 </div>
               </div>
