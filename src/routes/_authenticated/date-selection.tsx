@@ -46,7 +46,17 @@ function DateSelectionRoute() {
   }
 
   const handleViewHistory = () => {
-    navigate({ to: '/attendance-history' })
+    if (selectedDate && selectedServiceTimeId) {
+      navigate({
+        to: '/attendance-history',
+        search: {
+          date: selectedDate.toISOString().split('T')[0],
+          serviceTimeId: selectedServiceTimeId
+        }
+      })
+    } else {
+      navigate({ to: '/attendance-history' })
+    }
   }
 
   const handleBack = () => {

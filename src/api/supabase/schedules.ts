@@ -30,7 +30,20 @@ export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
       .order('date', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+
+    // Transform data to compute has_attendance and attendance_count
+    const transformedData = (data || []).map((schedule) => {
+      const attendanceRecords = schedule.attendance_records || [];
+      const attendanceCount = attendanceRecords.length;
+
+      return {
+        ...schedule,
+        has_attendance: attendanceCount > 0,
+        attendance_count: attendanceCount,
+      };
+    });
+
+    return transformedData;
   } catch (error) {
     handleSupabaseError(error);
   }
@@ -53,13 +66,27 @@ export async function getScheduleByDateAndService(
         assignments:schedule_assignments(
           *,
           teacher:teachers(*)
-        )
+        ),
+        attendance_records(id)
       `)
       .eq('date', date)
       .eq('service_time_id', serviceTimeId)
       .single();
 
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+
+    // Transform data to compute has_attendance and attendance_count
+    if (data) {
+      const attendanceRecords = data.attendance_records || [];
+      const attendanceCount = attendanceRecords.length;
+
+      return {
+        ...data,
+        has_attendance: attendanceCount > 0,
+        attendance_count: attendanceCount,
+      };
+    }
+
     return data;
   } catch (error) {
     handleSupabaseError(error);
@@ -80,13 +107,27 @@ export async function getScheduleByDate(date: string): Promise<ScheduleWithRelat
         assignments:schedule_assignments(
           *,
           teacher:teachers(*)
-        )
+        ),
+        attendance_records(id)
       `)
       .eq('date', date)
       .order('service_time_id', { ascending: true });
 
     if (error) throw error;
-    return data || [];
+
+    // Transform data to compute has_attendance and attendance_count
+    const transformedData = (data || []).map((schedule) => {
+      const attendanceRecords = schedule.attendance_records || [];
+      const attendanceCount = attendanceRecords.length;
+
+      return {
+        ...schedule,
+        has_attendance: attendanceCount > 0,
+        attendance_count: attendanceCount,
+      };
+    });
+
+    return transformedData;
   } catch (error) {
     handleSupabaseError(error);
   }

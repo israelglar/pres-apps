@@ -10,11 +10,19 @@ import { useQueryClient } from '@tanstack/react-query';
  * Business logic for Attendance History Page
  * Handles state management, pagination, and edit operations
  */
-export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) => void) {
+export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) => void, initialDate?: string, initialServiceTimeId?: number) {
   const queryClient = useQueryClient();
 
-  // Service time tab state - default to 11:00 (11h service)
-  const [selectedServiceTime, setSelectedServiceTime] = useState<'09:00:00' | '11:00:00'>('11:00:00');
+  // Map service time ID to time string
+  const getServiceTimeString = (serviceTimeId?: number): '09:00:00' | '11:00:00' => {
+    if (serviceTimeId === 1) return '09:00:00'; // 9am service
+    return '11:00:00'; // Default to 11am service (id: 2)
+  };
+
+  // Service time tab state - use initialServiceTimeId if provided, otherwise default to 11:00
+  const [selectedServiceTime, setSelectedServiceTime] = useState<'09:00:00' | '11:00:00'>(
+    getServiceTimeString(initialServiceTimeId)
+  );
 
   // Pagination state - starts with 5 dates
   const [limit, setLimit] = useState(5);
@@ -369,6 +377,10 @@ export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) =>
     // Service time tab state
     selectedServiceTime,
     handleServiceTimeChange,
+
+    // Initial navigation params
+    initialDate,
+    initialServiceTimeId,
 
     // Swipe gesture
     swipeGesture,

@@ -4,7 +4,7 @@ import {
   ExternalLink,
   UserPlus,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { theme } from "../../../config/theme";
 import type { AttendanceRecordWithRelations } from "../../../types/database.types";
 import { lightTap } from "../../../utils/haptics";
@@ -19,6 +19,8 @@ interface DateGroupCardProps {
   onOpenAddDialog: () => void;
   onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
   onViewStudent: (studentId: number) => void;
+  initialExpanded?: boolean;
+  shouldScrollIntoView?: boolean;
 }
 
 /**
@@ -26,9 +28,19 @@ interface DateGroupCardProps {
  * Includes lesson info, service time, student list, and summary stats
  * Starts collapsed, expands when clicked
  */
-export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenAddDialog, onOpenDeleteDialog, onViewStudent }: DateGroupCardProps) {
+export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenAddDialog, onOpenDeleteDialog, onViewStudent, initialExpanded = false, shouldScrollIntoView = false }: DateGroupCardProps) {
   const { schedule, records, stats } = group;
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(initialExpanded);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Scroll into view if requested (with a slight delay to allow rendering)
+  useEffect(() => {
+    if (shouldScrollIntoView && cardRef.current) {
+      setTimeout(() => {
+        cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [shouldScrollIntoView]);
 
   const toggleExpand = () => {
     lightTap();
@@ -51,7 +63,7 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenA
   });
 
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+    <div ref={cardRef} className="bg-white rounded-2xl shadow-md overflow-hidden">
       {/* Header - Clickable to expand/collapse */}
       <button
         onClick={toggleExpand}

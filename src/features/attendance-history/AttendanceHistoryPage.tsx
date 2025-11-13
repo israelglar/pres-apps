@@ -14,13 +14,15 @@ import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 interface AttendanceHistoryPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
+  initialDate?: string;
+  initialServiceTimeId?: number;
 }
 
 /**
  * Attendance History Page
  * View and edit past attendance records
  */
-export function AttendanceHistoryPage({ onBack, onViewStudent }: AttendanceHistoryPageProps) {
+export function AttendanceHistoryPage({ onBack, onViewStudent, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
   const {
     history,
     isLoading,
@@ -58,7 +60,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent }: AttendanceHisto
     handleViewStudent,
     handleLoadMore,
     handleRefresh,
-  } = useAttendanceHistoryLogic(onViewStudent);
+  } = useAttendanceHistoryLogic(onViewStudent, initialDate, initialServiceTimeId);
 
   return (
     <div
@@ -145,17 +147,24 @@ export function AttendanceHistoryPage({ onBack, onViewStudent }: AttendanceHisto
         {/* History List */}
         {history && history.length > 0 && (
           <div className="space-y-3">
-            {history.map((group) => (
-              <DateGroupCard
-                key={group.schedule.id}
-                group={group}
-                onQuickStatusChange={handleQuickStatusChange}
-                onOpenNotes={handleOpenNotes}
-                onOpenAddDialog={() => handleOpenAddDialog(group.schedule.id, group.schedule.service_time_id)}
-                onOpenDeleteDialog={handleOpenDeleteDialog}
-                onViewStudent={handleViewStudent}
-              />
-            ))}
+            {history.map((group) => {
+              // Check if this is the schedule we should auto-open and scroll to
+              const shouldAutoOpen = !!(initialDate && group.schedule.date === initialDate);
+
+              return (
+                <DateGroupCard
+                  key={group.schedule.id}
+                  group={group}
+                  onQuickStatusChange={handleQuickStatusChange}
+                  onOpenNotes={handleOpenNotes}
+                  onOpenAddDialog={() => handleOpenAddDialog(group.schedule.id, group.schedule.service_time_id)}
+                  onOpenDeleteDialog={handleOpenDeleteDialog}
+                  onViewStudent={handleViewStudent}
+                  initialExpanded={shouldAutoOpen}
+                  shouldScrollIntoView={shouldAutoOpen}
+                />
+              );
+            })}
 
             {/* Load More Button */}
             {canLoadMore && (
