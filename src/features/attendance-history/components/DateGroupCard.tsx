@@ -4,13 +4,14 @@ import {
   ExternalLink,
   UserPlus,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { theme } from "../../../config/theme";
 import type { AttendanceRecordWithRelations } from "../../../types/database.types";
 import { lightTap } from "../../../utils/haptics";
 import type { AttendanceHistoryGroup } from "../hooks/useAttendanceHistory";
 import { StudentAttendanceRow } from "./StudentAttendanceRow";
 import { AttendanceStats } from "../../../components/AttendanceStats";
+import { StatusGroupSeparator } from "./StatusGroupSeparator";
 
 interface DateGroupCardProps {
   group: AttendanceHistoryGroup;
@@ -55,12 +56,26 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenA
   const year = date.getFullYear();
   const formattedDate = `${day} ${month} ${year}`;
 
-  // Sort students alphabetically
-  const sortedRecords = [...records].sort((a, b) => {
-    const nameA = a.student?.name || "";
-    const nameB = b.student?.name || "";
-    return nameA.localeCompare(nameB);
-  });
+  // Group students by status: Present (including late) vs Absent/Excused
+  // Within present group: regular students first, then visitors
+  const groupedRecords = useMemo(() => {
+    // Present = 'present' or 'late' (they were there!)
+    // Absent = 'absent' or 'excused' (they didn't come)
+
+    const presentRegular = records.filter(r =>
+      (r.status === 'present' || r.status === 'late') && !r.student?.is_visitor
+    ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+    const presentVisitors = records.filter(r =>
+      (r.status === 'present' || r.status === 'late') && r.student?.is_visitor
+    ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+    const absent = records.filter(r =>
+      r.status === 'absent' || r.status === 'excused'
+    ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+    return { presentRegular, presentVisitors, absent };
+  }, [records]);
 
   return (
     <div ref={cardRef} className="bg-white rounded-2xl shadow-md overflow-hidden">
@@ -140,7 +155,37 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenA
           {/* Student List */}
           {records.length > 0 ? (
             <div className="p-5 space-y-2">
-              {sortedRecords.map((record) => (
+              {/* Present Regular Students */}
+              {groupedRecords.presentRegular.map((record) => (
+                <StudentAttendanceRow
+                  key={record.id}
+                  record={record}
+                  onQuickStatusChange={onQuickStatusChange}
+                  onOpenNotes={onOpenNotes}
+                  onOpenDeleteDialog={onOpenDeleteDialog}
+                  onViewStudent={onViewStudent}
+                />
+              ))}
+
+              {/* Present Visitors */}
+              {groupedRecords.presentVisitors.map((record) => (
+                <StudentAttendanceRow
+                  key={record.id}
+                  record={record}
+                  onQuickStatusChange={onQuickStatusChange}
+                  onOpenNotes={onOpenNotes}
+                  onOpenDeleteDialog={onOpenDeleteDialog}
+                  onViewStudent={onViewStudent}
+                />
+              ))}
+
+              {/* Separator (only show if there are absent students) */}
+              {groupedRecords.absent.length > 0 && (
+                <StatusGroupSeparator count={groupedRecords.absent.length} />
+              )}
+
+              {/* Absent Students */}
+              {groupedRecords.absent.map((record) => (
                 <StudentAttendanceRow
                   key={record.id}
                   record={record}

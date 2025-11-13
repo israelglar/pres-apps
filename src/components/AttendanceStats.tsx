@@ -1,4 +1,3 @@
-import { Clock, FileText, UserPlus, Users, UserX } from 'lucide-react';
 import { theme } from '../config/theme';
 import type { AttendanceStats as AttendanceStatsType } from '../utils/attendance';
 
@@ -104,69 +103,44 @@ export function AttendanceStats({
     );
   }
 
-  // Detailed mode - full boxes with icons and labels
+  // Detailed mode - compact layout with line wrapping
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
       {/* Present */}
-      <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-full ${theme.status.present.bgMedium} flex items-center justify-center`}>
-          <Users className={`w-4 h-4 ${theme.status.present.text}`} />
-        </div>
-        <div>
-          <p className={`text-xs ${theme.text.neutral}`}>Presenças</p>
-          <p className={`text-base font-bold ${theme.status.present.text}`}>{stats.present}</p>
-        </div>
+      <div className="flex items-baseline gap-1">
+        <span className={theme.text.neutral}>Presenças:</span>
+        <span className={`font-bold ${theme.status.present.text}`}>{stats.present}</span>
       </div>
 
       {/* Absent */}
       {showAbsent && (
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full ${theme.status.absent.bgMedium} flex items-center justify-center`}>
-            <UserX className={`w-4 h-4 ${theme.status.absent.text}`} />
-          </div>
-          <div>
-            <p className={`text-xs ${theme.text.neutral}`}>Faltas</p>
-            <p className={`text-base font-bold ${theme.status.absent.text}`}>{stats.absent}</p>
-          </div>
+        <div className="flex items-baseline gap-1">
+          <span className={theme.text.neutral}>Faltas:</span>
+          <span className={`font-bold ${theme.status.absent.text}`}>{stats.absent}</span>
         </div>
       )}
 
       {/* Late */}
       {stats.late > 0 && (
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full ${theme.status.late.bgMedium} flex items-center justify-center`}>
-            <Clock className={`w-4 h-4 ${theme.status.late.text}`} />
-          </div>
-          <div>
-            <p className={`text-xs ${theme.text.neutral}`}>Atrasados</p>
-            <p className={`text-base font-bold ${theme.status.late.text}`}>{stats.late}</p>
-          </div>
+        <div className="flex items-baseline gap-1">
+          <span className={theme.text.neutral}>Atrasados:</span>
+          <span className={`font-bold ${theme.status.late.text}`}>{stats.late}</span>
         </div>
       )}
 
       {/* Excused */}
       {stats.excused > 0 && (
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full ${theme.status.excused.bgMedium} flex items-center justify-center`}>
-            <FileText className={`w-4 h-4 ${theme.status.excused.text}`} />
-          </div>
-          <div>
-            <p className={`text-xs ${theme.text.neutral}`}>Justificadas</p>
-            <p className={`text-base font-bold ${theme.status.excused.text}`}>{stats.excused}</p>
-          </div>
+        <div className="flex items-baseline gap-1">
+          <span className={theme.text.neutral}>Justificadas:</span>
+          <span className={`font-bold ${theme.status.excused.text}`}>{stats.excused}</span>
         </div>
       )}
 
       {/* Visitors */}
       {stats.visitors > 0 && (
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full ${theme.backgrounds.primaryLight} flex items-center justify-center`}>
-            <UserPlus className={`w-4 h-4 ${theme.text.primary}`} />
-          </div>
-          <div>
-            <p className={`text-xs ${theme.text.neutral}`}>Visitantes</p>
-            <p className={`text-base font-bold ${theme.text.primary}`}>{stats.visitors}</p>
-          </div>
+        <div className="flex items-baseline gap-1">
+          <span className={theme.text.neutral}>Visitantes:</span>
+          <span className={`font-bold ${theme.text.primary}`}>{stats.visitors}</span>
         </div>
       )}
     </div>
