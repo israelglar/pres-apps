@@ -68,6 +68,9 @@ export async function getAttendanceByStudent(
 /**
  * Bulk save attendance records for a schedule
  * This is the main function used by the attendance marking interface
+ *
+ * IMPORTANT: This function REPLACES all existing attendance for the schedule.
+ * When redoing attendance, old records (including visitors) are deleted first.
  */
 export async function bulkSaveAttendance(
   scheduleId: number,
@@ -79,7 +82,16 @@ export async function bulkSaveAttendance(
   }>
 ): Promise<AttendanceRecord[]> {
   try {
-    // Prepare records with schedule_id and timestamp
+    // Step 1: Delete ALL existing records for this schedule
+    // This ensures visitors and other students not in new submission are removed
+    const { error: deleteError } = await supabase
+      .from('attendance_records')
+      .delete()
+      .eq('schedule_id', scheduleId);
+
+    if (deleteError) throw deleteError;
+
+    // Step 2: Insert new records
     const recordsToInsert: AttendanceRecordInsert[] = records.map((record) => ({
       schedule_id: scheduleId,
       student_id: record.student_id,
@@ -90,12 +102,9 @@ export async function bulkSaveAttendance(
       marked_at: new Date().toISOString(),
     }));
 
-    // Use upsert to handle both insert and update
     const { data, error } = await supabase
       .from('attendance_records')
-      .upsert(recordsToInsert, {
-        onConflict: 'student_id,schedule_id',
-      })
+      .insert(recordsToInsert)
       .select();
 
     if (error) throw error;

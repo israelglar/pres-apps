@@ -22,6 +22,9 @@ export function QuickNoteModal({
   onSave,
 }: QuickNoteModalProps) {
   const [note, setNote] = useState(currentNote);
+  const [viewportHeight, setViewportHeight] = useState(
+    window.visualViewport?.height || window.innerHeight
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Reset form when current note changes
@@ -29,13 +32,42 @@ export function QuickNoteModal({
     setNote(currentNote);
   }, [currentNote]);
 
-  // Auto-focus textarea when modal opens
+  // Auto-focus textarea and handle mobile keyboard
   useEffect(() => {
     // Small delay to allow modal animation to start
     const timer = setTimeout(() => {
       textareaRef.current?.focus();
     }, 100);
-    return () => clearTimeout(timer);
+
+    // Handle keyboard opening on mobile - scroll textarea into view
+    const handleViewportResize = () => {
+      if (window.visualViewport) {
+        // Update backdrop height to match visible viewport
+        setViewportHeight(window.visualViewport.height);
+
+        // Scroll the textarea into view with some offset
+        if (textareaRef.current) {
+          setTimeout(() => {
+            textareaRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }, 100);
+        }
+      }
+    };
+
+    // Listen for visualViewport resize (keyboard open/close)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportResize);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportResize);
+      }
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,15 +88,19 @@ export function QuickNoteModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end justify-center z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end justify-center z-50 animate-fade-in overflow-hidden"
       onClick={handleBackdropClick}
+      style={{
+        // Use visualViewport height (accounts for keyboard)
+        height: `${viewportHeight}px`,
+      }}
     >
-      <div className="bg-white rounded-t-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto animate-slide-up">
+      <div className="bg-white rounded-t-3xl shadow-2xl w-full max-w-2xl flex flex-col animate-slide-up" style={{ maxHeight: '85vh' }}>
         {/* Header */}
-        <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between sticky top-0 z-10 rounded-t-3xl`}>
+        <div className={`${theme.solids.primaryButton} p-4 flex items-center justify-between flex-shrink-0 rounded-t-3xl`}>
           <div>
-            <h2 className={`text-xl font-bold ${theme.text.onPrimaryButton}`}>Adicionar Nota</h2>
-            <p className={`text-sm ${theme.text.onPrimaryButton} opacity-90 mt-0.5`}>{studentName}</p>
+            <h2 className={`text-lg font-bold ${theme.text.onPrimaryButton}`}>Adicionar Nota</h2>
+            <p className={`text-sm ${theme.text.onPrimaryButton} opacity-90`}>{studentName}</p>
           </div>
           <button
             onClick={onClose}
@@ -75,12 +111,12 @@ export function QuickNoteModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 space-y-2.5 flex-shrink-0">
           {/* Notes Textarea */}
           <div>
             <label
               htmlFor="quick-note"
-              className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
+              className={`block ${theme.text.neutralDarker} font-bold mb-1.5 text-xs`}
             >
               Observações
             </label>
@@ -89,10 +125,10 @@ export function QuickNoteModal({
               id="quick-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className={`w-full px-4 py-3 ${inputClasses} resize-none text-sm ${
+              className={`w-full px-4 py-2.5 ${inputClasses} resize-none text-sm ${
                 isOverLimit ? 'border-red-500 focus:border-red-500' : ''
               }`}
-              rows={4}
+              rows={2}
               placeholder="Observações (visitante, seguimento, comportamento...)"
               maxLength={MAX_CHARS}
               onKeyDown={(e) => {
@@ -102,10 +138,7 @@ export function QuickNoteModal({
                 }
               }}
             />
-            <div className="flex justify-between items-center mt-1.5">
-              <p className={`text-xs ${theme.text.neutral}`}>
-                Cmd/Ctrl + Enter para guardar
-              </p>
+            <div className="flex justify-end items-center mt-1">
               <p
                 className={`text-xs ${
                   isOverLimit
@@ -115,23 +148,23 @@ export function QuickNoteModal({
                     : theme.text.neutral
                 }`}
               >
-                {remainingChars} caracteres restantes
+                {remainingChars} / {MAX_CHARS}
               </p>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-2.5 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className={`flex-1 px-5 py-3 ${buttonClasses.secondary} text-sm`}
+              className={`flex-1 px-4 py-2.5 ${buttonClasses.secondary} text-sm`}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm`}
+              className={`flex-1 px-4 py-2.5 ${buttonClasses.primary} text-sm`}
               disabled={isOverLimit}
             >
               Guardar

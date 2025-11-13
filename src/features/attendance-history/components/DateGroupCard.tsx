@@ -3,6 +3,7 @@ import {
   ChevronUp,
   ExternalLink,
   UserPlus,
+  RotateCcw,
 } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { theme } from "../../../config/theme";
@@ -20,6 +21,7 @@ interface DateGroupCardProps {
   onOpenAddDialog: () => void;
   onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
   onViewStudent: (studentId: number) => void;
+  onRedoAttendance: (scheduleId: number) => void;
   initialExpanded?: boolean;
   shouldScrollIntoView?: boolean;
 }
@@ -29,7 +31,7 @@ interface DateGroupCardProps {
  * Includes lesson info, service time, student list, and summary stats
  * Starts collapsed, expands when clicked
  */
-export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenAddDialog, onOpenDeleteDialog, onViewStudent, initialExpanded = false, shouldScrollIntoView = false }: DateGroupCardProps) {
+export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenAddDialog, onOpenDeleteDialog, onViewStudent, onRedoAttendance, initialExpanded = false, shouldScrollIntoView = false }: DateGroupCardProps) {
   const { schedule, records, stats } = group;
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -128,8 +130,8 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenA
             </div>
           )}
 
-          {/* Add Student Button */}
-          <div className="px-5 pb-3">
+          {/* Action Buttons */}
+          <div className="px-5 pb-3 space-y-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -140,6 +142,17 @@ export function DateGroupCard({ group, onQuickStatusChange, onOpenNotes, onOpenA
             >
               <UserPlus className="w-4 h-4" />
               Adicionar Pré
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                lightTap();
+                onRedoAttendance(schedule.id);
+              }}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} rounded-xl text-sm font-medium hover:${theme.backgrounds.primaryLight} active:scale-[0.99] transition-all`}
+            >
+              <RotateCcw className="w-4 h-4" />
+              Refazer Presenças
             </button>
           </div>
 

@@ -14,6 +14,7 @@ import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 interface AttendanceHistoryPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
+  onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
   initialDate?: string;
   initialServiceTimeId?: number;
 }
@@ -22,7 +23,7 @@ interface AttendanceHistoryPageProps {
  * Attendance History Page
  * View and edit past attendance records
  */
-export function AttendanceHistoryPage({ onBack, onViewStudent, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
+export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
   const {
     history,
     isLoading,
@@ -60,7 +61,8 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, initialDate, init
     handleViewStudent,
     handleLoadMore,
     handleRefresh,
-  } = useAttendanceHistoryLogic(onViewStudent, initialDate, initialServiceTimeId);
+    handleRedoAttendance,
+  } = useAttendanceHistoryLogic(onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId);
 
   return (
     <div
@@ -160,6 +162,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, initialDate, init
                   onOpenAddDialog={() => handleOpenAddDialog(group.schedule.id, group.schedule.service_time_id)}
                   onOpenDeleteDialog={handleOpenDeleteDialog}
                   onViewStudent={handleViewStudent}
+                  onRedoAttendance={handleRedoAttendance}
                   initialExpanded={shouldAutoOpen}
                   shouldScrollIntoView={shouldAutoOpen}
                 />

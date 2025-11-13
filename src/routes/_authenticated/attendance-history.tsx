@@ -25,10 +25,21 @@ function AttendanceHistoryRoute() {
     navigate({ to: '/students/$studentId', params: { studentId: studentId.toString() } });
   };
 
+  const handleRedoAttendance = (scheduleDate: string, serviceTimeId: number) => {
+    navigate({
+      to: '/search-marking',
+      search: {
+        date: new Date(scheduleDate).toISOString(),
+        serviceTimeId,
+      },
+    });
+  };
+
   return (
     <AttendanceHistoryPage
       onBack={handleBack}
       onViewStudent={handleViewStudent}
+      onRedoAttendance={handleRedoAttendance}
       initialDate={date}
       initialServiceTimeId={serviceTimeId}
     />

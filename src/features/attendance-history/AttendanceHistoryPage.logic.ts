@@ -10,7 +10,12 @@ import { useQueryClient } from '@tanstack/react-query';
  * Business logic for Attendance History Page
  * Handles state management, pagination, and edit operations
  */
-export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) => void, initialDate?: string, initialServiceTimeId?: number) {
+export function useAttendanceHistoryLogic(
+  onViewStudent?: (studentId: number) => void,
+  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
+  initialDate?: string,
+  initialServiceTimeId?: number
+) {
   const queryClient = useQueryClient();
 
   // Map service time ID to time string
@@ -343,6 +348,22 @@ export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) =>
     }, [selectedServiceTime, handleServiceTimeChange]),
   });
 
+  /**
+   * Redo attendance for a specific schedule
+   * Navigates to search marking page with pre-filled date and service time
+   */
+  const handleRedoAttendance = (scheduleId: number) => {
+    lightTap();
+
+    // Find the schedule in history
+    const group = history?.find(g => g.schedule.id === scheduleId);
+    if (!group || !onRedoAttendance || !group.schedule.service_time_id) return;
+
+    // Navigate to search marking with the schedule's date and service time
+    const serviceTimeId = group.schedule.service_time_id;
+    onRedoAttendance(group.schedule.date, serviceTimeId);
+  };
+
   return {
     // Data
     history,
@@ -409,5 +430,6 @@ export function useAttendanceHistoryLogic(onViewStudent?: (studentId: number) =>
     handleViewStudent,
     handleLoadMore,
     handleRefresh,
+    handleRedoAttendance,
   };
 }
