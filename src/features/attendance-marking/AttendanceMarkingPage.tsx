@@ -1,10 +1,11 @@
-import { AlertTriangle, CheckCircle, UserPlus, XCircle } from "lucide-react";
+import { CheckCircle, UserPlus, XCircle } from "lucide-react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { CompletionScreen } from "../../components/features/CompletionScreen";
 import { VisitorDialog } from "../../components/features/VisitorDialog";
 import { UnsavedChangesDialog } from "../../components/features/UnsavedChangesDialog";
 import { AbsenceAlertBanner } from "../../components/features/AbsenceAlertBanner";
+import { StudentList } from "../../components/features/StudentList";
 import {
   formatDate,
   getLessonName,
@@ -24,7 +25,6 @@ export const AttendanceMarkingPage = ({
   onCancel,
 }: AttendanceMarkingPageProps) => {
   const {
-    currentIndex,
     attendanceRecords,
     isComplete,
     isLoading,
@@ -107,65 +107,19 @@ export const AttendanceMarkingPage = ({
           </div>
 
           {/* Scrollable Student List - Takes remaining space */}
-          <div className="flex-1 overflow-y-auto px-5 pb-5">
-            <div className="space-y-2">
-              {students.map((student, idx) => {
-                const record = attendanceRecords[student.id];
-                const isMarked = !!record;
-                const isCurrent = currentIndex === idx;
-                const studentIdNumber = parseInt(student.id);
-                const alert = absenceAlerts.get(studentIdNumber);
-                const hasAlert = !!alert && !isMarked;
-
-                return (
-                  <button
-                    key={student.id}
-                    ref={(el) => {
-                      studentRefs.current[student.id] = el;
-                    }}
-                    onClick={() => isMarked && handleClickHistory(student.id)}
-                    disabled={!isMarked}
-                    className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
-                      isCurrent && !isMarked
-                        ? `${theme.backgrounds.primaryLighter} border-2 ${theme.borders.primary} shadow-md`
-                        : isMarked
-                          ? record.status === "P"
-                            ? `${theme.backgrounds.success} border-2 ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
-                            : `${theme.backgrounds.errorLight} border-2 ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
-                          : `${theme.backgrounds.white} border-2 ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all`
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-sm font-semibold ${
-                          isMarked
-                            ? record.status === "P"
-                              ? 'text-green-800'
-                              : theme.status.absent.text
-                            : theme.text.primary
-                        }`}
-                      >
-                        {student.name}
-                      </span>
-                      {student.isVisitor && (
-                        <span
-                          className={`px-1.5 py-0.5 ${theme.solids.badge} ${theme.text.onPrimaryButton} text-xs font-bold rounded-full`}
-                        >
-                          Visitante
-                        </span>
-                      )}
-                      {hasAlert && (
-                        <AlertTriangle className={`w-3 h-3 ${theme.text.warning}`} />
-                      )}
-                      {isCurrent && !isMarked && (
-                        <span className={`ml-1 w-2 h-2 ${theme.backgrounds.primary} rounded-full animate-pulse`} />
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <StudentList
+            students={students}
+            attendanceRecords={attendanceRecords}
+            absenceAlerts={absenceAlerts}
+            currentStudentId={currentStudent.id}
+            onStudentClick={(student, isMarked) => {
+              if (isMarked) {
+                handleClickHistory(student.id);
+              }
+            }}
+            onDismissAlert={dismissAbsenceAlert}
+            studentRefs={studentRefs}
+          />
         </div>
 
         {/* Swipe Card Section - Separate scroll area */}
