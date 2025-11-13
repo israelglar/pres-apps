@@ -4,7 +4,7 @@ import {
   ArrowRight,
   Calendar,
   Clock,
-  Code,
+  Code2,
   Download,
   ExternalLink,
   History,
@@ -69,7 +69,7 @@ export function HomePage({
           aria-label="Dev Tools"
           title="Dev Tools"
         >
-          <Code className="w-5 h-5" />
+          <Code2 className="w-5 h-5" />
         </button>
       )}
 
@@ -97,8 +97,49 @@ export function HomePage({
         </div>
       )}
 
+      {/* User Menu Button - Fixed top right */}
+      {teacher && (
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
+            aria-label="Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* User Menu Dropdown */}
+          {showUserMenu && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowUserMenu(false)}
+              />
+              <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 min-w-[200px]`}>
+                <div className={`px-4 py-3 border-b ${theme.borders.neutralLight}`}>
+                  <p className={`text-xs ${theme.text.neutral} mb-1`}>Olá,</p>
+                  <p className={`font-semibold text-sm ${theme.text.neutralDarker}`}>
+                    {teacher.name}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setShowUserMenu(false);
+                  }}
+                  className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center gap-3 rounded-b-xl ${theme.text.neutralDarker}`}
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="font-medium text-sm">Sair</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Main Content Container */}
-      <div className="flex flex-col items-center min-h-screen py-8 px-4">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
         <div
           className="max-w-md w-full space-y-6"
           style={{
@@ -108,53 +149,9 @@ export function HomePage({
               : "none",
           }}
         >
-          {/* Header Section */}
-          <div className="space-y-4">
-            {/* User Menu Button Row */}
-            {teacher && (
-              <div className="flex justify-end relative">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
-                  aria-label="Menu"
-                >
-                  <Menu className="w-5 h-5" />
-                </button>
-
-                {/* User Menu Dropdown */}
-                {showUserMenu && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setShowUserMenu(false)}
-                    />
-                    <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 min-w-[200px]`}>
-                      <div className={`px-4 py-3 border-b ${theme.borders.neutralLight}`}>
-                        <p className={`text-xs ${theme.text.neutral} mb-1`}>Olá,</p>
-                        <p className={`font-semibold text-sm ${theme.text.neutralDarker}`}>
-                          {teacher.name}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          handleSignOut();
-                          setShowUserMenu(false);
-                        }}
-                        className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center gap-3 rounded-b-xl ${theme.text.neutralDarker}`}
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span className="font-medium text-sm">Sair</span>
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Title */}
-            <div className="text-center">
-              <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>Pré-adolescentes</h1>
-            </div>
+          {/* Title */}
+          <div className="text-center">
+            <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>Pré-adolescentes</h1>
           </div>
 
           {/* Conditional rendering based on whether today is a lesson day */}

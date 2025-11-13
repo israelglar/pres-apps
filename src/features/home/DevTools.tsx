@@ -1,4 +1,4 @@
-import { Code, LogOut, X, Palette } from 'lucide-react';
+import { Code2, LogOut, X, Palette } from 'lucide-react';
 import { buttonClasses, theme, themeManager } from '../../config/theme';
 
 interface DevToolsProps {
@@ -28,7 +28,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
         {/* Header */}
         <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between -m-5 mb-5 rounded-t-2xl`}>
           <div className="flex items-center gap-2">
-            <Code className={`w-5 h-5 ${theme.text.onPrimaryButton}`} />
+            <Code2 className={`w-5 h-5 ${theme.text.onPrimaryButton}`} />
             <h2 className={`text-xl font-bold ${theme.text.onPrimaryButton}`}>Dev Tools</h2>
           </div>
           <button
