@@ -19,7 +19,7 @@ function DateSelectionRoute() {
   }
 
   const handleBack = () => {
-    navigate({ to: '/' })
+    window.history.back()
   }
 
   return (

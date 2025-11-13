@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { StudentDetailPage } from '../../features/student-detail'
 import { theme } from '@/config/theme'
 
@@ -7,11 +7,10 @@ export const Route = createFileRoute('/_authenticated/students/$studentId')({
 })
 
 function StudentDetailRoute() {
-  const navigate = useNavigate()
   const { studentId } = Route.useParams()
 
   const handleBack = () => {
-    navigate({ to: '/manage-students' })
+    window.history.back()
   }
 
   const handleEditSuccess = () => {
@@ -21,7 +20,7 @@ function StudentDetailRoute() {
 
   const handleDeleteSuccess = () => {
     // Navigate back after successful deletion
-    navigate({ to: '/manage-students' })
+    window.history.back()
   }
 
   // Parse studentId to number

@@ -39,11 +39,11 @@ function MarkingRoute() {
       notes: r.notes,
     }))
     await handleComplete(apiRecords, date, serviceTimeId)
-    navigate({ to: '/' })
+    navigate({ to: '/', replace: true })
   }
 
   const onCancel = () => {
-    navigate({ to: '/date-selection' })
+    window.history.back()
   }
 
   // Convert students to have string IDs and parse date string to Date

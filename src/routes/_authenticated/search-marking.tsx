@@ -41,11 +41,11 @@ function SearchMarkingRoute() {
       notes: r.notes,
     }))
     await handleComplete(apiRecords, date, serviceTimeId)
-    navigate({ to: '/' })
+    navigate({ to: '/', replace: true })
   }
 
   const onCancel = () => {
-    navigate({ to: '/date-selection' })
+    window.history.back()
   }
 
   return (

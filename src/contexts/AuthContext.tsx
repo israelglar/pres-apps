@@ -198,6 +198,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setTeacher(data);
+
+      // After successful OAuth callback and teacher load, redirect to home if on login page
+      // Use replace to clear history so back button doesn't go back to login
+      if (window.location.pathname === '/login') {
+        window.history.replaceState(null, '', '/');
+        // Force a navigation event to update the router
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     } catch (error) {
       console.error('[AuthContext] Error loading teacher profile:', error);
       setTeacher(null);
