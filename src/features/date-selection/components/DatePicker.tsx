@@ -4,7 +4,6 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
-  Eye,
 } from "lucide-react";
 import { theme } from "../../../config/theme";
 import { formatDate } from "../../../utils/helperFunctions";
@@ -14,7 +13,6 @@ interface DatePickerProps {
   selectedDate: Date;
   filteredSundays: Date[];
   isOpen: boolean;
-  showFutureLessons: boolean;
   dropdownRef: RefObject<HTMLDivElement | null>;
   dropdownListRef: RefObject<HTMLDivElement | null>;
   selectedItemRef: RefObject<HTMLButtonElement | null>;
@@ -30,14 +28,12 @@ interface DatePickerProps {
   }>;
   onToggleOpen: () => void;
   onSelectDate: (date: Date) => void;
-  onShowFutureLessons: () => void;
 }
 
 export function DatePicker({
   selectedDate,
   filteredSundays,
   isOpen,
-  showFutureLessons,
   dropdownRef,
   dropdownListRef,
   selectedItemRef,
@@ -47,7 +43,6 @@ export function DatePicker({
   getAllAttendanceStatuses,
   onToggleOpen,
   onSelectDate,
-  onShowFutureLessons,
 }: DatePickerProps) {
   return (
     <div className="flex-shrink-0 p-5 pb-3">
@@ -169,20 +164,6 @@ export function DatePicker({
                       </button>
                     );
                   })}
-
-                  {/* Show Future Lessons Toggle */}
-                  {!showFutureLessons && (
-                    <button
-                      type="button"
-                      onClick={onShowFutureLessons}
-                      className={`w-full px-4 py-3 text-left border-t-2 ${theme.borders.primaryLight} ${theme.backgrounds.primaryLighter} ${theme.backgrounds.primaryHover} transition-all flex items-center justify-center gap-2 last:rounded-b-xl`}
-                    >
-                      <Eye className={`w-4 h-4 ${theme.text.primary}`} />
-                      <span className={`font-bold text-sm ${theme.text.primary}`}>
-                        Ver Lições Futuras
-                      </span>
-                    </button>
-                  )}
                 </>
               )}
             </div>

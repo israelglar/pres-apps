@@ -46,7 +46,6 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
   const [selectedServiceTimeId, setSelectedServiceTimeId] = useState(getDefaultServiceTimeId());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'search' | 'swipe'>('search');
-  const [showFutureLessons, setShowFutureLessons] = useState(false);
   const [showMethodInfo, setShowMethodInfo] = useState<'search' | 'swipe' | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -79,24 +78,11 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     }
   }, [availableDatesForService, selectedDate]);
 
-  // Filter sundays based on showFutureLessons and selected service time
+  // Get all sundays sorted in ascending order (oldest first)
   const filteredSundays = useMemo(() => {
-    let dates = availableDatesForService;
-
-    if (!showFutureLessons) {
-      // Only show current and past sundays
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      dates = dates.filter((sunday) => {
-        const sundayDate = new Date(sunday);
-        sundayDate.setHours(0, 0, 0, 0);
-        return sundayDate <= today;
-      });
-    }
-
-    return dates;
-  }, [availableDatesForService, showFutureLessons]);
+    // Sort dates in ascending order (oldest first)
+    return [...availableDatesForService].sort((a, b) => a.getTime() - b.getTime());
+  }, [availableDatesForService]);
 
   // Get the most recent past Sunday with a lesson (for "Domingo Passado" label)
   const mostRecentPastSunday = useMemo(() => {
@@ -190,7 +176,6 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     selectedServiceTimeId,
     isOpen,
     selectedMethod,
-    showFutureLessons,
     showMethodInfo,
     filteredSundays,
 
@@ -204,7 +189,6 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     setSelectedServiceTimeId,
     setIsOpen,
     setSelectedMethod,
-    setShowFutureLessons,
     setShowMethodInfo,
 
     // Helpers

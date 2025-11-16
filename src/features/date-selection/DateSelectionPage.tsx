@@ -128,7 +128,6 @@ export function DateSelectionPage({
           selectedDate={logic.selectedDate}
           filteredSundays={logic.filteredSundays}
           isOpen={logic.isOpen}
-          showFutureLessons={logic.showFutureLessons}
           dropdownRef={logic.dropdownRef}
           dropdownListRef={logic.dropdownListRef}
           selectedItemRef={logic.selectedItemRef}
@@ -141,7 +140,6 @@ export function DateSelectionPage({
             logic.setSelectedDate(date);
             logic.setIsOpen(false);
           }}
-          onShowFutureLessons={() => logic.setShowFutureLessons(true)}
         />
 
         {/* Scrollable Content Section */}
