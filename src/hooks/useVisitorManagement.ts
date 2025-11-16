@@ -3,11 +3,11 @@
  * Handles adding visitors during attendance marking with smart search
  */
 
-import { useState, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import Fuse from 'fuse.js';
-import { addVisitor } from '../api/supabase/students';
-import { selectionTap } from '../utils/haptics';
+import { useQueryClient } from "@tanstack/react-query";
+import Fuse from "fuse.js";
+import { useMemo, useState } from "react";
+import { addVisitor } from "../api/supabase/students";
+import { selectionTap } from "../utils/haptics";
 
 // Minimal Student interface for visitor management
 export interface Student {
@@ -37,15 +37,21 @@ interface VisitorManagementReturn {
   markExistingVisitor: () => { student: Student; notes: string } | null;
 }
 
-export function useVisitorManagement(visitorStudents: Student[]): VisitorManagementReturn {
+export function useVisitorManagement(
+  visitorStudents: Student[],
+): VisitorManagementReturn {
   const queryClient = useQueryClient();
   const [isVisitorDialogOpen, setIsVisitorDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [selectedVisitor, setSelectedVisitor] = useState<Student | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const [firstTimeAtChurch, setFirstTimeAtChurch] = useState<string | null>(null);
-  const [willComeRegularly, setWillComeRegularly] = useState<string | null>(null);
+  const [firstTimeAtChurch, setFirstTimeAtChurch] = useState<string | null>(
+    null,
+  );
+  const [willComeRegularly, setWillComeRegularly] = useState<string | null>(
+    null,
+  );
   const [isAddingVisitor, setIsAddingVisitor] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +61,7 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
       keys: ["name"],
       threshold: 0.3, // Same as main search
       includeScore: true,
+      ignoreDiacritics: true,
     });
   }, [visitorStudents]);
 
@@ -65,7 +72,7 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
 
   const closeVisitorDialog = () => {
     setIsVisitorDialogOpen(false);
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
     setSelectedVisitor(null);
     setShowResults(false);
@@ -77,14 +84,14 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
 
-    if (query.trim() === '') {
+    if (query.trim() === "") {
       setSearchResults([]);
       setShowResults(false);
       return;
     }
 
     const results = fuse.search(query);
-    setSearchResults(results.map(r => r.item));
+    setSearchResults(results.map((r) => r.item));
     setShowResults(true);
   };
 
@@ -97,16 +104,19 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
 
   const handleClearSelection = () => {
     setSelectedVisitor(null);
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
     setShowResults(false);
   };
 
-  const markExistingVisitor = (): { student: Student; notes: string } | null => {
+  const markExistingVisitor = (): {
+    student: Student;
+    notes: string;
+  } | null => {
     if (!selectedVisitor) return null;
 
     // No notes for existing visitors
-    const notes = '';
+    const notes = "";
 
     selectionTap();
     closeVisitorDialog(); // Reset all state
@@ -114,7 +124,10 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
     return { student: selectedVisitor, notes };
   };
 
-  const addNewVisitor = async (): Promise<{ student: Student; notes: string } | null> => {
+  const addNewVisitor = async (): Promise<{
+    student: Student;
+    notes: string;
+  } | null> => {
     const trimmedName = searchQuery.trim();
 
     // Don't create if visitor is selected
@@ -124,7 +137,7 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
     }
 
     if (!trimmedName) {
-      setError('Por favor, insira um nome');
+      setError("Por favor, insira um nome");
       return null;
     }
 
@@ -138,18 +151,22 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
       // Build notes from question answers
       const notesArray: string[] = [];
       if (firstTimeAtChurch !== null) {
-        notesArray.push(`Primeira vez na igreja? ${firstTimeAtChurch === 'yes' ? 'Sim' : 'Não'}`);
+        notesArray.push(
+          `Primeira vez na igreja? ${firstTimeAtChurch === "yes" ? "Sim" : "Não"}`,
+        );
       }
       if (willComeRegularly !== null) {
-        notesArray.push(`Vai começar a vir regularmente? ${willComeRegularly === 'yes' ? 'Sim' : 'Não'}`);
+        notesArray.push(
+          `Vai começar a vir regularmente? ${willComeRegularly === "yes" ? "Sim" : "Não"}`,
+        );
       }
-      const notes = notesArray.join(' | ');
+      const notes = notesArray.join(" | ");
 
       // Haptic feedback for success
       selectionTap();
 
       // Invalidate React Query caches to refetch data
-      queryClient.invalidateQueries({ queryKey: ['students'] }); // Invalidate students cache
+      queryClient.invalidateQueries({ queryKey: ["students"] }); // Invalidate students cache
 
       // Close dialog and reset form
       closeVisitorDialog();
@@ -158,13 +175,13 @@ export function useVisitorManagement(visitorStudents: Student[]): VisitorManagem
       const studentForAttendance: Student = {
         id: String(newVisitor.id),
         name: newVisitor.name,
-        isVisitor: true
+        isVisitor: true,
       };
 
       return { student: studentForAttendance, notes };
     } catch (err) {
-      console.error('Error adding visitor:', err);
-      setError('Erro ao adicionar visitante. Tente novamente.');
+      console.error("Error adding visitor:", err);
+      setError("Erro ao adicionar visitante. Tente novamente.");
       return null;
     } finally {
       setIsAddingVisitor(false);

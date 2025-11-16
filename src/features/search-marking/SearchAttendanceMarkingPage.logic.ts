@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useRef } from "react";
 import Fuse from "fuse.js";
-import { selectionTap, successVibration } from "../../utils/haptics";
-import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
-import type { Student, AttendanceRecord } from "../../types/attendance.types";
+import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import type { AttendanceRecord, Student } from "../../types/attendance.types";
+import { selectionTap, successVibration } from "../../utils/haptics";
 
 export interface SearchAttendanceMarkingPageProps {
   students: Student[];
@@ -52,7 +52,7 @@ export const useSearchAttendanceMarkingLogic = ({
   // Fetch absence alerts for students
   const { alerts, dismissAlert } = useAbsenceAlerts({
     threshold: 3,
-    currentDate: date.toISOString().split('T')[0], // Exclude current date from absence count
+    currentDate: date.toISOString().split("T")[0], // Exclude current date from absence count
   });
 
   // Auto-focus search input on mount
@@ -87,6 +87,7 @@ export const useSearchAttendanceMarkingLogic = ({
       keys: ["name"],
       threshold: 0.3, // 0 = perfect match, 1 = match anything
       includeScore: true,
+      ignoreDiacritics: true,
     });
   }, [unmarkedStudents]);
 
@@ -102,7 +103,6 @@ export const useSearchAttendanceMarkingLogic = ({
 
     return [...filteredUnmarked, ...markedStudents];
   }, [searchQuery, unmarkedStudents, markedStudents, fuse]);
-
 
   const handleMarkPresent = (student: Student) => {
     selectionTap();
@@ -129,7 +129,11 @@ export const useSearchAttendanceMarkingLogic = ({
     setAttendanceRecords(newRecords);
   };
 
-  const handleUpdateNote = (studentId: string, note: string, isMarked: boolean) => {
+  const handleUpdateNote = (
+    studentId: string,
+    note: string,
+    isMarked: boolean,
+  ) => {
     selectionTap(); // Haptic feedback on save
 
     if (isMarked) {
@@ -144,7 +148,7 @@ export const useSearchAttendanceMarkingLogic = ({
       });
     } else {
       // Student not marked yet - mark as Present and add note
-      const student = allStudents.find(s => s.id === studentId);
+      const student = allStudents.find((s) => s.id === studentId);
       if (student) {
         setAttendanceRecords({
           ...attendanceRecords,
@@ -167,7 +171,7 @@ export const useSearchAttendanceMarkingLogic = ({
 
     if (result) {
       // Add visitor to local list
-      setAddedVisitors(prev => [...prev, result]);
+      setAddedVisitors((prev) => [...prev, result]);
 
       // Search-specific: clear search and refocus
       setSearchQuery("");
@@ -225,7 +229,7 @@ export const useSearchAttendanceMarkingLogic = ({
 
   // Derived values
   const presentCount = Object.values(attendanceRecords).filter(
-    (r) => r.status === "P"
+    (r) => r.status === "P",
   ).length;
   const totalCount = allStudents.length;
 
