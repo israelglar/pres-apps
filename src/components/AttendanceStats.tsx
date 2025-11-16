@@ -6,6 +6,7 @@ interface AttendanceStatsProps {
   mode?: 'inline' | 'compact' | 'detailed';
   showAbsent?: boolean;
   showTotalPresent?: boolean;
+  showVisitorLabel?: boolean;
 }
 
 /**
@@ -19,18 +20,31 @@ interface AttendanceStatsProps {
 export function AttendanceStats({
   stats,
   mode = 'inline',
-  showAbsent = true,
-  showTotalPresent = false,
+  showAbsent = false,
+  showTotalPresent = true,
+  showVisitorLabel = true,
 }: AttendanceStatsProps) {
   // Don't render if no data
   if (stats.total === 0) return null;
+
+  // Count how many categories have values
+  const categoriesWithValues = [
+    stats.present > 0,
+    showAbsent && stats.absent > 0,
+    stats.late > 0,
+    stats.excused > 0,
+    stats.visitors > 0,
+  ].filter(Boolean).length;
+
+  // Only show total if there's more than one category with values
+  const shouldShowTotal = showTotalPresent && categoriesWithValues > 1;
 
   // Inline mode - small circles with numbers
   if (mode === 'inline') {
     return (
       <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs`}>
-        {showTotalPresent && (
-          <span className={`flex items-center gap-1 text-m font-bold ${theme.text.primary}`}>
+        {shouldShowTotal && (
+          <span className={`flex items-center gap-1 text-m font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 py-0.5`}>
             {stats.totalPresent}
           </span>
         )}
@@ -59,7 +73,7 @@ export function AttendanceStats({
         {stats.visitors > 0 && (
           <span className="flex items-center gap-1">
             <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}></span>
-            {stats.visitors} visitantes
+            {stats.visitors}{showVisitorLabel && ' visitantes'}
           </span>
         )}
       </div>
@@ -70,8 +84,8 @@ export function AttendanceStats({
   if (mode === 'compact') {
     return (
       <div className="flex items-center justify-center gap-2">
-        {showTotalPresent && (
-          <span className={`text-m font-bold ${theme.text.primary}`}>
+        {shouldShowTotal && (
+          <span className={`text-m font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 py-0.5`}>
             {stats.totalPresent}
           </span>
         )}

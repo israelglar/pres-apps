@@ -15,61 +15,126 @@ import { calculateStats, type AttendanceStats } from '../../../utils/attendance'
 export const ATTENDANCE_HISTORY_QUERY_KEY = ['attendance-history'] as const;
 
 /**
- * Type for grouped attendance data by date
+ * Type for service time data within a date group
  */
-export interface AttendanceHistoryGroup {
+export interface ServiceTimeData {
   schedule: ScheduleWithRelations;
   records: AttendanceRecordWithRelations[];
   stats: AttendanceStats;
 }
 
 /**
- * Custom hook to fetch attendance history with pagination
- * Loads the last N schedules with attendance data
- * Filters by service time (e.g., '09:00:00' or '11:00:00')
+ * Type for grouped attendance data by date
+ * Each date can have multiple service times (09h, 11h)
  */
-export function useAttendanceHistory(limit: number = 5, serviceTimeFilter?: string) {
-  const { data: history, isLoading, error, refetch } = useQuery({
-    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, limit, serviceTimeFilter],
-    queryFn: async (): Promise<AttendanceHistoryGroup[]> => {
-      // Get all schedules ordered by date (most recent first)
+export interface AttendanceHistoryGroup {
+  date: string;
+  serviceTimes: ServiceTimeData[];
+}
+
+/**
+ * Custom hook to fetch attendance history with pagination
+ * Loads schedules centered around the most recent date
+ * Groups by date, showing all service times for each date
+ * Orders oldest first (ascending)
+ */
+export function useAttendanceHistory(
+  limit: number = 7,
+  offset: number = 0
+) {
+  const { data: response, isLoading, error, refetch } = useQuery({
+    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, limit, offset],
+    queryFn: async (): Promise<{
+      history: AttendanceHistoryGroup[];
+      totalCount: number;
+      mostRecentIndex: number;
+    }> => {
+      // Get all schedules ordered by date (most recent first by default)
       const allSchedules = await getAllSchedules();
 
       // Filter to only schedules that are in the past or today
       const today = new Date().toISOString().split('T')[0];
-      let pastSchedules = allSchedules.filter(schedule => schedule.date <= today);
+      const pastSchedules = allSchedules.filter(schedule => schedule.date <= today);
 
-      // Filter by service time if specified
-      if (serviceTimeFilter) {
-        pastSchedules = pastSchedules.filter(schedule =>
-          schedule.service_time?.time === serviceTimeFilter
-        );
+      // Group schedules by date
+      const schedulesByDate = pastSchedules.reduce((acc, schedule) => {
+        if (!acc[schedule.date]) {
+          acc[schedule.date] = [];
+        }
+        acc[schedule.date].push(schedule);
+        return acc;
+      }, {} as Record<string, ScheduleWithRelations[]>);
+
+      // Get unique dates and sort in ascending order (oldest first)
+      const uniqueDates = Object.keys(schedulesByDate).sort((a, b) => a.localeCompare(b));
+
+      const totalCount = uniqueDates.length;
+
+      // Find the index of the most recent date (last in ascending order)
+      const mostRecentIndex = totalCount - 1;
+
+      // Calculate slice range
+      // Initial load (offset=0): center around most recent with 3 before and 3 after (7 total)
+      // Load more (offset>0): load older items before the current range
+      let startIndex: number;
+      let endIndex: number;
+
+      if (offset === 0) {
+        // Initial load: try to get 3 before and 3 after the most recent
+        startIndex = Math.max(0, mostRecentIndex - 3);
+        endIndex = Math.min(totalCount, startIndex + limit);
+      } else {
+        // Loading more: extend backwards (older items)
+        startIndex = Math.max(0, mostRecentIndex - 3 - offset);
+        endIndex = mostRecentIndex + 4; // Keep showing up to 3 after most recent
       }
 
-      // Take only the specified limit
-      const limitedSchedules = pastSchedules.slice(0, limit);
+      const limitedDates = uniqueDates.slice(startIndex, endIndex);
 
-      // Fetch attendance for each schedule
+      // Fetch attendance for each date's schedules
       const historyData = await Promise.all(
-        limitedSchedules.map(async (schedule) => {
-          const records = await getAttendanceBySchedule(schedule.id);
+        limitedDates.map(async (date) => {
+          const schedulesForDate = schedulesByDate[date];
+
+          // Fetch attendance for each service time on this date
+          const serviceTimesData = await Promise.all(
+            schedulesForDate.map(async (schedule) => {
+              const records = await getAttendanceBySchedule(schedule.id);
+
+              return {
+                schedule,
+                records,
+                stats: calculateStats(records),
+              };
+            })
+          );
+
+          // Sort service times by time (09:00 before 11:00)
+          serviceTimesData.sort((a, b) =>
+            (a.schedule.service_time?.time || '').localeCompare(b.schedule.service_time?.time || '')
+          );
 
           return {
-            schedule,
-            records,
-            stats: calculateStats(records),
+            date,
+            serviceTimes: serviceTimesData,
           };
         })
       );
 
-      return historyData;
+      return {
+        history: historyData,
+        totalCount,
+        mostRecentIndex,
+      };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   return {
-    history,
+    history: response?.history,
+    totalCount: response?.totalCount ?? 0,
+    mostRecentIndex: response?.mostRecentIndex ?? 0,
     isLoading,
     error,
     refetch,
@@ -107,28 +172,34 @@ export function useEditAttendance() {
       // Optimistically update the cache
       queryClient.setQueriesData(
         { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: AttendanceHistoryGroup[] | undefined) => {
+        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
-          return old.map(group => ({
-            ...group,
-            records: group.records.map(record =>
-              record.id === variables.recordId
-                ? {
-                    ...record,
-                    status: variables.status,
-                    notes: variables.notes ?? null, // Ensure null is used, not undefined
-                  }
-                : record
-            ),
-            stats: calculateStats(
-              group.records.map(record =>
-                record.id === variables.recordId
-                  ? { ...record, status: variables.status }
-                  : record
-              )
-            ),
-          }));
+          return {
+            ...old,
+            history: old.history.map(group => ({
+              ...group,
+              serviceTimes: group.serviceTimes.map(serviceTime => ({
+                ...serviceTime,
+                records: serviceTime.records.map(record =>
+                  record.id === variables.recordId
+                    ? {
+                        ...record,
+                        status: variables.status,
+                        notes: variables.notes ?? null,
+                      }
+                    : record
+                ),
+                stats: calculateStats(
+                  serviceTime.records.map(record =>
+                    record.id === variables.recordId
+                      ? { ...record, status: variables.status }
+                      : record
+                  )
+                ),
+              })),
+            })),
+          };
         }
       );
 
@@ -205,36 +276,42 @@ export function useAddAttendance() {
       // Optimistically update the cache
       queryClient.setQueriesData(
         { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: AttendanceHistoryGroup[] | undefined) => {
+        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
-          return old.map(group => {
-            if (group.schedule.id !== variables.scheduleId) return group;
-
-            // Create temporary optimistic record
-            const optimisticRecord: AttendanceRecordWithRelations = {
-              id: Date.now(), // Temporary ID
-              student_id: variables.studentId,
-              schedule_id: variables.scheduleId,
-              status: variables.status,
-              service_time_id: variables.serviceTimeId || null,
-              notes: variables.notes || null,
-              marked_by: null,
-              marked_at: new Date().toISOString(),
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              student: undefined, // Will be populated on server response
-              schedule: group.schedule,
-            };
-
-            const newRecords = [...group.records, optimisticRecord];
-
-            return {
+          return {
+            ...old,
+            history: old.history.map(group => ({
               ...group,
-              records: newRecords,
-              stats: calculateStats(newRecords),
-            };
-          });
+              serviceTimes: group.serviceTimes.map(serviceTime => {
+                if (serviceTime.schedule.id !== variables.scheduleId) return serviceTime;
+
+                // Create temporary optimistic record
+                const optimisticRecord: AttendanceRecordWithRelations = {
+                  id: Date.now(), // Temporary ID
+                  student_id: variables.studentId,
+                  schedule_id: variables.scheduleId,
+                  status: variables.status,
+                  service_time_id: variables.serviceTimeId || null,
+                  notes: variables.notes || null,
+                  marked_by: null,
+                  marked_at: new Date().toISOString(),
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  student: undefined, // Will be populated on server response
+                  schedule: serviceTime.schedule,
+                };
+
+                const newRecords = [...serviceTime.records, optimisticRecord];
+
+                return {
+                  ...serviceTime,
+                  records: newRecords,
+                  stats: calculateStats(newRecords),
+                };
+              }),
+            })),
+          };
         }
       );
 
@@ -293,18 +370,24 @@ export function useDeleteAttendance() {
       // Optimistically update the cache
       queryClient.setQueriesData(
         { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: AttendanceHistoryGroup[] | undefined) => {
+        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
-          return old.map(group => {
-            const newRecords = group.records.filter(record => record.id !== variables.recordId);
-
-            return {
+          return {
+            ...old,
+            history: old.history.map(group => ({
               ...group,
-              records: newRecords,
-              stats: calculateStats(newRecords),
-            };
-          });
+              serviceTimes: group.serviceTimes.map(serviceTime => {
+                const newRecords = serviceTime.records.filter(record => record.id !== variables.recordId);
+
+                return {
+                  ...serviceTime,
+                  records: newRecords,
+                  stats: calculateStats(newRecords),
+                };
+              }),
+            })),
+          };
         }
       );
 

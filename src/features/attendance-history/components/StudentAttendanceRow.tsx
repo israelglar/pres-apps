@@ -48,25 +48,25 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
   // Status icon and color mapping
   const statusConfig = {
     present: {
-      icon: <Check className="w-5 h-5" />,
+      icon: <Check className="w-4 h-4" />,
       color: theme.status.present.text,
       bgColor: theme.status.present.bg,
       label: 'Presente',
     },
     absent: {
-      icon: <X className="w-5 h-5" />,
+      icon: <X className="w-4 h-4" />,
       color: theme.status.absent.text,
       bgColor: theme.status.absent.bg,
       label: 'Falta',
     },
     late: {
-      icon: <Clock className="w-5 h-5" />,
+      icon: <Clock className="w-4 h-4" />,
       color: theme.status.late.text,
       bgColor: theme.status.late.bg,
       label: 'Atrasado',
     },
     excused: {
-      icon: <FileText className="w-5 h-5" />,
+      icon: <FileText className="w-4 h-4" />,
       color: theme.status.excused.text,
       bgColor: theme.status.excused.bg,
       label: 'Justificada',
@@ -78,9 +78,9 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
   return (
     <div
       onClick={handleRowTap}
-      className={`flex items-center justify-between p-3 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 transition-all hover:shadow-md cursor-pointer active:scale-98`}
+      className={`flex items-center justify-between p-2 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 transition-all hover:shadow-md cursor-pointer active:scale-98`}
     >
-      <div className="flex items-center gap-3 flex-1">
+      <div className="flex items-center gap-2 flex-1">
         {/* Status Icon */}
         <div className={`${config.color} flex-shrink-0`}>
           {config.icon}
@@ -88,31 +88,31 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
 
         {/* Student Name */}
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <p className={`font-medium ${theme.text.primary} text-sm`}>{record.student?.name || 'Unknown'}</p>
+          <div className="flex items-center gap-1.5">
+            <p className={`font-medium ${theme.text.primary} text-xs`}>{record.student?.name || 'Unknown'}</p>
             {/* Visitor Indicator */}
             {record.student?.is_visitor && (
               <div
-                className={`w-2 h-2 rounded-full ${theme.indicators.visitor} flex-shrink-0`}
+                className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor} flex-shrink-0`}
                 title="Visitante"
               />
             )}
           </div>
           {record.notes && (
-            <p className={`text-xs ${theme.text.neutral} mt-0.5 line-clamp-1`}>
+            <p className={`text-xs ${theme.text.neutral} mt-0.5 line-clamp-1 opacity-70`}>
               {record.notes}
             </p>
           )}
         </div>
 
         {/* Status Label (mobile hidden) */}
-        <div className={`hidden sm:block text-sm font-medium ${theme.text.neutral}`}>
+        <div className={`hidden sm:block text-xs font-medium ${theme.text.neutral}`}>
           {config.label}
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="ml-3 flex items-center gap-1 flex-shrink-0">
+      <div className="ml-2 flex items-center gap-0.5 flex-shrink-0">
         {/* View Student Button */}
         <button
           onClick={(e) => {
@@ -120,10 +120,10 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
             selectionTap();
             onViewStudent(record.student_id);
           }}
-          className={`p-2 rounded-lg ${theme.text.primary} hover:bg-gray-100 active:scale-95 transition-all`}
+          className={`p-1.5 rounded-lg ${theme.text.primary} hover:bg-gray-100 active:scale-95 transition-all`}
           aria-label="Ver detalhes do pré"
         >
-          <User className="w-4 h-4" />
+          <User className="w-3.5 h-3.5" />
         </button>
 
         {/* Quick Edit Menu */}

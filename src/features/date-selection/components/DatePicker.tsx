@@ -123,27 +123,26 @@ export function DatePicker({
                                   {dateLabel}
                                 </span>
                               )}
-                              {/* Attendance status badges for past dates only - show all service times */}
-                              {isPast &&
-                                allAttendanceStatuses.map((status) =>
-                                  status.hasAttendance ? (
-                                    <span
-                                      key={status.serviceTimeId}
-                                      className={`px-2 py-0.5 text-xs font-bold ${theme.solids.successButton} text-white rounded-full shadow-sm flex items-center gap-1`}
-                                    >
-                                      <CheckCircle2 className="w-3 h-3" />
-                                      {status.serviceTimeName}
-                                    </span>
-                                  ) : (
-                                    <span
-                                      key={status.serviceTimeId}
-                                      className={`px-2 py-0.5 text-xs font-bold ${theme.backgrounds.warningMedium} text-white rounded-full shadow-sm flex items-center gap-1`}
-                                    >
-                                      <AlertTriangle className="w-3 h-3" />
-                                      {status.serviceTimeName}
-                                    </span>
-                                  )
-                                )}
+                              {/* Attendance status badges - show all service times */}
+                              {allAttendanceStatuses.map((status) =>
+                                status.hasAttendance ? (
+                                  <span
+                                    key={status.serviceTimeId}
+                                    className={`px-2 py-0.5 text-xs font-bold ${theme.solids.successButton} text-white rounded-full shadow-sm flex items-center gap-1`}
+                                  >
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    {status.serviceTimeName}
+                                  </span>
+                                ) : isPast ? (
+                                  <span
+                                    key={status.serviceTimeId}
+                                    className={`px-2 py-0.5 text-xs font-bold ${theme.backgrounds.warningMedium} text-white rounded-full shadow-sm flex items-center gap-1`}
+                                  >
+                                    <AlertTriangle className="w-3 h-3" />
+                                    {status.serviceTimeName}
+                                  </span>
+                                ) : null
+                              )}
                             </div>
                             <span
                               className={`text-xs ${isSelected ? `${theme.text.primaryDark} font-medium` : theme.text.neutral}`}

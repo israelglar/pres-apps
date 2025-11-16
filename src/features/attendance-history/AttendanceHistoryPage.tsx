@@ -42,9 +42,6 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
     isCreatingVisitor,
     visitorInitialName,
     canLoadMore,
-    selectedServiceTime,
-    handleServiceTimeChange,
-    swipeGesture,
     handleQuickStatusChange,
     handleOpenNotes,
     handleCloseNotes,
@@ -65,12 +62,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
   } = useAttendanceHistoryLogic(onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId);
 
   return (
-    <div
-      className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}
-      onTouchStart={swipeGesture.handleTouchStart}
-      onTouchMove={swipeGesture.handleTouchMove}
-      onTouchEnd={swipeGesture.handleTouchEnd}
-    >
+    <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
       {/* Header */}
       <PageHeader
         onBack={onBack}
@@ -78,34 +70,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
         sticky={true}
       />
 
-      <div className="max-w-4xl mx-auto p-3 pb-20">
-
-        {/* Service Time Tabs */}
-        <div className="mb-5">
-          <div className={`flex gap-2 ${theme.backgrounds.primaryLighter} rounded-xl p-1.5 border-2 ${theme.borders.primaryLight}`}>
-            {/* Tab buttons */}
-            <button
-              onClick={() => handleServiceTimeChange("09:00:00")}
-              className={`flex-1 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-200 ${
-                selectedServiceTime === "09:00:00"
-                  ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
-                  : `${theme.backgrounds.white} ${theme.text.primary} hover:shadow-sm`
-              }`}
-            >
-              09:00
-            </button>
-            <button
-              onClick={() => handleServiceTimeChange("11:00:00")}
-              className={`flex-1 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-200 ${
-                selectedServiceTime === "11:00:00"
-                  ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
-                  : `${theme.backgrounds.white} ${theme.text.primary} hover:shadow-sm`
-              }`}
-            >
-              11:00
-            </button>
-          </div>
-        </div>
+      <div className="max-w-4xl mx-auto p-2 pb-20">
 
         {/* Loading State */}
         {isLoading && !history && (
@@ -148,18 +113,18 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
 
         {/* History List */}
         {history && history.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {history.map((group) => {
-              // Check if this is the schedule we should auto-open and scroll to
-              const shouldAutoOpen = !!(initialDate && group.schedule.date === initialDate);
+              // Only auto-open and scroll if initialDate is provided
+              const shouldAutoOpen = !!(initialDate && group.date === initialDate);
 
               return (
                 <DateGroupCard
-                  key={group.schedule.id}
+                  key={group.date}
                   group={group}
                   onQuickStatusChange={handleQuickStatusChange}
                   onOpenNotes={handleOpenNotes}
-                  onOpenAddDialog={() => handleOpenAddDialog(group.schedule.id, group.schedule.service_time_id)}
+                  onOpenAddDialog={handleOpenAddDialog}
                   onOpenDeleteDialog={handleOpenDeleteDialog}
                   onViewStudent={handleViewStudent}
                   onRedoAttendance={handleRedoAttendance}
@@ -213,7 +178,11 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
         <AddStudentDialog
           scheduleId={addDialogScheduleId}
           serviceTimeId={addDialogServiceTimeId || 0}
-          currentRecords={history?.find(g => g.schedule.id === addDialogScheduleId)?.records || []}
+          currentRecords={
+            history
+              ?.flatMap(g => g.serviceTimes)
+              .find(st => st.schedule.id === addDialogScheduleId)?.records || []
+          }
           onAdd={handleAddStudent}
           onClose={handleCloseAddDialog}
           isAdding={isAdding}

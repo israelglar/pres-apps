@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useAttendanceHistory, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useAttendanceHistory';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
-import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -18,22 +17,14 @@ export function useAttendanceHistoryLogic(
 ) {
   const queryClient = useQueryClient();
 
-  // Map service time ID to time string
-  const getServiceTimeString = (serviceTimeId?: number): '09:00:00' | '11:00:00' => {
-    if (serviceTimeId === 1) return '09:00:00'; // 9am service
-    return '11:00:00'; // Default to 11am service (id: 2)
-  };
+  // Pagination state - uses offset to load more older items (starts at 0)
+  const [offset, setOffset] = useState(0);
 
-  // Service time tab state - use initialServiceTimeId if provided, otherwise default to 11:00
-  const [selectedServiceTime, setSelectedServiceTime] = useState<'09:00:00' | '11:00:00'>(
-    getServiceTimeString(initialServiceTimeId)
+  // Fetch attendance history with current offset (all service times grouped by date)
+  const { history, totalCount, mostRecentIndex, isLoading, error, refetch } = useAttendanceHistory(
+    7, // Always try to load 7 items (3 before + most recent + 3 after)
+    offset
   );
-
-  // Pagination state - starts with 5 dates
-  const [limit, setLimit] = useState(5);
-
-  // Fetch attendance history with current limit and service time filter
-  const { history, isLoading, error, refetch } = useAttendanceHistory(limit, selectedServiceTime);
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -294,11 +285,11 @@ export function useAttendanceHistoryLogic(
   };
 
   /**
-   * Load more history dates (pagination)
+   * Load more history dates (pagination - loads older items)
    */
   const handleLoadMore = () => {
     lightTap();
-    setLimit((prev) => prev + 5);
+    setOffset((prev) => prev + 5);
   };
 
   /**
@@ -319,34 +310,6 @@ export function useAttendanceHistoryLogic(
     }
   };
 
-  /**
-   * Switch between service time tabs
-   */
-  const handleServiceTimeChange = useCallback((serviceTime: '09:00:00' | '11:00:00') => {
-    lightTap();
-    setSelectedServiceTime(serviceTime);
-    setLimit(5); // Reset to 5 when switching tabs
-  }, []);
-
-  /**
-   * Swipe gesture for tab switching
-   */
-  const swipeGesture = useSwipeGesture({
-    minSwipeDistance: 80,
-    enabled: true,
-    onSwipeLeft: useCallback(() => {
-      // Swipe left: 11h -> 9h
-      if (selectedServiceTime === '11:00:00') {
-        handleServiceTimeChange('09:00:00');
-      }
-    }, [selectedServiceTime, handleServiceTimeChange]),
-    onSwipeRight: useCallback(() => {
-      // Swipe right: 9h -> 11h
-      if (selectedServiceTime === '09:00:00') {
-        handleServiceTimeChange('11:00:00');
-      }
-    }, [selectedServiceTime, handleServiceTimeChange]),
-  });
 
   /**
    * Redo attendance for a specific schedule
@@ -355,13 +318,19 @@ export function useAttendanceHistoryLogic(
   const handleRedoAttendance = (scheduleId: number) => {
     lightTap();
 
-    // Find the schedule in history
-    const group = history?.find(g => g.schedule.id === scheduleId);
-    if (!group || !onRedoAttendance || !group.schedule.service_time_id) return;
+    // Find the schedule in history (now grouped by date with multiple service times)
+    const dateGroup = history?.find(g =>
+      g.serviceTimes.some(st => st.schedule.id === scheduleId)
+    );
+    if (!dateGroup || !onRedoAttendance) return;
+
+    // Find the specific service time
+    const serviceTimeData = dateGroup.serviceTimes.find(st => st.schedule.id === scheduleId);
+    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id) return;
 
     // Navigate to search marking with the schedule's date and service time
-    const serviceTimeId = group.schedule.service_time_id;
-    onRedoAttendance(group.schedule.date, serviceTimeId);
+    const serviceTimeId = serviceTimeData.schedule.service_time_id;
+    onRedoAttendance(dateGroup.date, serviceTimeId);
   };
 
   return {
@@ -395,20 +364,14 @@ export function useAttendanceHistoryLogic(
     isCreatingVisitor,
     visitorInitialName,
 
-    // Service time tab state
-    selectedServiceTime,
-    handleServiceTimeChange,
-
     // Initial navigation params
     initialDate,
     initialServiceTimeId,
 
-    // Swipe gesture
-    swipeGesture,
-
     // Pagination
-    limit,
-    canLoadMore: history && history.length === limit,
+    offset,
+    totalCount,
+    canLoadMore: mostRecentIndex - 3 - offset > 0, // Can load more if there are older items
 
     // Actions
     handleOpenEdit,
