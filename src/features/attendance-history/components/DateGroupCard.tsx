@@ -76,6 +76,52 @@ export function DateGroupCard({
   const year = date.getFullYear();
   const formattedDate = `${day} ${month} ${year}`;
 
+  // Parse date string as local date (avoid timezone issues)
+  const parseLocalDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  // Check if date is today
+  const isToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = parseLocalDate(group.date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() === today.getTime();
+  };
+
+  // Check if date is the most recent past Sunday (Domingo Passado)
+  const isPreviousSunday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = parseLocalDate(group.date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    // Must be in the past (not today)
+    if (checkDate.getTime() >= today.getTime()) return false;
+
+    // Check if it's a Sunday
+    if (checkDate.getDay() !== 0) return false;
+
+    // Find the most recent past Sunday
+    const daysToSubtract = today.getDay() === 0 ? 7 : today.getDay();
+    const lastSunday = new Date(today);
+    lastSunday.setDate(today.getDate() - daysToSubtract);
+    lastSunday.setHours(0, 0, 0, 0);
+
+    return checkDate.getTime() === lastSunday.getTime();
+  };
+
+  // Get date label (Hoje or Domingo Passado)
+  const getDateLabel = () => {
+    if (isToday()) return 'Hoje';
+    if (isPreviousSunday()) return 'Domingo Passado';
+    return null;
+  };
+
+  const dateLabel = getDateLabel();
+
   // Get lesson name (should be the same for all service times on this date)
   const lessonName = group.serviceTimes[0]?.schedule.lesson?.name || "Sem lição";
   const lessonUrl = group.serviceTimes[0]?.schedule.lesson?.resource_url;
@@ -93,9 +139,16 @@ export function DateGroupCard({
             <h3 className={`text-base font-normal ${theme.text.onLight} leading-tight`}>
               {lessonName}
             </h3>
-            <span className={`${theme.text.onLightSecondary} text-xs mt-1 block`}>
-              {formattedDate}
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`${theme.text.onLightSecondary} text-xs`}>
+                {formattedDate}
+              </span>
+              {dateLabel && (
+                <span className={`px-2 py-0.5 text-xs font-bold ${theme.solids.badge} ${theme.text.onPrimary} rounded-full shadow-sm`}>
+                  {dateLabel}
+                </span>
+              )}
+            </div>
           </div>
           {isExpanded ? (
             <ChevronUp className={`w-4 h-4 ${theme.text.neutral} flex-shrink-0`} />
