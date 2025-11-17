@@ -22,6 +22,7 @@ interface DateGroupCardProps {
   onDateClick?: (date: string) => void;
   initialExpanded?: boolean;
   shouldScrollIntoView?: boolean;
+  initialServiceTimeId?: number;
 }
 
 /**
@@ -40,15 +41,29 @@ export function DateGroupCard({
   onDateClick,
   initialExpanded = false,
   shouldScrollIntoView = false,
+  initialServiceTimeId,
 }: DateGroupCardProps) {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
-  // Find the index of 11:00 service time, default to 0 if not found
-  const default11hIndex = group.serviceTimes.findIndex(
-    (st) => st.schedule.service_time?.time === "11:00:00",
-  );
+  // Determine initial service time index
+  const getInitialServiceTimeIndex = () => {
+    // If initialServiceTimeId is provided, find its index
+    if (initialServiceTimeId) {
+      const index = group.serviceTimes.findIndex(
+        (st) => st.schedule.service_time_id === initialServiceTimeId,
+      );
+      if (index !== -1) return index;
+    }
+
+    // Otherwise, find the index of 11:00 service time, default to 0 if not found
+    const default11hIndex = group.serviceTimes.findIndex(
+      (st) => st.schedule.service_time?.time === "11:00:00",
+    );
+    return default11hIndex !== -1 ? default11hIndex : 0;
+  };
+
   const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(
-    default11hIndex !== -1 ? default11hIndex : 0,
+    getInitialServiceTimeIndex(),
   );
 
   const cardRef = useRef<HTMLDivElement>(null);

@@ -17,6 +17,7 @@ import { StudentFormModal } from "./StudentFormModal";
 
 type StatusFilter = "all" | "active" | "inactive" | "aged-out" | "moved";
 type VisitorFilter = "all" | "visitors";
+type AlertFilter = "all" | "with-alerts";
 
 interface StudentManagementPageProps {
   onBack: () => void;
@@ -61,6 +62,7 @@ export function StudentManagementPage({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [visitorFilter, setVisitorFilter] = useState<VisitorFilter>("all");
+  const [alertFilter, setAlertFilter] = useState<AlertFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter groups configuration
@@ -84,22 +86,32 @@ export function StudentManagementPage({
         { value: "visitors", label: "Visitantes" },
       ],
     },
+    {
+      id: "alert",
+      label: "Alertas",
+      options: [
+        { value: "all", label: "Todos" },
+        { value: "with-alerts", label: "Com alerta" },
+      ],
+    },
   ];
 
   // Helper functions
-  const hasActiveFilters = statusFilter !== "all" || visitorFilter !== "all";
+  const hasActiveFilters = statusFilter !== "all" || visitorFilter !== "all" || alertFilter !== "all";
 
   const handleClearFilters = () => {
     setStatusFilter("all");
     setVisitorFilter("all");
+    setAlertFilter("all");
   };
 
   const handleFilterChange = (groupId: string, value: string) => {
     if (groupId === "status") setStatusFilter(value as StatusFilter);
     if (groupId === "visitor") setVisitorFilter(value as VisitorFilter);
+    if (groupId === "alert") setAlertFilter(value as AlertFilter);
   };
 
-  // Filter students based on search query, status, and visitor status
+  // Filter students based on search query, status, visitor status, and alerts
   const filteredStudents = useMemo(() => {
     let filtered = students;
 
@@ -111,6 +123,11 @@ export function StudentManagementPage({
     // Apply visitor filter
     if (visitorFilter === "visitors") {
       filtered = filtered.filter((student) => student.is_visitor === true);
+    }
+
+    // Apply alert filter
+    if (alertFilter === "with-alerts") {
+      filtered = filtered.filter((student) => student.hasAlert === true);
     }
 
     // Apply search query
@@ -137,7 +154,7 @@ export function StudentManagementPage({
 
       return statusDiff;
     });
-  }, [students, searchQuery, statusFilter, visitorFilter]);
+  }, [students, searchQuery, statusFilter, visitorFilter, alertFilter]);
 
   const handleAddStudent = () => {
     setEditingStudent(null);
@@ -210,6 +227,7 @@ export function StudentManagementPage({
               activeFilters={{
                 status: statusFilter,
                 visitor: visitorFilter,
+                alert: alertFilter,
               }}
               onFilterChange={handleFilterChange}
               onClearFilters={handleClearFilters}

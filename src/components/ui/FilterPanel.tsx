@@ -38,21 +38,21 @@ export function FilterPanel({
 
   return (
     <div
-      className={`${theme.backgrounds.white} rounded-xl p-4 space-y-4 border-2 ${theme.borders.primaryLight} shadow-md ${className}`}
+      className={`${theme.backgrounds.white} rounded-xl p-3 space-y-2.5 border-2 ${theme.borders.primaryLight} shadow-md ${className}`}
     >
       {filterGroups.map((group) => (
         <div key={group.id}>
           <label
-            className={`block text-xs font-bold ${theme.text.primary} mb-2`}
+            className={`block text-xs font-bold ${theme.text.primary} mb-1.5`}
           >
             {group.label}
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {group.options.map((option) => (
               <button
                 key={option.value}
                 onClick={() => onFilterChange(group.id, option.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                   activeFilters[group.id] === option.value
                     ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-sm`
                     : `bg-gray-100 ${theme.text.neutral} hover:bg-gray-200`
@@ -69,7 +69,7 @@ export function FilterPanel({
       {hasActiveFilters && (
         <button
           onClick={onClearFilters}
-          className={`w-full py-2 ${theme.backgrounds.errorMedium} ${theme.text.white} rounded-lg text-xs font-medium hover:bg-red-600 transition-colors`}
+          className={`w-full py-1.5 ${theme.backgrounds.errorMedium} ${theme.text.white} rounded-lg text-xs font-medium hover:bg-red-600 transition-colors`}
         >
           Limpar Filtros
         </button>

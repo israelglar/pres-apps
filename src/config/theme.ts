@@ -25,8 +25,8 @@ export const theme = {
 
     // Primary action backgrounds
     primary: 'bg-blue-600',
-    primaryHover: 'hover:bg-blue-700',
-    primaryActive: 'active:bg-blue-800',
+    primaryHover: 'hover:bg-blue-100',
+    primaryActive: 'active:bg-blue-200',
 
     // Light primary backgrounds (for cards/highlights)
     primaryLight: 'bg-blue-100',
@@ -147,7 +147,7 @@ export const theme = {
     // Main app background
     background: 'bg-blue-600',
 
-    // Buttons
+    // Buttons (keep darker hover for buttons with white text)
     primaryButton: 'bg-blue-600',
     primaryButtonHover: 'hover:bg-blue-700',
     neutralButton: 'bg-gray-100',

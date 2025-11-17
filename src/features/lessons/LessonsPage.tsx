@@ -223,6 +223,7 @@ export function LessonsPage({
                     onDateClick={onDateClick}
                     initialExpanded={shouldAutoOpen}
                     shouldScrollIntoView={shouldAutoOpen}
+                    initialServiceTimeId={shouldAutoOpen ? initialServiceTimeId : undefined}
                   />
                 );
               })}
