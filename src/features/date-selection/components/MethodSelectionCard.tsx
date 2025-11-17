@@ -17,29 +17,27 @@ export function MethodSelectionCard({
   onCloseMethodInfo,
 }: MethodSelectionCardProps) {
   return (
-    <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-4`}>
-      <label
-        className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide flex items-center gap-2`}
-      >
+    <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-3`}>
+      <p className={`text-xs ${theme.text.primary} font-bold uppercase tracking-wide mb-2 flex items-center gap-2`}>
         <Search className="w-4 h-4" />
-        Método de Registo
-      </label>
-      <div className="grid grid-cols-2 gap-3">
+        Método
+      </p>
+      <div className="grid grid-cols-2 gap-2">
         {/* Search Method - DEFAULT */}
         <div className="relative">
           <button
             type="button"
             onClick={() => onSelectMethod("search")}
-            className={`w-full p-3 rounded-xl border-2 transition-all ${
+            className={`w-full p-2 rounded-xl border-2 transition-all ${
               selectedMethod === "search"
                 ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
                 : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
             }`}
           >
-            <UserCheck className={`w-6 h-6 mx-auto mb-2 ${
+            <UserCheck className={`w-5 h-5 mx-auto mb-1 ${
               selectedMethod === "search" ? "text-blue-600" : theme.text.neutral
             }`} />
-            <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
+            <p className={`font-semibold text-xs ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis`}>
               Só Presentes
             </p>
           </button>
@@ -49,9 +47,9 @@ export function MethodSelectionCard({
               e.stopPropagation();
               onToggleMethodInfo("search");
             }}
-            className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
+            className={`absolute top-1.5 right-1.5 p-1 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
           >
-            <Info className="w-4 h-4 text-blue-600" />
+            <Info className="w-3.5 h-3.5 text-blue-600" />
           </button>
           {showMethodInfo === "search" && (
             <>
@@ -73,17 +71,17 @@ export function MethodSelectionCard({
           <button
             type="button"
             onClick={() => onSelectMethod("swipe")}
-            className={`w-full p-3 rounded-xl border-2 transition-all ${
+            className={`w-full p-2 rounded-xl border-2 transition-all ${
               selectedMethod === "swipe"
                 ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                 : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
             }`}
           >
-            <ArrowDownAZ className={`w-6 h-6 mx-auto mb-2 ${
+            <ArrowDownAZ className={`w-5 h-5 mx-auto mb-1 ${
               selectedMethod === "swipe" ? theme.text.primary : theme.text.neutral
             }`} />
-            <p className={`font-bold text-sm ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis px-1`}>
-              Ordem Alfabética
+            <p className={`font-semibold text-xs ${theme.text.neutralDarker} whitespace-nowrap overflow-hidden text-ellipsis`}>
+              Alfabética
             </p>
           </button>
           <button
@@ -92,9 +90,9 @@ export function MethodSelectionCard({
               e.stopPropagation();
               onToggleMethodInfo("swipe");
             }}
-            className={`absolute top-2 right-2 p-1.5 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
+            className={`absolute top-1.5 right-1.5 p-1 ${theme.backgrounds.white} hover:bg-gray-100 rounded-full transition-colors shadow-sm`}
           >
-            <Info className={`w-4 h-4 ${theme.text.primary}`} />
+            <Info className={`w-3.5 h-3.5 ${theme.text.primary}`} />
           </button>
           {showMethodInfo === "swipe" && (
             <>

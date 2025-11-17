@@ -1,9 +1,11 @@
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
+import { EmptyState } from "../../components/ui/EmptyState";
 import type { Schedule } from "../../schemas/attendance.schema";
 import { useDateSelectionLogic } from "./DateSelectionPage.logic";
 import type { AttendanceStats } from "../../utils/attendance";
 import { useEffect } from "react";
+import { Calendar } from "lucide-react";
 import {
   DatePicker,
   LessonInfoCard,
@@ -21,6 +23,7 @@ interface DateSelectionPageProps {
   ) => void;
   onBack: () => void;
   onViewHistory?: () => void;
+  onViewLesson?: (date: string) => void;
   serviceTimes: Array<{ id: number; name: string; time: string }>;
   getSchedule: (
     date: string,
@@ -45,6 +48,7 @@ export function DateSelectionPage({
   onDateSelected,
   onBack,
   onViewHistory,
+  onViewLesson,
   serviceTimes,
   getSchedule,
   getAvailableDates,
@@ -88,6 +92,17 @@ export function DateSelectionPage({
     checkDate.setHours(0, 0, 0, 0);
     return checkDate.getTime() < today.getTime();
   };
+
+  // Check if selected date is in the future
+  const isFutureDate = (date: Date): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() > today.getTime();
+  };
+
+  const selectedDateIsFuture = isFutureDate(logic.selectedDate);
 
   // Get attendance status for all service times for a date
   const getAllAttendanceStatuses = (date: Date) => {
@@ -143,47 +158,63 @@ export function DateSelectionPage({
         />
 
         {/* Scrollable Content Section */}
-        <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 pb-3 space-y-3">
           {/* Lesson Info Card */}
           <LessonInfoCard selectedSchedule={selectedSchedule} />
 
-          {/* Service Time Card */}
-          <ServiceTimeSelector
-            serviceTimes={serviceTimes}
-            selectedServiceTimeId={logic.selectedServiceTimeId}
-            getServiceTimeAttendanceStatus={(serviceTimeId) => {
-              const dateStr = logic.selectedDate.toISOString().split("T")[0];
-              const schedule = getSchedule(dateStr, serviceTimeId);
-              return schedule?.has_attendance || false;
-            }}
-            onSelectServiceTime={(serviceTimeId) =>
-              logic.setSelectedServiceTimeId(serviceTimeId)
-            }
-          />
-
-          {/* Conditional: Method Selection OR Attendance Summary */}
-          {selectedSchedule?.has_attendance && attendanceStats ? (
-            /* Attendance Summary Card - When attendance is already marked */
-            <AttendanceSummaryCard attendanceStats={attendanceStats} />
+          {/* Future Date Message - Shows in place of service time and method cards */}
+          {selectedDateIsFuture ? (
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-md`}>
+              <EmptyState
+                icon={<Calendar className="w-10 h-10" />}
+                title="Lição Futura"
+                description="As presenças podem ser registadas no dia da lição."
+                variant="compact"
+              />
+            </div>
           ) : (
-            /* Method Selection Card - When attendance NOT marked */
-            <MethodSelectionCard
-              selectedMethod={logic.selectedMethod}
-              showMethodInfo={logic.showMethodInfo}
-              onSelectMethod={(method) => logic.setSelectedMethod(method)}
-              onToggleMethodInfo={(method) =>
-                logic.setShowMethodInfo(
-                  logic.showMethodInfo === method ? null : method
-                )
-              }
-              onCloseMethodInfo={() => logic.setShowMethodInfo(null)}
-            />
+            <>
+              {/* Service Time Card - Only show if NOT future date */}
+              <ServiceTimeSelector
+                serviceTimes={serviceTimes}
+                selectedServiceTimeId={logic.selectedServiceTimeId}
+                getServiceTimeAttendanceStatus={(serviceTimeId) => {
+                  const dateStr = logic.selectedDate.toISOString().split("T")[0];
+                  const schedule = getSchedule(dateStr, serviceTimeId);
+                  return schedule?.has_attendance || false;
+                }}
+                onSelectServiceTime={(serviceTimeId) =>
+                  logic.setSelectedServiceTimeId(serviceTimeId)
+                }
+              />
+
+              {/* Conditional: Method Selection OR Attendance Summary */}
+              {selectedSchedule?.has_attendance && attendanceStats ? (
+                /* Attendance Summary Card - When attendance is already marked */
+                <AttendanceSummaryCard attendanceStats={attendanceStats} />
+              ) : (
+                /* Method Selection Card - When attendance NOT marked */
+                <MethodSelectionCard
+                  selectedMethod={logic.selectedMethod}
+                  showMethodInfo={logic.showMethodInfo}
+                  onSelectMethod={(method) => logic.setSelectedMethod(method)}
+                  onToggleMethodInfo={(method) =>
+                    logic.setShowMethodInfo(
+                      logic.showMethodInfo === method ? null : method
+                    )
+                  }
+                  onCloseMethodInfo={() => logic.setShowMethodInfo(null)}
+                />
+              )}
+            </>
           )}
         </div>
 
         {/* Fixed button at bottom */}
         <ActionButton
           hasAttendance={!!selectedSchedule?.has_attendance && !!attendanceStats}
+          isFutureDate={selectedDateIsFuture}
+          selectedDate={logic.selectedDate}
           onContinue={() =>
             onDateSelected(
               logic.selectedDate,
@@ -192,6 +223,7 @@ export function DateSelectionPage({
             )
           }
           onViewHistory={onViewHistory}
+          onViewLesson={onViewLesson}
         />
       </div>
     </div>

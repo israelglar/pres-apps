@@ -45,27 +45,19 @@ export function DatePicker({
   onSelectDate,
 }: DatePickerProps) {
   return (
-    <div className="flex-shrink-0 p-5 pb-3">
-      <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-4`}>
-        <label className={`block ${theme.text.primary} font-bold mb-3 text-xs uppercase tracking-wide`}>
-          Data da Lição
-        </label>
-
+    <div className="flex-shrink-0 px-4 pt-4 pb-2">
+      <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md`}>
         {/* Custom Select Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
             onClick={onToggleOpen}
-            className={`w-full px-4 py-3 text-sm border-2 ${theme.borders.primary} rounded-xl focus:ring-4 ${theme.rings.primary} ${theme.borders.primaryFocus} cursor-pointer ${theme.backgrounds.white} ${theme.borders.primaryHover} hover:shadow-lg transition-all shadow-sm flex items-center justify-between`}
+            className={`w-full px-3 py-3 text-sm ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-between`}
           >
-            <div className="flex items-center gap-3">
-              <div
-                className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg`}
-              >
-                <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
-              </div>
+            <div className="flex items-center gap-2">
+              <Calendar className={`w-4 h-4 ${theme.text.primary}`} />
               <span
-                className={`font-bold ${theme.text.neutralDarker} text-sm`}
+                className={`font-semibold ${theme.text.primary} text-sm`}
               >
                 {formatDate(selectedDate)}
               </span>

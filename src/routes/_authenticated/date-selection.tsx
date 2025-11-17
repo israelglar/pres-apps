@@ -60,6 +60,13 @@ function DateSelectionRoute() {
     }
   }
 
+  const handleViewLesson = (date: string) => {
+    navigate({
+      to: '/lesson/$date',
+      params: { date }
+    })
+  }
+
   const handleBack = () => {
     window.history.back()
   }
@@ -69,6 +76,7 @@ function DateSelectionRoute() {
       onDateSelected={handleDateSelected}
       onBack={handleBack}
       onViewHistory={handleViewHistory}
+      onViewLesson={handleViewLesson}
       serviceTimes={serviceTimes}
       getSchedule={getSchedule}
       getAvailableDates={getAvailableDates}
