@@ -63,11 +63,31 @@ export const AttendanceMarkingPage = ({
       (r) => r.status === "P" && !visitorStudents.some(v => v.id === r.studentId)
     ).length;
 
+    // Build list of present students for display
+    const presentStudentsList = Object.values(attendanceRecords)
+      .filter((r) => r.status === "P")
+      .map((record) => {
+        const student = [...students, ...visitorStudents].find(s => s.id === record.studentId);
+        return {
+          name: student?.name || "Desconhecido",
+          isVisitor: visitorStudents.some(v => v.id === record.studentId),
+        };
+      })
+      .sort((a, b) => {
+        // Sort: regular students first, then visitors
+        if (a.isVisitor !== b.isVisitor) {
+          return a.isVisitor ? 1 : -1;
+        }
+        // Within same group, sort alphabetically
+        return a.name.localeCompare(b.name, "pt-PT");
+      });
+
     return (
       <CompletionScreen
         lessonName={getLessonName(selectedDate, lessonNames)}
         presentCount={presentCount}
         visitorsCount={visitorsCount}
+        presentStudents={presentStudentsList}
         onConfirm={handleComplete}
         onGoBack={handleGoBack}
         isLoading={isLoading}

@@ -1,5 +1,12 @@
-import { CheckCircle, Loader2, Users, UserCheck, UserPlus } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
+import type { AttendanceStats as AttendanceStatsType } from "../../utils/attendance";
+import { AttendanceStats } from "../AttendanceStats";
+
+interface PresentStudent {
+  name: string;
+  isVisitor?: boolean;
+}
 
 interface CompletionScreenProps {
   lessonName: string;
@@ -7,6 +14,7 @@ interface CompletionScreenProps {
   lateCount?: number;
   excusedCount?: number;
   visitorsCount?: number;
+  presentStudents?: PresentStudent[];
   onConfirm: () => void;
   onGoBack: () => void;
   isLoading?: boolean;
@@ -22,6 +30,7 @@ export function CompletionScreen({
   lateCount = 0,
   excusedCount = 0,
   visitorsCount = 0,
+  presentStudents = [],
   onConfirm,
   onGoBack,
   isLoading = false,
@@ -29,74 +38,88 @@ export function CompletionScreen({
   // Calculate total as everyone who attended (present + late + excused + visitors)
   const totalCount = presentCount + lateCount + excusedCount + visitorsCount;
 
+  // Helper to format name as "FirstName LastName" (only first and last)
+  const formatCompactName = (fullName: string): string => {
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0];
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+  };
+
+  // Build stats object for AttendanceStats component
+  const stats: AttendanceStatsType = {
+    total: totalCount,
+    totalPresent: presentCount + lateCount + excusedCount + visitorsCount,
+    present: presentCount,
+    absent: 0, // Not needed in completion screen
+    late: lateCount,
+    excused: excusedCount,
+    visitors: visitorsCount,
+  };
+
   return (
     <div
-      className={`min-h-screen ${theme.solids.background} flex items-center justify-center p-4`}
+      className={`min-h-screen ${theme.solids.background} flex items-center justify-center p-4 overflow-y-auto`}
     >
-      <div className="max-w-md w-full text-center">
-        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 md:p-12`}>
-          <div
-            className={`w-20 h-20 md:w-24 md:h-24 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-6`}
+      <div className="max-w-md w-full text-center my-auto">
+        <div
+          className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 md:p-12`}
+        >
+          <p
+            className={`${theme.text.neutral} mb-6 md:mb-8 text-base leading-relaxed`}
           >
-            <CheckCircle
-              className={`w-12 h-12 md:w-16 md:h-16 ${theme.text.primary}`}
-            />
-          </div>
-          <h2 className={`text-2xl md:text-3xl font-semibold ${theme.text.neutralDarker} mb-4 leading-relaxed`}>
-            Confirmar Presenças?
-          </h2>
-          <p className={`${theme.text.neutral} mb-6 md:mb-8 text-base leading-relaxed`}>
             {lessonName}
           </p>
-          <div className="flex justify-center gap-6 md:gap-8 mb-6 md:mb-8">
-            <div className="text-center">
-              <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.backgrounds.neutral} rounded-full flex items-center justify-center mx-auto mb-2`}>
-                <Users className={`w-6 h-6 md:w-7 md:h-7 ${theme.text.neutral}`} />
-              </div>
-              <div
-                className={`text-3xl md:text-4xl font-bold ${theme.text.neutralDarker} mb-1`}
-              >
-                {totalCount}
-              </div>
-              <div
-                className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
-              >
-                Total
-              </div>
-            </div>
-            <div className="text-center">
-              <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.status.present.bgMedium} rounded-full flex items-center justify-center mx-auto mb-2`}>
-                <UserCheck className={`w-6 h-6 md:w-7 md:h-7 ${theme.status.present.text}`} />
-              </div>
-              <div
-                className={`text-3xl md:text-4xl font-bold ${theme.status.present.text} mb-1`}
-              >
-                {presentCount}
-              </div>
-              <div
-                className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
-              >
-                Presentes
-              </div>
-            </div>
-            {visitorsCount > 0 && (
-              <div className="text-center">
-                <div className={`w-12 h-12 md:w-14 md:h-14 ${theme.backgrounds.primaryLight} rounded-full flex items-center justify-center mx-auto mb-2`}>
-                  <UserPlus className={`w-6 h-6 md:w-7 md:h-7 ${theme.text.primary}`} />
-                </div>
-                <div
-                  className={`text-3xl md:text-4xl font-bold ${theme.text.primary} mb-1`}
-                >
-                  {visitorsCount}
-                </div>
-                <div
-                  className={`text-xs md:text-sm ${theme.text.neutral} font-medium`}
-                >
-                  Visitantes
-                </div>
-              </div>
-            )}
+
+          {/* Attendance Stats */}
+          <div className="mb-6 md:mb-8 flex justify-center">
+            <AttendanceStats
+              stats={stats}
+              mode="detailed"
+              showAbsent={false}
+              showTotalPresent={true}
+            />
           </div>
+
+          {/* List of Present Students - Compact format */}
+          {presentStudents.length > 0 && (
+            <div
+              className={`mb-6 p-4 ${theme.backgrounds.neutralLight} rounded-xl`}
+            >
+              <h3 className={`text-sm font-bold ${theme.text.onLight} mb-2`}>
+                Prés Presentes:
+              </h3>
+              <div className="text-xs leading-relaxed">
+                {presentStudents.map((student, index) => (
+                  <span key={index} className={theme.text.neutral}>
+                    {formatCompactName(student.name)}
+                    {student.isVisitor && (
+                      <span className={`${theme.text.visitor} font-bold`}>
+                        {" "}
+                        (V)
+                      </span>
+                    )}
+                    {index < presentStudents.length - 1 && ", "}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Prayer Reminder */}
+          <div
+            className={`mb-6 p-3 ${theme.backgrounds.warningLight} border ${theme.borders.warning} rounded-xl flex items-start gap-2`}
+          >
+            <AlertCircle
+              className={`w-4 h-4 ${theme.text.warning} flex-shrink-0 mt-0.5`}
+            />
+            <p
+              className={`text-xs ${theme.text.warning} text-left leading-relaxed`}
+            >
+              <span className="font-bold">Lembrete:</span> Estar atento a
+              assuntos para oração durante a lição.
+            </p>
+          </div>
+
           <div className="flex gap-3 justify-center">
             <button
               onClick={onGoBack}
