@@ -15,6 +15,7 @@ interface AttendanceHistoryPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
+  onDateClick?: (date: string) => void;
   initialDate?: string;
   initialServiceTimeId?: number;
 }
@@ -23,7 +24,7 @@ interface AttendanceHistoryPageProps {
  * Attendance History Page
  * View and edit past attendance records
  */
-export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
+export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance, onDateClick, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
   const {
     history,
     isLoading,
@@ -128,6 +129,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
                   onOpenDeleteDialog={handleOpenDeleteDialog}
                   onViewStudent={handleViewStudent}
                   onRedoAttendance={handleRedoAttendance}
+                  onDateClick={onDateClick}
                   initialExpanded={shouldAutoOpen}
                   shouldScrollIntoView={shouldAutoOpen}
                 />

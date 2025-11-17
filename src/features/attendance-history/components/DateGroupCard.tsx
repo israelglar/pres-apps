@@ -1,6 +1,5 @@
 import {
-  ChevronDown,
-  ChevronUp,
+  ChevronRight,
   ExternalLink,
   UserPlus,
   RotateCcw,
@@ -22,6 +21,7 @@ interface DateGroupCardProps {
   onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
   onViewStudent: (studentId: number) => void;
   onRedoAttendance: (scheduleId: number) => void;
+  onDateClick?: (date: string) => void;
   initialExpanded?: boolean;
   shouldScrollIntoView?: boolean;
 }
@@ -39,6 +39,7 @@ export function DateGroupCard({
   onOpenDeleteDialog,
   onViewStudent,
   onRedoAttendance,
+  onDateClick,
   initialExpanded = false,
   shouldScrollIntoView = false
 }: DateGroupCardProps) {
@@ -63,9 +64,13 @@ export function DateGroupCard({
     }
   }, [shouldScrollIntoView]);
 
-  const toggleExpand = () => {
+  const handleCardClick = () => {
     lightTap();
-    setIsExpanded(!isExpanded);
+    if (onDateClick) {
+      onDateClick(group.date);
+    } else {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   // Format date for display (short format: "10 nov 2025")
@@ -128,14 +133,15 @@ export function DateGroupCard({
 
   return (
     <div ref={cardRef} className="bg-white rounded-2xl shadow-md overflow-hidden">
-      {/* Header - Clickable to expand/collapse */}
+      {/* Header - Clickable to navigate to detail page */}
       <button
-        onClick={toggleExpand}
-        className={`${theme.backgrounds.white} p-4 w-full text-left ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99]`}
+        onClick={handleCardClick}
+        className={`${theme.backgrounds.white} p-4 w-full text-left ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99] flex items-center gap-3`}
       >
-        {/* Lesson Name and Date */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex-1">
+        {/* Content */}
+        <div className="flex-1">
+          {/* Lesson Name and Date */}
+          <div className="mb-3">
             <h3 className={`text-base font-normal ${theme.text.onLight} leading-tight`}>
               {lessonName}
             </h3>
@@ -150,34 +156,32 @@ export function DateGroupCard({
               )}
             </div>
           </div>
-          {isExpanded ? (
-            <ChevronUp className={`w-4 h-4 ${theme.text.neutral} flex-shrink-0`} />
-          ) : (
-            <ChevronDown className={`w-4 h-4 ${theme.text.neutral} flex-shrink-0`} />
-          )}
+
+          {/* Summary Stats - Show stats for each service time */}
+          <div className="flex items-center gap-4 flex-wrap">
+            {group.serviceTimes.map((serviceTimeData) => {
+              const timeFormatted = serviceTimeData.schedule.service_time?.time.slice(0, 5) || 'N/A';
+
+              return (
+                <div key={serviceTimeData.schedule.id} className="flex items-center gap-2">
+                  <span className={`${theme.text.primary} font-bold text-sm`}>
+                    {timeFormatted}
+                  </span>
+                  <AttendanceStats
+                    stats={serviceTimeData.stats}
+                    mode="inline"
+                    showAbsent={false}
+                    showTotalPresent={true}
+                    showVisitorLabel={false}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Summary Stats - Show stats for each service time */}
-        <div className="flex items-center gap-4 flex-wrap">
-          {group.serviceTimes.map((serviceTimeData) => {
-            const timeFormatted = serviceTimeData.schedule.service_time?.time.slice(0, 5) || 'N/A';
-
-            return (
-              <div key={serviceTimeData.schedule.id} className="flex items-center gap-2">
-                <span className={`${theme.text.primary} font-bold text-sm`}>
-                  {timeFormatted}
-                </span>
-                <AttendanceStats
-                  stats={serviceTimeData.stats}
-                  mode="inline"
-                  showAbsent={false}
-                  showTotalPresent={true}
-                  showVisitorLabel={false}
-                />
-              </div>
-            );
-          })}
-        </div>
+        {/* Chevron - Centered vertically */}
+        <ChevronRight className={`w-5 h-5 ${theme.text.neutral} flex-shrink-0`} />
       </button>
 
       {/* Expanded Content - Only show when expanded */}

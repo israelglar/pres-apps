@@ -1,0 +1,378 @@
+import {
+  ExternalLink,
+  Loader2,
+  UserPlus,
+  RotateCcw,
+} from "lucide-react";
+import { theme } from "../../config/theme";
+import { PageHeader } from "../../components/ui/PageHeader";
+import { useAttendanceDetailLogic } from "./AttendanceDetailPage.logic";
+import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
+import { AttendanceStats } from "../../components/AttendanceStats";
+import { StatusGroupSeparator } from "./components/StatusGroupSeparator";
+import { NotesDialog } from "./components/NotesDialog";
+import { AddStudentDialog } from "./components/AddStudentDialog";
+import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
+import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
+
+interface AttendanceDetailPageProps {
+  date: string;
+  onBack: () => void;
+  onViewStudent?: (studentId: number) => void;
+  onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
+}
+
+/**
+ * Attendance Detail Page
+ * Shows detailed attendance for a specific date with all service times
+ */
+export function AttendanceDetailPage({
+  date,
+  onBack,
+  onViewStudent,
+  onRedoAttendance
+}: AttendanceDetailPageProps) {
+  const {
+    dateGroup,
+    isLoading,
+    error,
+    isEditing,
+    isNotesDialogOpen,
+    selectedRecordForNotes,
+    isAddDialogOpen,
+    addDialogScheduleId,
+    addDialogServiceTimeId,
+    isAdding,
+    isDeleteDialogOpen,
+    recordToDelete,
+    isDeleting,
+    isCreateVisitorDialogOpen,
+    isCreatingVisitor,
+    visitorInitialName,
+    selectedServiceTimeIndex,
+    handleQuickStatusChange,
+    handleOpenNotes,
+    handleCloseNotes,
+    handleSubmitNotes,
+    handleOpenAddDialog,
+    handleCloseAddDialog,
+    handleAddStudent,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
+    handleOpenCreateVisitorDialog,
+    handleCloseCreateVisitorDialog,
+    handleCreateVisitor,
+    handleViewStudent,
+    handleRedoAttendance,
+    handleServiceTimeChange,
+  } = useAttendanceDetailLogic(date, onViewStudent, onRedoAttendance);
+
+  // Format date for display (short format: "10 nov 2025")
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const day = d.getDate();
+    const monthNames = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    const month = monthNames[d.getMonth()];
+    const year = d.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
+  // Parse date string as local date (avoid timezone issues)
+  const parseLocalDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  // Check if date is today
+  const isToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = parseLocalDate(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() === today.getTime();
+  };
+
+  // Check if date is the most recent past Sunday (Domingo Passado)
+  const isPreviousSunday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = parseLocalDate(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    // Must be in the past (not today)
+    if (checkDate.getTime() >= today.getTime()) return false;
+
+    // Check if it's a Sunday
+    if (checkDate.getDay() !== 0) return false;
+
+    // Find the most recent past Sunday
+    const daysToSubtract = today.getDay() === 0 ? 7 : today.getDay();
+    const lastSunday = new Date(today);
+    lastSunday.setDate(today.getDate() - daysToSubtract);
+    lastSunday.setHours(0, 0, 0, 0);
+
+    return checkDate.getTime() === lastSunday.getTime();
+  };
+
+  // Get date label (Hoje or Domingo Passado)
+  const getDateLabel = () => {
+    if (isToday()) return 'Hoje';
+    if (isPreviousSunday()) return 'Domingo Passado';
+    return null;
+  };
+
+  const dateLabel = getDateLabel();
+  const formattedDate = formatDate(date);
+
+  return (
+    <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
+      {/* Header */}
+      <PageHeader
+        onBack={onBack}
+        title="Detalhes da Presença"
+        sticky={true}
+      />
+
+      <div className="max-w-4xl mx-auto p-2 pb-20">
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
+            <p className={`${theme.text.primary} text-base font-semibold`}>
+              A carregar detalhes...
+            </p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}>
+            <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
+              Erro ao carregar detalhes
+            </p>
+            <p className={`${theme.text.error} text-sm mb-4`}>{error.toString()}</p>
+          </div>
+        )}
+
+        {/* Content */}
+        {dateGroup && (
+          <div className="space-y-4">
+            {/* Header Card */}
+            <div className="bg-white rounded-2xl shadow-md p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`${theme.text.onLightSecondary} text-sm`}>
+                  {formattedDate}
+                </span>
+                {dateLabel && (
+                  <span className={`px-2 py-0.5 text-xs font-bold ${theme.solids.badge} ${theme.text.onPrimary} rounded-full shadow-sm`}>
+                    {dateLabel}
+                  </span>
+                )}
+              </div>
+              <h2 className={`text-xl font-bold ${theme.text.onLight} mb-3`}>
+                {dateGroup.serviceTimes[0]?.schedule.lesson?.name || "Sem lição"}
+              </h2>
+
+              {/* Lesson Link */}
+              {dateGroup.serviceTimes[0]?.schedule.lesson?.resource_url && (
+                <a
+                  href={dateGroup.serviceTimes[0].schedule.lesson.resource_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1 text-sm ${theme.text.primary} hover:underline transition-colors`}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Ver currículo
+                </a>
+              )}
+            </div>
+
+            {/* Service Time Tabs - Only show if there are multiple service times */}
+            {dateGroup.serviceTimes.length > 1 && (
+              <div className="bg-white rounded-2xl shadow-md p-4">
+                <div className="flex gap-1.5">
+                  {dateGroup.serviceTimes.map((serviceTimeData, index) => {
+                    const timeFormatted = serviceTimeData.schedule.service_time?.time.slice(0, 5) || 'N/A';
+                    const isSelected = selectedServiceTimeIndex === index;
+
+                    return (
+                      <button
+                        key={serviceTimeData.schedule.id}
+                        onClick={() => handleServiceTimeChange(index)}
+                        className={`flex-1 px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+                          isSelected
+                            ? `${theme.backgrounds.primary} ${theme.text.white}`
+                            : `${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight}`
+                        }`}
+                      >
+                        {timeFormatted}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Service Time Content */}
+            {dateGroup.serviceTimes[selectedServiceTimeIndex] && (() => {
+              const serviceTimeData = dateGroup.serviceTimes[selectedServiceTimeIndex];
+              const timeFormatted = serviceTimeData.schedule.service_time?.time.slice(0, 5) || 'N/A';
+
+              // Group students by status
+              const presentRegular = serviceTimeData.records.filter(r =>
+                (r.status === 'present' || r.status === 'late') && !r.student?.is_visitor
+              ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+              const presentVisitors = serviceTimeData.records.filter(r =>
+                (r.status === 'present' || r.status === 'late') && r.student?.is_visitor
+              ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+              const absent = serviceTimeData.records.filter(r =>
+                r.status === 'absent' || r.status === 'excused'
+              ).sort((a, b) => (a.student?.name || "").localeCompare(b.student?.name || ""));
+
+              const groupedRecords = { presentRegular, presentVisitors, absent };
+
+              return (
+                <>
+                  {/* Stats Card */}
+                  <div className="bg-white rounded-2xl shadow-md p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`${theme.text.primary} font-bold text-base`}>
+                        {dateGroup.serviceTimes.length === 1 ? timeFormatted : 'Estatísticas'}
+                      </span>
+                      <AttendanceStats
+                        stats={serviceTimeData.stats}
+                        mode="inline"
+                        showAbsent={true}
+                        showTotalPresent={true}
+                        showVisitorLabel={true}
+                      />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleOpenAddDialog(serviceTimeData.schedule.id, serviceTimeData.schedule.service_time_id)}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-lg text-sm font-medium hover:shadow-md active:scale-[0.99] transition-all`}
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        Adicionar Pré
+                      </button>
+                      <button
+                        onClick={() => handleRedoAttendance(serviceTimeData.schedule.id)}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} rounded-lg text-sm font-medium hover:${theme.backgrounds.primaryLight} active:scale-[0.99] transition-all`}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Refazer
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Student List */}
+                  {serviceTimeData.records.length > 0 ? (
+                    <div className="bg-white rounded-2xl shadow-md p-4 space-y-2">
+                      {/* Present Regular Students */}
+                      {groupedRecords.presentRegular.map((record) => (
+                        <StudentAttendanceRow
+                          key={record.id}
+                          record={record}
+                          onQuickStatusChange={handleQuickStatusChange}
+                          onOpenNotes={handleOpenNotes}
+                          onOpenDeleteDialog={handleOpenDeleteDialog}
+                          onViewStudent={handleViewStudent}
+                        />
+                      ))}
+
+                      {/* Present Visitors */}
+                      {groupedRecords.presentVisitors.map((record) => (
+                        <StudentAttendanceRow
+                          key={record.id}
+                          record={record}
+                          onQuickStatusChange={handleQuickStatusChange}
+                          onOpenNotes={handleOpenNotes}
+                          onOpenDeleteDialog={handleOpenDeleteDialog}
+                          onViewStudent={handleViewStudent}
+                        />
+                      ))}
+
+                      {/* Separator (only show if there are absent students) */}
+                      {groupedRecords.absent.length > 0 && (
+                        <StatusGroupSeparator count={groupedRecords.absent.length} />
+                      )}
+
+                      {/* Absent Students */}
+                      {groupedRecords.absent.map((record) => (
+                        <StudentAttendanceRow
+                          key={record.id}
+                          record={record}
+                          onQuickStatusChange={handleQuickStatusChange}
+                          onOpenNotes={handleOpenNotes}
+                          onOpenDeleteDialog={handleOpenDeleteDialog}
+                          onViewStudent={handleViewStudent}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+                      <p className={`${theme.text.neutral} text-sm`}>
+                        Nenhum registo de presença
+                      </p>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        )}
+      </div>
+
+      {/* Notes Dialog */}
+      {isNotesDialogOpen && selectedRecordForNotes && (
+        <NotesDialog
+          record={selectedRecordForNotes}
+          onClose={handleCloseNotes}
+          onSubmit={handleSubmitNotes}
+          isSubmitting={isEditing}
+        />
+      )}
+
+      {/* Add Student Dialog */}
+      {isAddDialogOpen && addDialogScheduleId && (
+        <AddStudentDialog
+          scheduleId={addDialogScheduleId}
+          serviceTimeId={addDialogServiceTimeId || 0}
+          currentRecords={
+            dateGroup?.serviceTimes
+              .find(st => st.schedule.id === addDialogScheduleId)?.records || []
+          }
+          onAdd={handleAddStudent}
+          onClose={handleCloseAddDialog}
+          isAdding={isAdding}
+          onCreateVisitor={handleOpenCreateVisitorDialog}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && recordToDelete && (
+        <DeleteAttendanceDialog
+          studentName={recordToDelete.student?.name || "Estudante"}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCloseDeleteDialog}
+          isDeleting={isDeleting}
+        />
+      )}
+
+      {/* Create Visitor Dialog */}
+      {isCreateVisitorDialogOpen && (
+        <CreateVisitorDialog
+          onConfirm={handleCreateVisitor}
+          onCancel={handleCloseCreateVisitorDialog}
+          isCreating={isCreatingVisitor}
+          initialName={visitorInitialName}
+        />
+      )}
+    </div>
+  );
+}

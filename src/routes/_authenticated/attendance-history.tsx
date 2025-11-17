@@ -35,11 +35,16 @@ function AttendanceHistoryRoute() {
     });
   };
 
+  const handleDateClick = (dateStr: string) => {
+    navigate({ to: '/attendance-detail/$date', params: { date: dateStr } });
+  };
+
   return (
     <AttendanceHistoryPage
       onBack={handleBack}
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}
+      onDateClick={handleDateClick}
       initialDate={date}
       initialServiceTimeId={serviceTimeId}
     />
