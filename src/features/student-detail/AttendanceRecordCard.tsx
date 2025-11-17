@@ -1,7 +1,10 @@
-import { Clock } from 'lucide-react'
-import { theme } from '../../config/theme'
-import type { SundayAttendanceRecord } from './student-detail.logic'
-import { getStatusLabel, getStatusIcon } from './student-detail.logic'
+import {
+  formatShortDate,
+  ServiceTimeBadges,
+} from "../../components/lesson-cards";
+import { theme } from "../../config/theme";
+import type { SundayAttendanceRecord } from "./student-detail.logic";
+import { getStatusIcon, getStatusLabel } from "./student-detail.logic";
 
 interface AttendanceRecordCardProps {
   record: SundayAttendanceRecord
@@ -25,20 +28,14 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
     late: { text: theme.status.late.text, bg: theme.status.late.bg },
     excused: { text: theme.status.excused.text, bg: theme.status.excused.bg },
   }
-  const statusStyle = statusConfig[status]
-
-  // Format date to match DateGroupCard style (e.g., "10 nov 2025")
-  const formatShortDate = (dateStr: string): string => {
-    const [day, month, year] = dateStr.split(' ')
-    return `${parseInt(day)} ${month.toLowerCase()} ${year}`
-  }
+  const statusStyle = statusConfig[status];
 
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden">
       <div className={`${theme.backgrounds.white} p-5`}>
         {/* Lesson Name as Title */}
         <div className="mb-3">
-          <h3 className={`text-base font-normal ${theme.text.onLight} leading-tight`}>
+          <h3 className={`text-sm font-medium ${theme.text.onLight} leading-tight`}>
             {lesson?.name || "Sem lição"}
           </h3>
         </div>
@@ -55,19 +52,11 @@ export function AttendanceRecordCard({ record }: AttendanceRecordCardProps) {
             </span>
 
             {/* Service Time Badges */}
-            {serviceTimes.length > 0 && (
-              <div className="flex items-center gap-1">
-                {serviceTimes.map((serviceTime) => (
-                  <div
-                    key={serviceTime.id}
-                    className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded ${theme.backgrounds.primaryLight} ${theme.text.primaryDark} text-xs font-semibold`}
-                  >
-                    <Clock className="w-3 h-3" />
-                    <span>{serviceTime.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <ServiceTimeBadges
+              serviceTimes={serviceTimes}
+              variant="compact"
+              showIcon={true}
+            />
           </div>
 
           {/* Date in bottom right */}

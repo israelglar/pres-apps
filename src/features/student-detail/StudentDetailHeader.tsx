@@ -103,31 +103,31 @@ export function StudentDetailHeader({
         {/* Statistics */}
         {stats.total > 0 && (
           <div className={`mt-4 pt-4 border-t ${theme.borders.neutralLight}`}>
-            <h2 className={`text-sm font-semibold ${theme.text.neutralDarker} mb-3 flex items-center gap-2`}>
-              <TrendingUp className={`w-4 h-4 ${theme.text.primary}`} />
+            <h2 className={`text-xs font-semibold ${theme.text.neutralDarker} mb-2 flex items-center gap-1.5`}>
+              <TrendingUp className={`w-3.5 h-3.5 ${theme.text.primary}`} />
               Estatísticas
             </h2>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               {/* Attendance Rate */}
-              <div className="text-center p-3 bg-gray-100 rounded-xl">
-                <div className={`text-xl font-semibold ${theme.text.primaryDark} mb-1`}>
+              <div className="text-center p-2 bg-gray-100 rounded-lg">
+                <div className={`text-base font-semibold ${theme.text.primaryDark} mb-0.5`}>
                   {stats.attendanceRate}%
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Taxa</div>
               </div>
 
               {/* Present Count */}
-              <div className="text-center p-3 bg-green-50 rounded-xl">
-                <div className={`text-xl font-semibold ${theme.text.success} mb-1`}>
+              <div className="text-center p-2 bg-green-50 rounded-lg">
+                <div className={`text-base font-semibold ${theme.text.success} mb-0.5`}>
                   {stats.present}
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Presenças</div>
               </div>
 
               {/* Absent Count */}
-              <div className="text-center p-3 bg-red-50 rounded-xl">
-                <div className={`text-xl font-semibold ${theme.text.error} mb-1`}>
+              <div className="text-center p-2 bg-red-50 rounded-lg">
+                <div className={`text-base font-semibold ${theme.text.error} mb-0.5`}>
                   {stats.absent}
                 </div>
                 <div className={`text-xs ${theme.text.neutral} font-medium`}>Faltas</div>
@@ -136,10 +136,10 @@ export function StudentDetailHeader({
 
             {/* Additional Stats Row (if excused exists) */}
             {stats.excused > 0 && (
-              <div className={`flex justify-center mt-3 pt-3 border-t ${theme.borders.neutralLight}`}>
-                <div className="text-center p-3 bg-blue-50 rounded-xl">
-                  <span className={`text-base font-semibold ${theme.text.secondary}`}>{stats.excused}</span>
-                  <span className={`text-sm ${theme.text.neutral} ml-2 font-medium`}>Justificadas</span>
+              <div className={`flex justify-center mt-2 pt-2 border-t ${theme.borders.neutralLight}`}>
+                <div className="text-center p-2 bg-blue-50 rounded-lg">
+                  <span className={`text-sm font-semibold ${theme.text.secondary}`}>{stats.excused}</span>
+                  <span className={`text-xs ${theme.text.neutral} ml-1.5 font-medium`}>Justificadas</span>
                 </div>
               </div>
             )}

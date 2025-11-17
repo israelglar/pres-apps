@@ -1,6 +1,10 @@
 import { ChevronRight, ExternalLink, RotateCcw, UserPlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AttendanceStats } from "../../../components/AttendanceStats";
+import {
+  formatShortDate,
+  getDateLabel,
+} from "../../../components/lesson-cards";
 import { theme } from "../../../config/theme";
 import type { AttendanceRecordWithRelations } from "../../../types/database.types";
 import { lightTap } from "../../../utils/haptics";
@@ -86,72 +90,9 @@ export function DateGroupCard({
     }
   };
 
-  // Format date for display (short format: "10 nov 2025")
-  const date = new Date(group.date);
-  const day = date.getDate();
-  const monthNames = [
-    "jan",
-    "fev",
-    "mar",
-    "abr",
-    "mai",
-    "jun",
-    "jul",
-    "ago",
-    "set",
-    "out",
-    "nov",
-    "dez",
-  ];
-  const month = monthNames[date.getMonth()];
-  const year = date.getFullYear();
-  const formattedDate = `${day} ${month} ${year}`;
-
-  // Parse date string as local date (avoid timezone issues)
-  const parseLocalDate = (dateStr: string) => {
-    const [year, month, day] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  // Check if date is today
-  const isToday = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkDate = parseLocalDate(group.date);
-    checkDate.setHours(0, 0, 0, 0);
-    return checkDate.getTime() === today.getTime();
-  };
-
-  // Check if date is the most recent past Sunday (Domingo Passado)
-  const isPreviousSunday = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkDate = parseLocalDate(group.date);
-    checkDate.setHours(0, 0, 0, 0);
-
-    // Must be in the past (not today)
-    if (checkDate.getTime() >= today.getTime()) return false;
-
-    // Check if it's a Sunday
-    if (checkDate.getDay() !== 0) return false;
-
-    // Find the most recent past Sunday
-    const daysToSubtract = today.getDay() === 0 ? 7 : today.getDay();
-    const lastSunday = new Date(today);
-    lastSunday.setDate(today.getDate() - daysToSubtract);
-    lastSunday.setHours(0, 0, 0, 0);
-
-    return checkDate.getTime() === lastSunday.getTime();
-  };
-
-  // Get date label (Hoje or Domingo Passado)
-  const getDateLabel = () => {
-    if (isToday()) return "Hoje";
-    if (isPreviousSunday()) return "Domingo Passado";
-    return null;
-  };
-
-  const dateLabel = getDateLabel();
+  // Use shared date formatting utilities
+  const formattedDate = formatShortDate(group.date);
+  const dateLabel = getDateLabel(group.date);
 
   // Get lesson name (should be the same for all service times on this date)
   const lessonName =
@@ -173,7 +114,7 @@ export function DateGroupCard({
           {/* Lesson Name and Date */}
           <div className="mb-3">
             <h3
-              className={`text-base font-normal ${theme.text.onLight} leading-tight`}
+              className={`text-sm font-medium ${theme.text.onLight} leading-tight`}
             >
               {lessonName}
             </h3>
@@ -203,7 +144,7 @@ export function DateGroupCard({
                   key={serviceTimeData.schedule.id}
                   className="flex items-center gap-2"
                 >
-                  <span className={`${theme.text.primary} font-bold text-sm`}>
+                  <span className={`${theme.text.primary} font-semibold text-xs`}>
                     {timeFormatted}
                   </span>
                   <AttendanceStats
@@ -326,7 +267,7 @@ export function DateGroupCard({
                     >
                       <div className="flex items-center justify-between">
                         <span
-                          className={`${theme.text.primary} font-bold text-sm`}
+                          className={`${theme.text.primary} font-semibold text-xs`}
                         >
                           {timeFormatted}
                         </span>
