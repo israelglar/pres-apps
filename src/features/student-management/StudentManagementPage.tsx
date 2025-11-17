@@ -1,7 +1,11 @@
-import { Filter, Loader2, Plus, Search } from "lucide-react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { SearchBar } from "../../components/ui/SearchBar";
+import { FilterButton } from "../../components/ui/FilterButton";
+import { FilterPanel } from "../../components/ui/FilterPanel";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { ItemCount } from "../../components/ui/ItemCount";
 import { theme } from "../../config/theme";
 import {
   useStudentManagement,
@@ -58,6 +62,42 @@ export function StudentManagementPage({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [visitorFilter, setVisitorFilter] = useState<VisitorFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Filter groups configuration
+  const filterGroups = [
+    {
+      id: "status",
+      label: "Estado",
+      options: [
+        { value: "all", label: "Todos" },
+        { value: "active", label: "Ativo" },
+        { value: "inactive", label: "Inativo" },
+        { value: "aged-out", label: "Passou" },
+        { value: "moved", label: "Mudou" },
+      ],
+    },
+    {
+      id: "visitor",
+      label: "Visitantes",
+      options: [
+        { value: "all", label: "Todos" },
+        { value: "visitors", label: "Visitantes" },
+      ],
+    },
+  ];
+
+  // Helper functions
+  const hasActiveFilters = statusFilter !== "all" || visitorFilter !== "all";
+
+  const handleClearFilters = () => {
+    setStatusFilter("all");
+    setVisitorFilter("all");
+  };
+
+  const handleFilterChange = (groupId: string, value: string) => {
+    if (groupId === "status") setStatusFilter(value as StatusFilter);
+    if (groupId === "visitor") setVisitorFilter(value as VisitorFilter);
+  };
 
   // Filter students based on search query, status, and visitor status
   const filteredStudents = useMemo(() => {
@@ -156,105 +196,25 @@ export function StudentManagementPage({
               />
 
               {/* Filter Toggle Button */}
-              <button
+              <FilterButton
+                isActive={hasActiveFilters}
+                isOpen={showFilters}
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all flex-shrink-0 ${
-                  showFilters ||
-                  statusFilter !== "all" ||
-                  visitorFilter !== "all"
-                    ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
-                    : `${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:shadow-md`
-                }`}
-              >
-                <Filter className="w-4 h-4" />
-                {(statusFilter !== "all" || visitorFilter !== "all") && (
-                  <span
-                    className={`w-2 h-2 ${theme.backgrounds.white} rounded-full`}
-                  />
-                )}
-              </button>
+              />
             </div>
 
             {/* Filter Options */}
-            {showFilters && (
-              <div
-                className={`${theme.backgrounds.white} rounded-xl p-4 space-y-4 border-2 ${theme.borders.primaryLight} shadow-md`}
-              >
-                {/* Status Filter */}
-                <div>
-                  <label
-                    className={`block text-xs font-bold ${theme.text.primary} mb-2`}
-                  >
-                    Estado
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { value: "all", label: "Todos" },
-                      { value: "active", label: "Ativo" },
-                      { value: "inactive", label: "Inativo" },
-                      { value: "aged-out", label: "Passou" },
-                      { value: "moved", label: "Mudou" },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() =>
-                          setStatusFilter(option.value as StatusFilter)
-                        }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          statusFilter === option.value
-                            ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-sm`
-                            : `bg-gray-100 ${theme.text.neutral} hover:bg-gray-200`
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Visitor Filter */}
-                <div>
-                  <label
-                    className={`block text-xs font-bold ${theme.text.primary} mb-2`}
-                  >
-                    Visitantes
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { value: "all", label: "Todos" },
-                      { value: "visitors", label: "Visitantes" },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() =>
-                          setVisitorFilter(option.value as VisitorFilter)
-                        }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          visitorFilter === option.value
-                            ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-sm`
-                            : `bg-gray-100 ${theme.text.neutral} hover:bg-gray-200`
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Clear Filters */}
-                {(statusFilter !== "all" || visitorFilter !== "all") && (
-                  <button
-                    onClick={() => {
-                      setStatusFilter("all");
-                      setVisitorFilter("all");
-                    }}
-                    className={`w-full py-2 ${theme.backgrounds.errorMedium} ${theme.text.white} rounded-lg text-xs font-medium hover:bg-red-600 transition-colors`}
-                  >
-                    Limpar Filtros
-                  </button>
-                )}
-              </div>
-            )}
+            <FilterPanel
+              isOpen={showFilters}
+              filterGroups={filterGroups}
+              activeFilters={{
+                status: statusFilter,
+                visitor: visitorFilter,
+              }}
+              onFilterChange={handleFilterChange}
+              onClearFilters={handleClearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
           </div>
         )}
 
@@ -296,58 +256,38 @@ export function StudentManagementPage({
           {!isLoading && !isError && (
             <>
               {students.length === 0 ? (
-                <div className="text-center py-16">
-                  <p
-                    className={`text-base ${theme.text.neutral} font-medium mb-4`}
-                  >
-                    Nenhum pré encontrado
-                  </p>
-                  <button
-                    onClick={handleAddStudent}
-                    className={`px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium inline-flex items-center hover:shadow-md transition-all`}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Adicionar Primeiro Pré
-                  </button>
-                </div>
+                <EmptyState
+                  icon={<Plus className="w-16 h-16" />}
+                  title="Nenhum pré encontrado"
+                  action={{
+                    label: "Adicionar Primeiro Pré",
+                    onClick: handleAddStudent,
+                    icon: <Plus className="w-4 h-4" />,
+                  }}
+                />
               ) : filteredStudents.length === 0 ? (
-                <div className="text-center py-16">
-                  <Search
-                    className={`w-16 h-16 ${theme.text.neutralLight} mx-auto mb-4`}
-                  />
-                  <p
-                    className={`text-base ${theme.text.neutral} font-medium mb-2`}
-                  >
-                    Nenhum pré encontrado
-                  </p>
-                  <p className={`text-sm ${theme.text.neutralLight}`}>
-                    Tenta procurar com outro nome
-                  </p>
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className={`mt-4 px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md transition-all`}
-                  >
-                    Limpar pesquisa
-                  </button>
-                </div>
+                <EmptyState
+                  icon={<Search className="w-16 h-16" />}
+                  title="Nenhum pré encontrado"
+                  description="Tenta procurar com outro nome"
+                  action={{
+                    label: "Limpar pesquisa",
+                    onClick: () => {
+                      setSearchQuery("");
+                      handleClearFilters();
+                    },
+                  }}
+                />
               ) : (
                 <>
-                  <div className="mb-4 flex items-center justify-between">
-                    <p className={`text-sm ${theme.text.neutral} font-medium`}>
-                      {searchQuery ? (
-                        <>
-                          A mostrar {filteredStudents.length} de{" "}
-                          {students.length}{" "}
-                          {students.length === 1 ? "pré" : "prés"}
-                        </>
-                      ) : (
-                        <>
-                          Total: {students.length}{" "}
-                          {students.length === 1 ? "pré" : "prés"}
-                        </>
-                      )}
-                    </p>
-                  </div>
+                  <ItemCount
+                    totalCount={students.length}
+                    filteredCount={filteredStudents.length}
+                    itemLabel="pré"
+                    itemLabelPlural="prés"
+                    isFiltered={hasActiveFilters || searchQuery.length > 0}
+                    className="mb-4"
+                  />
 
                   <div className="space-y-3">
                     {filteredStudents.map((student) => (

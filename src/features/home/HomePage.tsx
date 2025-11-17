@@ -2,11 +2,11 @@ import React from "react";
 import {
   AlertCircle,
   ArrowRight,
+  BookOpen,
   Calendar,
   Clock,
   Download,
   ExternalLink,
-  History,
   Loader2,
   LogOut,
   Menu,
@@ -263,14 +263,14 @@ export function HomePage({
               </button>
             </div>
 
-            {/* History Button */}
+            {/* Lessons Button */}
             <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
               <button
                 onClick={onViewHistory}
                 className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-1.5`}
               >
-                <History className={`w-5 h-5 ${theme.text.primary}`} />
-                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Histórico</span>
+                <BookOpen className={`w-5 h-5 ${theme.text.primary}`} />
+                <span className={`font-semibold text-sm ${theme.text.primary} text-center`}>Lições</span>
               </button>
             </div>
 

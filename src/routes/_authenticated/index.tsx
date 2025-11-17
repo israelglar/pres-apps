@@ -23,7 +23,7 @@ function HomeRoute() {
   }
 
   const handleViewHistory = () => {
-    navigate({ to: '/attendance-history' })
+    navigate({ to: '/lessons' })
   }
 
   const handleQuickStart = (date: string, serviceTimeId: number) => {

@@ -8,13 +8,13 @@ import { useState, useEffect, useRef } from "react";
 import { theme } from "../../../config/theme";
 import type { AttendanceRecordWithRelations } from "../../../types/database.types";
 import { lightTap } from "../../../utils/haptics";
-import type { AttendanceHistoryGroup } from "../hooks/useAttendanceHistory";
+import type { LessonGroup } from "../hooks/useLessons";
 import { StudentAttendanceRow } from "./StudentAttendanceRow";
 import { AttendanceStats } from "../../../components/AttendanceStats";
 import { StatusGroupSeparator } from "./StatusGroupSeparator";
 
 interface DateGroupCardProps {
-  group: AttendanceHistoryGroup;
+  group: LessonGroup;
   onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
   onOpenNotes: (record: AttendanceRecordWithRelations) => void;
   onOpenAddDialog: (scheduleId: number, serviceTimeId: number | null) => void;

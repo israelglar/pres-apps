@@ -16,10 +16,10 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedSearchMarkingRouteImport } from './routes/_authenticated/search-marking'
 import { Route as AuthenticatedMarkingRouteImport } from './routes/_authenticated/marking'
 import { Route as AuthenticatedManageStudentsRouteImport } from './routes/_authenticated/manage-students'
+import { Route as AuthenticatedLessonsRouteImport } from './routes/_authenticated/lessons'
 import { Route as AuthenticatedDateSelectionRouteImport } from './routes/_authenticated/date-selection'
-import { Route as AuthenticatedAttendanceHistoryRouteImport } from './routes/_authenticated/attendance-history'
 import { Route as AuthenticatedStudentsStudentIdRouteImport } from './routes/_authenticated/students.$studentId'
-import { Route as AuthenticatedAttendanceDetailDateRouteImport } from './routes/_authenticated/attendance-detail.$date'
+import { Route as AuthenticatedLessonDateRouteImport } from './routes/_authenticated/lesson.$date'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -57,16 +57,15 @@ const AuthenticatedManageStudentsRoute =
     path: '/manage-students',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedLessonsRoute = AuthenticatedLessonsRouteImport.update({
+  id: '/lessons',
+  path: '/lessons',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDateSelectionRoute =
   AuthenticatedDateSelectionRouteImport.update({
     id: '/date-selection',
     path: '/date-selection',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAttendanceHistoryRoute =
-  AuthenticatedAttendanceHistoryRouteImport.update({
-    id: '/attendance-history',
-    path: '/attendance-history',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedStudentsStudentIdRoute =
@@ -75,35 +74,34 @@ const AuthenticatedStudentsStudentIdRoute =
     path: '/students/$studentId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedAttendanceDetailDateRoute =
-  AuthenticatedAttendanceDetailDateRouteImport.update({
-    id: '/attendance-detail/$date',
-    path: '/attendance-detail/$date',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
+const AuthenticatedLessonDateRoute = AuthenticatedLessonDateRouteImport.update({
+  id: '/lesson/$date',
+  path: '/lesson/$date',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
-  '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/lessons': typeof AuthenticatedLessonsRoute
   '/manage-students': typeof AuthenticatedManageStudentsRoute
   '/marking': typeof AuthenticatedMarkingRoute
   '/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/': typeof AuthenticatedIndexRoute
-  '/attendance-detail/$date': typeof AuthenticatedAttendanceDetailDateRoute
+  '/lesson/$date': typeof AuthenticatedLessonDateRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRoutesByTo {
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
-  '/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/lessons': typeof AuthenticatedLessonsRoute
   '/manage-students': typeof AuthenticatedManageStudentsRoute
   '/marking': typeof AuthenticatedMarkingRoute
   '/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/': typeof AuthenticatedIndexRoute
-  '/attendance-detail/$date': typeof AuthenticatedAttendanceDetailDateRoute
+  '/lesson/$date': typeof AuthenticatedLessonDateRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRoutesById {
@@ -111,13 +109,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
-  '/_authenticated/attendance-history': typeof AuthenticatedAttendanceHistoryRoute
   '/_authenticated/date-selection': typeof AuthenticatedDateSelectionRoute
+  '/_authenticated/lessons': typeof AuthenticatedLessonsRoute
   '/_authenticated/manage-students': typeof AuthenticatedManageStudentsRoute
   '/_authenticated/marking': typeof AuthenticatedMarkingRoute
   '/_authenticated/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/attendance-detail/$date': typeof AuthenticatedAttendanceDetailDateRoute
+  '/_authenticated/lesson/$date': typeof AuthenticatedLessonDateRoute
   '/_authenticated/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRouteTypes {
@@ -125,38 +123,38 @@ export interface FileRouteTypes {
   fullPaths:
     | '/dev-login'
     | '/login'
-    | '/attendance-history'
     | '/date-selection'
+    | '/lessons'
     | '/manage-students'
     | '/marking'
     | '/search-marking'
     | '/'
-    | '/attendance-detail/$date'
+    | '/lesson/$date'
     | '/students/$studentId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dev-login'
     | '/login'
-    | '/attendance-history'
     | '/date-selection'
+    | '/lessons'
     | '/manage-students'
     | '/marking'
     | '/search-marking'
     | '/'
-    | '/attendance-detail/$date'
+    | '/lesson/$date'
     | '/students/$studentId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/dev-login'
     | '/login'
-    | '/_authenticated/attendance-history'
     | '/_authenticated/date-selection'
+    | '/_authenticated/lessons'
     | '/_authenticated/manage-students'
     | '/_authenticated/marking'
     | '/_authenticated/search-marking'
     | '/_authenticated/'
-    | '/_authenticated/attendance-detail/$date'
+    | '/_authenticated/lesson/$date'
     | '/_authenticated/students/$studentId'
   fileRoutesById: FileRoutesById
 }
@@ -217,18 +215,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageStudentsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/lessons': {
+      id: '/_authenticated/lessons'
+      path: '/lessons'
+      fullPath: '/lessons'
+      preLoaderRoute: typeof AuthenticatedLessonsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/date-selection': {
       id: '/_authenticated/date-selection'
       path: '/date-selection'
       fullPath: '/date-selection'
       preLoaderRoute: typeof AuthenticatedDateSelectionRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/attendance-history': {
-      id: '/_authenticated/attendance-history'
-      path: '/attendance-history'
-      fullPath: '/attendance-history'
-      preLoaderRoute: typeof AuthenticatedAttendanceHistoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/students/$studentId': {
@@ -238,36 +236,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsStudentIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/attendance-detail/$date': {
-      id: '/_authenticated/attendance-detail/$date'
-      path: '/attendance-detail/$date'
-      fullPath: '/attendance-detail/$date'
-      preLoaderRoute: typeof AuthenticatedAttendanceDetailDateRouteImport
+    '/_authenticated/lesson/$date': {
+      id: '/_authenticated/lesson/$date'
+      path: '/lesson/$date'
+      fullPath: '/lesson/$date'
+      preLoaderRoute: typeof AuthenticatedLessonDateRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedAttendanceHistoryRoute: typeof AuthenticatedAttendanceHistoryRoute
   AuthenticatedDateSelectionRoute: typeof AuthenticatedDateSelectionRoute
+  AuthenticatedLessonsRoute: typeof AuthenticatedLessonsRoute
   AuthenticatedManageStudentsRoute: typeof AuthenticatedManageStudentsRoute
   AuthenticatedMarkingRoute: typeof AuthenticatedMarkingRoute
   AuthenticatedSearchMarkingRoute: typeof AuthenticatedSearchMarkingRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedAttendanceDetailDateRoute: typeof AuthenticatedAttendanceDetailDateRoute
+  AuthenticatedLessonDateRoute: typeof AuthenticatedLessonDateRoute
   AuthenticatedStudentsStudentIdRoute: typeof AuthenticatedStudentsStudentIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAttendanceHistoryRoute: AuthenticatedAttendanceHistoryRoute,
   AuthenticatedDateSelectionRoute: AuthenticatedDateSelectionRoute,
+  AuthenticatedLessonsRoute: AuthenticatedLessonsRoute,
   AuthenticatedManageStudentsRoute: AuthenticatedManageStudentsRoute,
   AuthenticatedMarkingRoute: AuthenticatedMarkingRoute,
   AuthenticatedSearchMarkingRoute: AuthenticatedSearchMarkingRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedAttendanceDetailDateRoute:
-    AuthenticatedAttendanceDetailDateRoute,
+  AuthenticatedLessonDateRoute: AuthenticatedLessonDateRoute,
   AuthenticatedStudentsStudentIdRoute: AuthenticatedStudentsStudentIdRoute,
 }
 

@@ -1,30 +1,28 @@
-import { useState } from 'react';
-import { useAttendanceHistory, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useAttendanceHistory';
+import { useState, useMemo } from 'react';
+import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient } from '@tanstack/react-query';
 
 /**
- * Business logic for Attendance History Page
- * Handles state management, pagination, and edit operations
+ * Business logic for Lesson Detail Page
+ * Handles state management and operations for a specific date's lesson
  */
-export function useAttendanceHistoryLogic(
+export function useLessonDetailLogic(
+  date: string,
   onViewStudent?: (studentId: number) => void,
-  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
-  initialDate?: string,
-  initialServiceTimeId?: number
+  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void
 ) {
   const queryClient = useQueryClient();
 
-  // Pagination state - uses offset to load more older items (starts at 0)
-  const [offset, setOffset] = useState(0);
+  // Fetch lessons - we'll extract the specific date from it
+  const { history, isLoading, error } = useLessons(100, 0); // Load all dates
 
-  // Fetch attendance history with current offset (all service times grouped by date)
-  const { history, totalCount, mostRecentIndex, isLoading, error, refetch } = useAttendanceHistory(
-    7, // Always try to load 7 items (3 before + most recent + 3 after)
-    offset
-  );
+  // Find the specific date group from history
+  const dateGroup = useMemo(() => {
+    return history?.find(group => group.date === date);
+  }, [history, date]);
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -35,9 +33,13 @@ export function useAttendanceHistoryLogic(
   // Delete attendance mutation
   const { deleteAttendance, isDeleting } = useDeleteAttendance();
 
-  // Dialog state
-  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordWithRelations | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Find the index of 11:00 service time, default to 0 if not found
+  const default11hIndex = dateGroup?.serviceTimes.findIndex(
+    st => st.schedule.service_time?.time === '11:00:00'
+  ) ?? 0;
+  const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(
+    default11hIndex !== -1 ? default11hIndex : 0
+  );
 
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);
@@ -56,43 +58,6 @@ export function useAttendanceHistoryLogic(
   const [isCreateVisitorDialogOpen, setIsCreateVisitorDialogOpen] = useState(false);
   const [isCreatingVisitor, setIsCreatingVisitor] = useState(false);
   const [visitorInitialName, setVisitorInitialName] = useState('');
-
-  /**
-   * Open edit dialog for a specific attendance record
-   */
-  const handleOpenEdit = (record: AttendanceRecordWithRelations) => {
-    lightTap();
-    setSelectedRecord(record);
-    setIsDialogOpen(true);
-  };
-
-  /**
-   * Close edit dialog
-   */
-  const handleCloseEdit = () => {
-    lightTap();
-    setIsDialogOpen(false);
-    // Don't clear selectedRecord immediately to prevent flash during close animation
-    setTimeout(() => setSelectedRecord(null), 300);
-  };
-
-  /**
-   * Submit edit changes
-   */
-  const handleSubmitEdit = async (
-    recordId: number,
-    status: 'present' | 'absent' | 'excused' | 'late',
-    notes?: string
-  ) => {
-    try {
-      await editAttendance({ recordId, status, notes });
-      successVibration();
-      handleCloseEdit();
-    } catch (error) {
-      console.error('Failed to edit attendance:', error);
-      // Error handling is done by the mutation hook
-    }
-  };
 
   /**
    * Quick status change (no dialog) - used by tap-to-cycle and quick menu
@@ -285,22 +250,6 @@ export function useAttendanceHistoryLogic(
   };
 
   /**
-   * Load more history dates (pagination - loads older items)
-   */
-  const handleLoadMore = () => {
-    lightTap();
-    setOffset((prev) => prev + 5);
-  };
-
-  /**
-   * Refresh all data
-   */
-  const handleRefresh = async () => {
-    lightTap();
-    await refetch();
-  };
-
-  /**
    * View student detail page
    */
   const handleViewStudent = (studentId: number) => {
@@ -310,7 +259,6 @@ export function useAttendanceHistoryLogic(
     }
   };
 
-
   /**
    * Redo attendance for a specific schedule
    * Navigates to search marking page with pre-filled date and service time
@@ -318,30 +266,30 @@ export function useAttendanceHistoryLogic(
   const handleRedoAttendance = (scheduleId: number) => {
     lightTap();
 
-    // Find the schedule in history (now grouped by date with multiple service times)
-    const dateGroup = history?.find(g =>
-      g.serviceTimes.some(st => st.schedule.id === scheduleId)
-    );
-    if (!dateGroup || !onRedoAttendance) return;
-
-    // Find the specific service time
-    const serviceTimeData = dateGroup.serviceTimes.find(st => st.schedule.id === scheduleId);
-    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id) return;
+    // Find the schedule in dateGroup
+    const serviceTimeData = dateGroup?.serviceTimes.find(st => st.schedule.id === scheduleId);
+    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id || !onRedoAttendance) return;
 
     // Navigate to search marking with the schedule's date and service time
     const serviceTimeId = serviceTimeData.schedule.service_time_id;
-    onRedoAttendance(dateGroup.date, serviceTimeId);
+    onRedoAttendance(date, serviceTimeId);
+  };
+
+  /**
+   * Handle service time tab change
+   */
+  const handleServiceTimeChange = (index: number) => {
+    lightTap();
+    setSelectedServiceTimeIndex(index);
   };
 
   return {
     // Data
-    history,
+    dateGroup,
     isLoading,
     error,
 
     // Dialog state
-    isDialogOpen,
-    selectedRecord,
     isEditing,
 
     // Notes dialog state
@@ -364,19 +312,10 @@ export function useAttendanceHistoryLogic(
     isCreatingVisitor,
     visitorInitialName,
 
-    // Initial navigation params
-    initialDate,
-    initialServiceTimeId,
-
-    // Pagination
-    offset,
-    totalCount,
-    canLoadMore: mostRecentIndex - 3 - offset > 0, // Can load more if there are older items
+    // Selected service time
+    selectedServiceTimeIndex,
 
     // Actions
-    handleOpenEdit,
-    handleCloseEdit,
-    handleSubmitEdit,
     handleQuickStatusChange,
     handleOpenNotes,
     handleCloseNotes,
@@ -391,8 +330,7 @@ export function useAttendanceHistoryLogic(
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
     handleViewStudent,
-    handleLoadMore,
-    handleRefresh,
     handleRedoAttendance,
+    handleServiceTimeChange,
   };
 }

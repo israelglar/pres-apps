@@ -1,19 +1,19 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { AttendanceHistoryPage } from '../../features/attendance-history';
+import { LessonsPage } from '../../features/lessons';
 import { z } from 'zod';
 
 // Define search params schema
-const attendanceHistorySearchSchema = z.object({
+const lessonsSearchSchema = z.object({
   date: z.string().optional(),
   serviceTimeId: z.number().optional(),
 });
 
-export const Route = createFileRoute('/_authenticated/attendance-history')({
-  component: AttendanceHistoryRoute,
-  validateSearch: (search) => attendanceHistorySearchSchema.parse(search),
+export const Route = createFileRoute('/_authenticated/lessons')({
+  component: LessonsRoute,
+  validateSearch: (search) => lessonsSearchSchema.parse(search),
 });
 
-function AttendanceHistoryRoute() {
+function LessonsRoute() {
   const navigate = useNavigate();
   const { date, serviceTimeId } = Route.useSearch();
 
@@ -36,11 +36,11 @@ function AttendanceHistoryRoute() {
   };
 
   const handleDateClick = (dateStr: string) => {
-    navigate({ to: '/attendance-detail/$date', params: { date: dateStr } });
+    navigate({ to: '/lesson/$date', params: { date: dateStr } });
   };
 
   return (
-    <AttendanceHistoryPage
+    <LessonsPage
       onBack={handleBack}
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}

@@ -1,28 +1,30 @@
 import { useState, useMemo } from 'react';
-import { useAttendanceHistory, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useAttendanceHistory';
+import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient } from '@tanstack/react-query';
 
 /**
- * Business logic for Attendance Detail Page
- * Handles state management and operations for a specific date's attendance
+ * Business logic for Lessons Page
+ * Handles state management, pagination, and edit operations
  */
-export function useAttendanceDetailLogic(
-  date: string,
+export function useLessonsLogic(
   onViewStudent?: (studentId: number) => void,
-  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void
+  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
+  initialDate?: string,
+  initialServiceTimeId?: number
 ) {
   const queryClient = useQueryClient();
 
-  // Fetch attendance history - we'll extract the specific date from it
-  const { history, isLoading, error } = useAttendanceHistory(100, 0); // Load all dates
+  // Pagination state - uses offset to load more older items (starts at 0)
+  const [offset, setOffset] = useState(0);
 
-  // Find the specific date group from history
-  const dateGroup = useMemo(() => {
-    return history?.find(group => group.date === date);
-  }, [history, date]);
+  // Fetch lessons with current offset (all service times grouped by date)
+  const { history, totalCount, mostRecentIndex, isLoading, error, refetch } = useLessons(
+    7, // Always try to load 7 items (3 before + most recent + 3 after)
+    offset
+  );
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -33,13 +35,9 @@ export function useAttendanceDetailLogic(
   // Delete attendance mutation
   const { deleteAttendance, isDeleting } = useDeleteAttendance();
 
-  // Find the index of 11:00 service time, default to 0 if not found
-  const default11hIndex = dateGroup?.serviceTimes.findIndex(
-    st => st.schedule.service_time?.time === '11:00:00'
-  ) ?? 0;
-  const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(
-    default11hIndex !== -1 ? default11hIndex : 0
-  );
+  // Dialog state
+  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordWithRelations | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);
@@ -58,6 +56,114 @@ export function useAttendanceDetailLogic(
   const [isCreateVisitorDialogOpen, setIsCreateVisitorDialogOpen] = useState(false);
   const [isCreatingVisitor, setIsCreatingVisitor] = useState(false);
   const [visitorInitialName, setVisitorInitialName] = useState('');
+
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [timePeriodFilter, setTimePeriodFilter] = useState('all'); // 'past' | 'today' | 'future' | 'all'
+  const [attendanceFilter, setAttendanceFilter] = useState('all'); // 'has-attendance' | 'no-attendance' | 'all'
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Filter groups configuration
+  const filterGroups = [
+    {
+      id: 'timePeriod',
+      label: 'Período',
+      options: [
+        { value: 'all', label: 'Todas' },
+        { value: 'past', label: 'Passadas' },
+        { value: 'today', label: 'Hoje' },
+        { value: 'future', label: 'Futuras' },
+      ],
+    },
+    {
+      id: 'attendance',
+      label: 'Presenças',
+      options: [
+        { value: 'all', label: 'Todas' },
+        { value: 'has-attendance', label: 'Com Presenças' },
+        { value: 'no-attendance', label: 'Sem Presenças' },
+      ],
+    },
+  ];
+
+  // Helper functions for filtering
+  const hasActiveFilters = timePeriodFilter !== 'all' || attendanceFilter !== 'all';
+
+  const handleClearFilters = () => {
+    setTimePeriodFilter('all');
+    setAttendanceFilter('all');
+  };
+
+  const handleFilterChange = (groupId: string, value: string) => {
+    if (groupId === 'timePeriod') setTimePeriodFilter(value);
+    if (groupId === 'attendance') setAttendanceFilter(value);
+  };
+
+  // Apply filters to history
+  const filteredLessons = useMemo(() => {
+    if (!history) return [];
+
+    const today = new Date().toISOString().split('T')[0];
+
+    return history.filter((group) => {
+      // Search filter - search in lesson name
+      if (searchQuery) {
+        const lessonName = group.serviceTimes[0]?.schedule.lesson?.name || '';
+        if (!lessonName.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Time period filter
+      if (timePeriodFilter === 'past' && group.date >= today) return false;
+      if (timePeriodFilter === 'today' && group.date !== today) return false;
+      if (timePeriodFilter === 'future' && group.date <= today) return false;
+
+      // Attendance filter
+      const hasAttendance = group.serviceTimes.some(st => st.records.length > 0);
+      if (attendanceFilter === 'has-attendance' && !hasAttendance) return false;
+      if (attendanceFilter === 'no-attendance' && hasAttendance) return false;
+
+      return true;
+    });
+  }, [history, searchQuery, timePeriodFilter, attendanceFilter]);
+
+  /**
+   * Open edit dialog for a specific attendance record
+   */
+  const handleOpenEdit = (record: AttendanceRecordWithRelations) => {
+    lightTap();
+    setSelectedRecord(record);
+    setIsDialogOpen(true);
+  };
+
+  /**
+   * Close edit dialog
+   */
+  const handleCloseEdit = () => {
+    lightTap();
+    setIsDialogOpen(false);
+    // Don't clear selectedRecord immediately to prevent flash during close animation
+    setTimeout(() => setSelectedRecord(null), 300);
+  };
+
+  /**
+   * Submit edit changes
+   */
+  const handleSubmitEdit = async (
+    recordId: number,
+    status: 'present' | 'absent' | 'excused' | 'late',
+    notes?: string
+  ) => {
+    try {
+      await editAttendance({ recordId, status, notes });
+      successVibration();
+      handleCloseEdit();
+    } catch (error) {
+      console.error('Failed to edit attendance:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
 
   /**
    * Quick status change (no dialog) - used by tap-to-cycle and quick menu
@@ -250,6 +356,22 @@ export function useAttendanceDetailLogic(
   };
 
   /**
+   * Load more history dates (pagination - loads older items)
+   */
+  const handleLoadMore = () => {
+    lightTap();
+    setOffset((prev) => prev + 5);
+  };
+
+  /**
+   * Refresh all data
+   */
+  const handleRefresh = async () => {
+    lightTap();
+    await refetch();
+  };
+
+  /**
    * View student detail page
    */
   const handleViewStudent = (studentId: number) => {
@@ -259,6 +381,7 @@ export function useAttendanceDetailLogic(
     }
   };
 
+
   /**
    * Redo attendance for a specific schedule
    * Navigates to search marking page with pre-filled date and service time
@@ -266,30 +389,31 @@ export function useAttendanceDetailLogic(
   const handleRedoAttendance = (scheduleId: number) => {
     lightTap();
 
-    // Find the schedule in dateGroup
-    const serviceTimeData = dateGroup?.serviceTimes.find(st => st.schedule.id === scheduleId);
-    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id || !onRedoAttendance) return;
+    // Find the schedule in history (now grouped by date with multiple service times)
+    const dateGroup = history?.find(g =>
+      g.serviceTimes.some(st => st.schedule.id === scheduleId)
+    );
+    if (!dateGroup || !onRedoAttendance) return;
+
+    // Find the specific service time
+    const serviceTimeData = dateGroup.serviceTimes.find(st => st.schedule.id === scheduleId);
+    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id) return;
 
     // Navigate to search marking with the schedule's date and service time
     const serviceTimeId = serviceTimeData.schedule.service_time_id;
-    onRedoAttendance(date, serviceTimeId);
-  };
-
-  /**
-   * Handle service time tab change
-   */
-  const handleServiceTimeChange = (index: number) => {
-    lightTap();
-    setSelectedServiceTimeIndex(index);
+    onRedoAttendance(dateGroup.date, serviceTimeId);
   };
 
   return {
     // Data
-    dateGroup,
+    history: filteredLessons, // Use filtered lessons instead of raw history
+    totalLessons: history?.length || 0, // Track total unfiltered count for ItemCount
     isLoading,
     error,
 
     // Dialog state
+    isDialogOpen,
+    selectedRecord,
     isEditing,
 
     // Notes dialog state
@@ -312,10 +436,31 @@ export function useAttendanceDetailLogic(
     isCreatingVisitor,
     visitorInitialName,
 
-    // Selected service time
-    selectedServiceTimeIndex,
+    // Search and filter state
+    searchQuery,
+    setSearchQuery,
+    timePeriodFilter,
+    attendanceFilter,
+    isFilterOpen,
+    setIsFilterOpen,
+    filterGroups,
+    hasActiveFilters,
+    handleFilterChange,
+    handleClearFilters,
+
+    // Initial navigation params
+    initialDate,
+    initialServiceTimeId,
+
+    // Pagination
+    offset,
+    totalCount,
+    canLoadMore: mostRecentIndex - 3 - offset > 0, // Can load more if there are older items
 
     // Actions
+    handleOpenEdit,
+    handleCloseEdit,
+    handleSubmitEdit,
     handleQuickStatusChange,
     handleOpenNotes,
     handleCloseNotes,
@@ -330,7 +475,8 @@ export function useAttendanceDetailLogic(
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
     handleViewStudent,
+    handleLoadMore,
+    handleRefresh,
     handleRedoAttendance,
-    handleServiceTimeChange,
   };
 }

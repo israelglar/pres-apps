@@ -1,17 +1,23 @@
 import {
-  History as HistoryIcon,
+  BookOpen,
   Loader2,
+  Search,
 } from "lucide-react";
 import { buttonClasses, theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
-import { useAttendanceHistoryLogic } from "./AttendanceHistoryPage.logic";
+import { SearchBar } from "../../components/ui/SearchBar";
+import { FilterButton } from "../../components/ui/FilterButton";
+import { FilterPanel } from "../../components/ui/FilterPanel";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { ItemCount } from "../../components/ui/ItemCount";
+import { useLessonsLogic } from "./LessonsPage.logic";
 import { DateGroupCard } from "./components/DateGroupCard";
 import { NotesDialog } from "./components/NotesDialog";
 import { AddStudentDialog } from "./components/AddStudentDialog";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 
-interface AttendanceHistoryPageProps {
+interface LessonsPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
@@ -21,12 +27,13 @@ interface AttendanceHistoryPageProps {
 }
 
 /**
- * Attendance History Page
+ * Lessons Page
  * View and edit past attendance records
  */
-export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance, onDateClick, initialDate, initialServiceTimeId }: AttendanceHistoryPageProps) {
+export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateClick, initialDate, initialServiceTimeId }: LessonsPageProps) {
   const {
     history,
+    totalLessons,
     isLoading,
     error,
     isEditing,
@@ -42,6 +49,16 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
     isCreateVisitorDialogOpen,
     isCreatingVisitor,
     visitorInitialName,
+    searchQuery,
+    setSearchQuery,
+    timePeriodFilter,
+    attendanceFilter,
+    isFilterOpen,
+    setIsFilterOpen,
+    filterGroups,
+    hasActiveFilters,
+    handleFilterChange,
+    handleClearFilters,
     canLoadMore,
     handleQuickStatusChange,
     handleOpenNotes,
@@ -60,25 +77,58 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
     handleLoadMore,
     handleRefresh,
     handleRedoAttendance,
-  } = useAttendanceHistoryLogic(onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId);
+  } = useLessonsLogic(onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId);
 
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
       {/* Header */}
       <PageHeader
         onBack={onBack}
-        title="Histórico de Presenças"
+        title="Lições"
         sticky={true}
       />
 
       <div className="max-w-4xl mx-auto p-2 pb-20">
+
+        {/* Search and Filter Bar */}
+        {!isLoading && !error && (
+          <div className="mb-4 space-y-2">
+            <div className="flex gap-2">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Procurar lição..."
+                onClear={() => setSearchQuery('')}
+                className="flex-1"
+              />
+
+              <FilterButton
+                isActive={hasActiveFilters}
+                isOpen={isFilterOpen}
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              />
+            </div>
+
+            <FilterPanel
+              isOpen={isFilterOpen}
+              filterGroups={filterGroups}
+              activeFilters={{
+                timePeriod: timePeriodFilter,
+                attendance: attendanceFilter,
+              }}
+              onFilterChange={handleFilterChange}
+              onClearFilters={handleClearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
+          </div>
+        )}
 
         {/* Loading State */}
         {isLoading && !history && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
             <p className={`${theme.text.primary} text-base font-semibold`}>
-              A carregar histórico...
+              A carregar lições...
             </p>
           </div>
         )}
@@ -87,7 +137,7 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
         {error && (
           <div className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}>
             <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
-              Erro ao carregar histórico
+              Erro ao carregar lições
             </p>
             <p className={`${theme.text.error} text-sm mb-4`}>{error.toString()}</p>
             <button
@@ -99,23 +149,51 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
           </div>
         )}
 
-        {/* Empty State */}
-        {!isLoading && !error && history && history.length === 0 && (
-          <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-2xl p-12 text-center`}>
-            <HistoryIcon className={`w-16 h-16 ${theme.text.white}/50 mx-auto mb-4`} />
-            <p className={`${theme.text.white} text-base font-semibold mb-2`}>
-              Nenhum histórico disponível
-            </p>
-            <p className={`${theme.text.white}/80 text-sm`}>
-              Ainda não existem registos de presenças
-            </p>
-          </div>
+        {/* Empty State - No lessons at all */}
+        {!isLoading && !error && totalLessons === 0 && (
+          <EmptyState
+            icon={<BookOpen className="w-16 h-16" />}
+            title="Nenhuma lição disponível"
+            description="Ainda não existem lições agendadas"
+            variant="compact"
+          />
         )}
 
-        {/* History List */}
-        {history && history.length > 0 && (
-          <div className="space-y-2">
-            {history.map((group) => {
+        {/* Filtered Empty State - Has lessons but none match filters */}
+        {!isLoading && !error && totalLessons > 0 && history && history.length === 0 && (
+          <EmptyState
+            icon={<Search className="w-16 h-16" />}
+            title="Nenhuma lição encontrada"
+            description={
+              searchQuery
+                ? `Nenhuma lição corresponde a "${searchQuery}"`
+                : "Nenhuma lição corresponde aos filtros selecionados"
+            }
+            action={{
+              label: "Limpar Filtros",
+              onClick: () => {
+                setSearchQuery('');
+                handleClearFilters();
+              },
+            }}
+          />
+        )}
+
+        {/* Lesson List */}
+        {!isLoading && !error && history && history.length > 0 && (
+          <>
+            {/* Item Count */}
+            <ItemCount
+              totalCount={totalLessons}
+              filteredCount={history.length}
+              itemLabel="lição"
+              itemLabelPlural="lições"
+              isFiltered={hasActiveFilters || searchQuery.length > 0}
+              className="mb-4"
+            />
+
+            <div className="space-y-2">
+              {history.map((group) => {
               // Only auto-open and scroll if initialDate is provided
               const shouldAutoOpen = !!(initialDate && group.date === initialDate);
 
@@ -158,10 +236,11 @@ export function AttendanceHistoryPage({ onBack, onViewStudent, onRedoAttendance,
             {/* End of List Message */}
             {!canLoadMore && history.length >= 5 && (
               <div className="text-center py-4">
-                <p className={`${theme.text.white}/70 text-sm`}>Fim do histórico</p>
+                <p className={`${theme.text.white}/70 text-sm`}>Fim da lista</p>
               </div>
             )}
-          </div>
+            </div>
+          </>
         )}
       </div>
 

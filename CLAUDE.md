@@ -364,7 +364,7 @@ The app supports multiple theme variants (Ocean, Sky, Deep Waters, Tropical Sea)
 3. **Search Marking** - Fuzzy search + tap to mark (default)
 4. **Swipe Marking** - Alphabetical one-by-one with gestures
 5. **Student Management** - Full CRUD + visitor tracking
-6. **Attendance History** - View/edit past records (paginated)
+6. **Lessons** - View/edit all lessons (past, present, future) with search and filter capabilities
 7. **Haptic Feedback** - iOS/Android vibration patterns
 8. **PWA** - Installable, offline-capable
 
@@ -382,7 +382,8 @@ The app supports multiple theme variants (Ocean, Sky, Deep Waters, Tropical Sea)
       ├─ /search-marking
       ├─ /marking
       ├─ /manage-students
-      └─ /attendance-history
+      ├─ /lessons
+      └─ /lesson/$date
 ```
 
 ---
@@ -464,7 +465,7 @@ npm run db:link-lessons         # Link lessons to schedules
 - **Voltar** - Go back
 - **Guardar** - Save
 - **Gerir Prés** - Manage pre-teens
-- **Histórico de Presenças** - Attendance history
+- **Lições** - Lessons (view all scheduled lessons with search and filter)
 
 ---
 
@@ -476,7 +477,8 @@ npm run db:link-lessons         # Link lessons to schedules
 - `src/features/attendance-marking/AttendanceMarkingPage.tsx`
 - `src/features/search-marking/SearchAttendanceMarkingPage.tsx`
 - `src/features/student-management/StudentManagementPage.tsx`
-- `src/features/attendance-history/AttendanceHistoryPage.tsx`
+- `src/features/lessons/LessonsPage.tsx`
+- `src/features/lessons/LessonDetailPage.tsx`
 
 **Config:**
 - `src/config/theme.ts` - Theme system

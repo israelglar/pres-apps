@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AttendanceDetailPage } from '../../features/attendance-history'
+import { LessonDetailPage } from '../../features/lessons'
 import { theme } from '@/config/theme'
 
-export const Route = createFileRoute('/_authenticated/attendance-detail/$date')({
-  component: AttendanceDetailRoute,
+export const Route = createFileRoute('/_authenticated/lesson/$date')({
+  component: LessonDetailRoute,
 })
 
-function AttendanceDetailRoute() {
+function LessonDetailRoute() {
   const { date } = Route.useParams()
   const navigate = useNavigate()
 
@@ -51,7 +51,7 @@ function AttendanceDetailRoute() {
   }
 
   return (
-    <AttendanceDetailPage
+    <LessonDetailPage
       date={date}
       onBack={handleBack}
       onViewStudent={handleViewStudent}

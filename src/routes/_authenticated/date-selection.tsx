@@ -49,14 +49,14 @@ function DateSelectionRoute() {
   const handleViewHistory = () => {
     if (selectedDate && selectedServiceTimeId) {
       navigate({
-        to: '/attendance-history',
+        to: '/lessons',
         search: {
           date: selectedDate.toISOString().split('T')[0],
           serviceTimeId: selectedServiceTimeId
         }
       })
     } else {
-      navigate({ to: '/attendance-history' })
+      navigate({ to: '/lessons' })
     }
   }
 

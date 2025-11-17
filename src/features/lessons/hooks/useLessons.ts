@@ -10,9 +10,9 @@ import type { ScheduleWithRelations, AttendanceRecordWithRelations } from '../..
 import { calculateStats, type AttendanceStats } from '../../../utils/attendance';
 
 /**
- * Query key for attendance history
+ * Query key for lessons
  */
-export const ATTENDANCE_HISTORY_QUERY_KEY = ['attendance-history'] as const;
+export const LESSONS_QUERY_KEY = ['lessons'] as const;
 
 /**
  * Type for service time data within a date group
@@ -24,10 +24,10 @@ export interface ServiceTimeData {
 }
 
 /**
- * Type for grouped attendance data by date
+ * Type for grouped lesson data by date
  * Each date can have multiple service times (09h, 11h)
  */
-export interface AttendanceHistoryGroup {
+export interface LessonGroup {
   date: string;
   serviceTimes: ServiceTimeData[];
 }
@@ -38,26 +38,22 @@ export interface AttendanceHistoryGroup {
  * Groups by date, showing all service times for each date
  * Orders oldest first (ascending)
  */
-export function useAttendanceHistory(
+export function useLessons(
   limit: number = 7,
   offset: number = 0
 ) {
   const { data: response, isLoading, error, refetch } = useQuery({
-    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, limit, offset],
+    queryKey: [...LESSONS_QUERY_KEY, limit, offset],
     queryFn: async (): Promise<{
-      history: AttendanceHistoryGroup[];
+      history: LessonGroup[];
       totalCount: number;
       mostRecentIndex: number;
     }> => {
       // Get all schedules ordered by date (most recent first by default)
       const allSchedules = await getAllSchedules();
 
-      // Filter to only schedules that are in the past or today
-      const today = new Date().toISOString().split('T')[0];
-      const pastSchedules = allSchedules.filter(schedule => schedule.date <= today);
-
-      // Group schedules by date
-      const schedulesByDate = pastSchedules.reduce((acc, schedule) => {
+      // Group all schedules by date (no date filtering - show ALL lessons)
+      const schedulesByDate = allSchedules.reduce((acc, schedule) => {
         if (!acc[schedule.date]) {
           acc[schedule.date] = [];
         }
@@ -70,8 +66,10 @@ export function useAttendanceHistory(
 
       const totalCount = uniqueDates.length;
 
-      // Find the index of the most recent date (last in ascending order)
-      const mostRecentIndex = totalCount - 1;
+      // Find the index of today's date to center pagination around it
+      const today = new Date().toISOString().split('T')[0];
+      const todayIndex = uniqueDates.indexOf(today);
+      const mostRecentIndex = todayIndex !== -1 ? todayIndex : totalCount - 1;
 
       // Calculate slice range
       // Initial load (offset=0): center around most recent with 3 before and 3 after (7 total)
@@ -164,15 +162,15 @@ export function useEditAttendance() {
     // Optimistic update - instantly update UI before server responds
     onMutate: async (variables) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+      await queryClient.cancelQueries({ queryKey: LESSONS_QUERY_KEY });
 
       // Snapshot previous value
-      const previousHistory = queryClient.getQueryData(ATTENDANCE_HISTORY_QUERY_KEY);
+      const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
       queryClient.setQueriesData(
-        { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
+        { queryKey: LESSONS_QUERY_KEY },
+        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
           return {
@@ -210,7 +208,7 @@ export function useEditAttendance() {
     // Rollback on error
     onError: (_err, _variables, context) => {
       if (context?.previousHistory) {
-        queryClient.setQueryData(ATTENDANCE_HISTORY_QUERY_KEY, context.previousHistory);
+        queryClient.setQueryData(LESSONS_QUERY_KEY, context.previousHistory);
       }
     },
 
@@ -218,7 +216,7 @@ export function useEditAttendance() {
     onSettled: async () => {
       // Invalidate all related queries to ensure fresh data everywhere
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: ['schedules'] }),
         queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
         queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
@@ -268,15 +266,15 @@ export function useAddAttendance() {
     // Optimistic update - instantly add to UI before server responds
     onMutate: async (variables) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+      await queryClient.cancelQueries({ queryKey: LESSONS_QUERY_KEY });
 
       // Snapshot previous value
-      const previousHistory = queryClient.getQueryData(ATTENDANCE_HISTORY_QUERY_KEY);
+      const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
       queryClient.setQueriesData(
-        { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
+        { queryKey: LESSONS_QUERY_KEY },
+        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
           return {
@@ -322,7 +320,7 @@ export function useAddAttendance() {
     // Rollback on error
     onError: (_err, _variables, context) => {
       if (context?.previousHistory) {
-        queryClient.setQueryData(ATTENDANCE_HISTORY_QUERY_KEY, context.previousHistory);
+        queryClient.setQueryData(LESSONS_QUERY_KEY, context.previousHistory);
       }
     },
 
@@ -330,7 +328,7 @@ export function useAddAttendance() {
     onSettled: async () => {
       // Invalidate all related queries to ensure fresh data everywhere
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: ['schedules'] }),
         queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
         queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
@@ -362,15 +360,15 @@ export function useDeleteAttendance() {
     // Optimistic update - instantly remove from UI before server responds
     onMutate: async (variables) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY });
+      await queryClient.cancelQueries({ queryKey: LESSONS_QUERY_KEY });
 
       // Snapshot previous value
-      const previousHistory = queryClient.getQueryData(ATTENDANCE_HISTORY_QUERY_KEY);
+      const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
       queryClient.setQueriesData(
-        { queryKey: ATTENDANCE_HISTORY_QUERY_KEY },
-        (old: { history: AttendanceHistoryGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
+        { queryKey: LESSONS_QUERY_KEY },
+        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
           if (!old) return old;
 
           return {
@@ -398,7 +396,7 @@ export function useDeleteAttendance() {
     // Rollback on error
     onError: (_err, _variables, context) => {
       if (context?.previousHistory) {
-        queryClient.setQueryData(ATTENDANCE_HISTORY_QUERY_KEY, context.previousHistory);
+        queryClient.setQueryData(LESSONS_QUERY_KEY, context.previousHistory);
       }
     },
 
@@ -406,7 +404,7 @@ export function useDeleteAttendance() {
     onSettled: async () => {
       // Invalidate all related queries to ensure fresh data everywhere
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ATTENDANCE_HISTORY_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: ['schedules'] }),
         queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
         queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),

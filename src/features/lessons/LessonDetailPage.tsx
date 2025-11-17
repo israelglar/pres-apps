@@ -1,4 +1,5 @@
 import {
+  Calendar,
   ExternalLink,
   Loader2,
   UserPlus,
@@ -6,7 +7,8 @@ import {
 } from "lucide-react";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
-import { useAttendanceDetailLogic } from "./AttendanceDetailPage.logic";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { useLessonDetailLogic } from "./LessonDetailPage.logic";
 import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
 import { AttendanceStats } from "../../components/AttendanceStats";
 import { StatusGroupSeparator } from "./components/StatusGroupSeparator";
@@ -15,7 +17,7 @@ import { AddStudentDialog } from "./components/AddStudentDialog";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 
-interface AttendanceDetailPageProps {
+interface LessonDetailPageProps {
   date: string;
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
@@ -23,15 +25,15 @@ interface AttendanceDetailPageProps {
 }
 
 /**
- * Attendance Detail Page
+ * Lesson Detail Page
  * Shows detailed attendance for a specific date with all service times
  */
-export function AttendanceDetailPage({
+export function LessonDetailPage({
   date,
   onBack,
   onViewStudent,
   onRedoAttendance
-}: AttendanceDetailPageProps) {
+}: LessonDetailPageProps) {
   const {
     dateGroup,
     isLoading,
@@ -66,7 +68,7 @@ export function AttendanceDetailPage({
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
-  } = useAttendanceDetailLogic(date, onViewStudent, onRedoAttendance);
+  } = useLessonDetailLogic(date, onViewStudent, onRedoAttendance);
 
   // Format date for display (short format: "10 nov 2025")
   const formatDate = (dateStr: string) => {
@@ -92,6 +94,17 @@ export function AttendanceDetailPage({
     checkDate.setHours(0, 0, 0, 0);
     return checkDate.getTime() === today.getTime();
   };
+
+  // Check if date is in the future
+  const isFutureLesson = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = parseLocalDate(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate.getTime() > today.getTime();
+  };
+
+  const lessonIsFuture = isFutureLesson();
 
   // Check if date is the most recent past Sunday (Domingo Passado)
   const isPreviousSunday = () => {
@@ -130,7 +143,7 @@ export function AttendanceDetailPage({
       {/* Header */}
       <PageHeader
         onBack={onBack}
-        title="Detalhes da Presença"
+        title="Detalhes da Lição"
         sticky={true}
       />
 
@@ -140,7 +153,7 @@ export function AttendanceDetailPage({
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
             <p className={`${theme.text.primary} text-base font-semibold`}>
-              A carregar detalhes...
+              A carregar lição...
             </p>
           </div>
         )}
@@ -149,7 +162,7 @@ export function AttendanceDetailPage({
         {error && (
           <div className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}>
             <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
-              Erro ao carregar detalhes
+              Erro ao carregar lição
             </p>
             <p className={`${theme.text.error} text-sm mb-4`}>{error.toString()}</p>
           </div>
@@ -254,15 +267,25 @@ export function AttendanceDetailPage({
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleOpenAddDialog(serviceTimeData.schedule.id, serviceTimeData.schedule.service_time_id)}
-                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-lg text-sm font-medium hover:shadow-md active:scale-[0.99] transition-all`}
+                        onClick={() => !lessonIsFuture && handleOpenAddDialog(serviceTimeData.schedule.id, serviceTimeData.schedule.service_time_id)}
+                        disabled={lessonIsFuture}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${
+                          lessonIsFuture
+                            ? `${theme.backgrounds.neutralLight} ${theme.text.neutral} cursor-not-allowed opacity-50`
+                            : `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} hover:shadow-md active:scale-[0.99]`
+                        } rounded-lg text-sm font-medium transition-all`}
                       >
                         <UserPlus className="w-4 h-4" />
                         Adicionar Pré
                       </button>
                       <button
-                        onClick={() => handleRedoAttendance(serviceTimeData.schedule.id)}
-                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} rounded-lg text-sm font-medium hover:${theme.backgrounds.primaryLight} active:scale-[0.99] transition-all`}
+                        onClick={() => !lessonIsFuture && handleRedoAttendance(serviceTimeData.schedule.id)}
+                        disabled={lessonIsFuture}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 ${
+                          lessonIsFuture
+                            ? `${theme.backgrounds.neutralLight} ${theme.text.neutral} cursor-not-allowed opacity-50`
+                            : `${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} active:scale-[0.99]`
+                        } rounded-lg text-sm font-medium transition-all`}
                       >
                         <RotateCcw className="w-4 h-4" />
                         Refazer
@@ -315,11 +338,22 @@ export function AttendanceDetailPage({
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-                      <p className={`${theme.text.neutral} text-sm`}>
-                        Nenhum registo de presença
-                      </p>
-                    </div>
+                    <>
+                      {lessonIsFuture ? (
+                        <EmptyState
+                          icon={<Calendar className="w-12 h-12" />}
+                          title="Lição Futura"
+                          description="Esta lição ainda não tem registos de presença. As presenças podem ser registadas no dia da lição."
+                          variant="compact"
+                        />
+                      ) : (
+                        <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+                          <p className={`${theme.text.neutral} text-sm`}>
+                            Nenhum registo de presença
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               );
