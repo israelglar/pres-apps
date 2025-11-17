@@ -1,11 +1,11 @@
 import { Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { SearchBar } from "../../components/ui/SearchBar";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
-import { EmptyState } from "../../components/ui/EmptyState";
 import { ItemCount } from "../../components/ui/ItemCount";
+import { PageHeader } from "../../components/ui/PageHeader";
+import { SearchBar } from "../../components/ui/SearchBar";
 import { theme } from "../../config/theme";
 import {
   useStudentManagement,
@@ -169,7 +169,7 @@ export function StudentManagementPage({
       {/* Header Section */}
       <PageHeader
         onBack={onBack}
-        title="Gerir Prés"
+        title="Prés"
         rightAction={{
           icon: <Plus className="w-5 h-5" />,
           label: "Adicionar",

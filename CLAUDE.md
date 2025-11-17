@@ -464,7 +464,7 @@ npm run db:link-lessons         # Link lessons to schedules
 - **Continuar** - Continue
 - **Voltar** - Go back
 - **Guardar** - Save
-- **Gerir Prés** - Manage pre-teens
+- **Prés** - Manage pre-teens
 - **Lições** - Lessons (view all scheduled lessons with search and filter)
 
 ---

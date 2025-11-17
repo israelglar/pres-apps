@@ -1,12 +1,11 @@
-import { theme } from '../config/theme';
-import type { AttendanceStats as AttendanceStatsType } from '../utils/attendance';
+import { theme } from "../config/theme";
+import type { AttendanceStats as AttendanceStatsType } from "../utils/attendance";
 
 interface AttendanceStatsProps {
   stats: AttendanceStatsType;
-  mode?: 'inline' | 'compact' | 'detailed';
+  mode?: "inline" | "compact" | "detailed";
   showAbsent?: boolean;
   showTotalPresent?: boolean;
-  showVisitorLabel?: boolean;
 }
 
 /**
@@ -19,10 +18,9 @@ interface AttendanceStatsProps {
  */
 export function AttendanceStats({
   stats,
-  mode = 'inline',
+  mode = "inline",
   showAbsent = false,
   showTotalPresent = true,
-  showVisitorLabel = true,
 }: AttendanceStatsProps) {
   // Don't render if no data
   if (stats.total === 0) return null;
@@ -40,40 +38,52 @@ export function AttendanceStats({
   const shouldShowTotal = showTotalPresent && categoriesWithValues > 1;
 
   // Inline mode - small circles with numbers
-  if (mode === 'inline') {
+  if (mode === "inline") {
     return (
-      <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs`}>
+      <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs h-5`}>
         {shouldShowTotal && (
-          <span className={`flex items-center gap-1 text-m font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 py-0.5`}>
+          <span
+            className={`flex items-center justify-center text-xs font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 h-5 min-w-[1.25rem]`}
+          >
             {stats.totalPresent}
           </span>
         )}
-        <span className="flex items-center gap-1">
-          <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}></span>
+        <span className="flex items-center gap-1 h-5">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}
+          ></span>
           {stats.present}
         </span>
-        {showAbsent && (
-          <span className="flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.absent}`}></span>
-            {stats.absent}
-          </span>
-        )}
         {stats.late > 0 && (
-          <span className="flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}></span>
+          <span className="flex items-center gap-1 h-5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}
+            ></span>
             {stats.late}
           </span>
         )}
         {stats.excused > 0 && (
-          <span className="flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}></span>
+          <span className="flex items-center gap-1 h-5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}
+            ></span>
             {stats.excused}
           </span>
         )}
         {stats.visitors > 0 && (
-          <span className="flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}></span>
-            {stats.visitors}{showVisitorLabel && ' visitantes'}
+          <span className="flex items-center gap-1 h-5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}
+            ></span>
+            {stats.visitors}
+          </span>
+        )}
+        {showAbsent && (
+          <span className="flex items-center gap-1 h-5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.absent}`}
+            ></span>
+            {stats.absent}
           </span>
         )}
       </div>
@@ -81,35 +91,53 @@ export function AttendanceStats({
   }
 
   // Compact mode - small circles only, centered
-  if (mode === 'compact') {
+  if (mode === "compact") {
     return (
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 h-5">
         {shouldShowTotal && (
-          <span className={`text-m font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 py-0.5`}>
+          <span
+            className={`flex items-center justify-center text-xs font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 h-5 min-w-[1.25rem]`}
+          >
             {stats.totalPresent}
           </span>
         )}
         {stats.present > 0 && (
-          <span className={`flex items-center gap-1 text-xs ${theme.status.present.text}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}></span>
+          <span
+            className={`flex items-center gap-1 text-xs ${theme.status.present.text} h-5`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}
+            ></span>
             {stats.present}
           </span>
         )}
         {stats.late > 0 && (
-          <span className={`flex items-center gap-1 text-xs ${theme.status.late.text}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}></span>
+          <span
+            className={`flex items-center gap-1 text-xs ${theme.status.late.text} h-5`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}
+            ></span>
             {stats.late}
           </span>
         )}
         {stats.excused > 0 && (
-          <span className={`flex items-center gap-1 text-xs ${theme.status.excused.text}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}></span>
+          <span
+            className={`flex items-center gap-1 text-xs ${theme.status.excused.text} h-5`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}
+            ></span>
             {stats.excused}
           </span>
         )}
         {stats.visitors > 0 && (
-          <span className={`flex items-center gap-1 text-xs ${theme.text.primary}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}></span>
+          <span
+            className={`flex items-center gap-1 text-xs ${theme.text.primary} h-5`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}
+            ></span>
             {stats.visitors}
           </span>
         )}
@@ -123,14 +151,18 @@ export function AttendanceStats({
       {/* Present */}
       <div className="flex items-baseline gap-1">
         <span className={theme.text.neutral}>Presenças:</span>
-        <span className={`font-bold ${theme.status.present.text}`}>{stats.present}</span>
+        <span className={`font-bold ${theme.status.present.text}`}>
+          {stats.present}
+        </span>
       </div>
 
       {/* Absent */}
       {showAbsent && (
         <div className="flex items-baseline gap-1">
           <span className={theme.text.neutral}>Faltas:</span>
-          <span className={`font-bold ${theme.status.absent.text}`}>{stats.absent}</span>
+          <span className={`font-bold ${theme.status.absent.text}`}>
+            {stats.absent}
+          </span>
         </div>
       )}
 
@@ -138,7 +170,9 @@ export function AttendanceStats({
       {stats.late > 0 && (
         <div className="flex items-baseline gap-1">
           <span className={theme.text.neutral}>Atrasados:</span>
-          <span className={`font-bold ${theme.status.late.text}`}>{stats.late}</span>
+          <span className={`font-bold ${theme.status.late.text}`}>
+            {stats.late}
+          </span>
         </div>
       )}
 
@@ -146,7 +180,9 @@ export function AttendanceStats({
       {stats.excused > 0 && (
         <div className="flex items-baseline gap-1">
           <span className={theme.text.neutral}>Justificadas:</span>
-          <span className={`font-bold ${theme.status.excused.text}`}>{stats.excused}</span>
+          <span className={`font-bold ${theme.status.excused.text}`}>
+            {stats.excused}
+          </span>
         </div>
       )}
 
@@ -154,7 +190,9 @@ export function AttendanceStats({
       {stats.visitors > 0 && (
         <div className="flex items-baseline gap-1">
           <span className={theme.text.neutral}>Visitantes:</span>
-          <span className={`font-bold ${theme.text.primary}`}>{stats.visitors}</span>
+          <span className={`font-bold ${theme.text.primary}`}>
+            {stats.visitors}
+          </span>
         </div>
       )}
     </div>

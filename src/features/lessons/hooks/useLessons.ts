@@ -33,21 +33,17 @@ export interface LessonGroup {
 }
 
 /**
- * Custom hook to fetch attendance history with pagination
- * Loads schedules centered around the most recent date
+ * Custom hook to fetch all attendance history
+ * Loads ALL schedules at once (no pagination)
  * Groups by date, showing all service times for each date
  * Orders oldest first (ascending)
  */
-export function useLessons(
-  limit: number = 7,
-  offset: number = 0
-) {
+export function useLessons() {
   const { data: response, isLoading, error, refetch } = useQuery({
-    queryKey: [...LESSONS_QUERY_KEY, limit, offset],
+    queryKey: LESSONS_QUERY_KEY,
     queryFn: async (): Promise<{
       history: LessonGroup[];
       totalCount: number;
-      mostRecentIndex: number;
     }> => {
       // Get all schedules ordered by date (most recent first by default)
       const allSchedules = await getAllSchedules();
@@ -66,32 +62,9 @@ export function useLessons(
 
       const totalCount = uniqueDates.length;
 
-      // Find the index of today's date to center pagination around it
-      const today = new Date().toISOString().split('T')[0];
-      const todayIndex = uniqueDates.indexOf(today);
-      const mostRecentIndex = todayIndex !== -1 ? todayIndex : totalCount - 1;
-
-      // Calculate slice range
-      // Initial load (offset=0): center around most recent with 3 before and 3 after (7 total)
-      // Load more (offset>0): load older items before the current range
-      let startIndex: number;
-      let endIndex: number;
-
-      if (offset === 0) {
-        // Initial load: try to get 3 before and 3 after the most recent
-        startIndex = Math.max(0, mostRecentIndex - 3);
-        endIndex = Math.min(totalCount, startIndex + limit);
-      } else {
-        // Loading more: extend backwards (older items)
-        startIndex = Math.max(0, mostRecentIndex - 3 - offset);
-        endIndex = mostRecentIndex + 4; // Keep showing up to 3 after most recent
-      }
-
-      const limitedDates = uniqueDates.slice(startIndex, endIndex);
-
-      // Fetch attendance for each date's schedules
+      // Fetch attendance for ALL dates
       const historyData = await Promise.all(
-        limitedDates.map(async (date) => {
+        uniqueDates.map(async (date) => {
           const schedulesForDate = schedulesByDate[date];
 
           // Fetch attendance for each service time on this date
@@ -122,7 +95,6 @@ export function useLessons(
       return {
         history: historyData,
         totalCount,
-        mostRecentIndex,
       };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -132,7 +104,6 @@ export function useLessons(
   return {
     history: response?.history,
     totalCount: response?.totalCount ?? 0,
-    mostRecentIndex: response?.mostRecentIndex ?? 0,
     isLoading,
     error,
     refetch,

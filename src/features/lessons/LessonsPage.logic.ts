@@ -17,14 +17,8 @@ export function useLessonsLogic(
 ) {
   const queryClient = useQueryClient();
 
-  // Pagination state - uses offset to load more older items (starts at 0)
-  const [offset, setOffset] = useState(0);
-
-  // Fetch lessons with current offset (all service times grouped by date)
-  const { history, totalCount, mostRecentIndex, isLoading, error, refetch } = useLessons(
-    7, // Always try to load 7 items (3 before + most recent + 3 after)
-    offset
-  );
+  // Fetch all lessons at once (no pagination)
+  const { history, isLoading, error, refetch } = useLessons();
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -355,13 +349,6 @@ export function useLessonsLogic(
     }
   };
 
-  /**
-   * Load more history dates (pagination - loads older items)
-   */
-  const handleLoadMore = () => {
-    lightTap();
-    setOffset((prev) => prev + 5);
-  };
 
   /**
    * Refresh all data
@@ -452,11 +439,6 @@ export function useLessonsLogic(
     initialDate,
     initialServiceTimeId,
 
-    // Pagination
-    offset,
-    totalCount,
-    canLoadMore: mostRecentIndex - 3 - offset > 0, // Can load more if there are older items
-
     // Actions
     handleOpenEdit,
     handleCloseEdit,
@@ -475,7 +457,6 @@ export function useLessonsLogic(
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
     handleViewStudent,
-    handleLoadMore,
     handleRefresh,
     handleRedoAttendance,
   };

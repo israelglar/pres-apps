@@ -1,21 +1,17 @@
-import {
-  BookOpen,
-  Loader2,
-  Search,
-} from "lucide-react";
-import { buttonClasses, theme } from "../../config/theme";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { SearchBar } from "../../components/ui/SearchBar";
+import { BookOpen, Search } from "lucide-react";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
-import { EmptyState } from "../../components/ui/EmptyState";
 import { ItemCount } from "../../components/ui/ItemCount";
+import { PageHeader } from "../../components/ui/PageHeader";
+import { SearchBar } from "../../components/ui/SearchBar";
+import { buttonClasses, theme } from "../../config/theme";
 import { useLessonsLogic } from "./LessonsPage.logic";
-import { DateGroupCard } from "./components/DateGroupCard";
-import { NotesDialog } from "./components/NotesDialog";
 import { AddStudentDialog } from "./components/AddStudentDialog";
-import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
+import { DateGroupCard } from "./components/DateGroupCard";
+import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
+import { NotesDialog } from "./components/NotesDialog";
 
 interface LessonsPageProps {
   onBack: () => void;
@@ -30,7 +26,14 @@ interface LessonsPageProps {
  * Lessons Page
  * View and edit past attendance records
  */
-export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateClick, initialDate, initialServiceTimeId }: LessonsPageProps) {
+export function LessonsPage({
+  onBack,
+  onViewStudent,
+  onRedoAttendance,
+  onDateClick,
+  initialDate,
+  initialServiceTimeId,
+}: LessonsPageProps) {
   const {
     history,
     totalLessons,
@@ -59,7 +62,6 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
     hasActiveFilters,
     handleFilterChange,
     handleClearFilters,
-    canLoadMore,
     handleQuickStatusChange,
     handleOpenNotes,
     handleCloseNotes,
@@ -74,22 +76,21 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
     handleViewStudent,
-    handleLoadMore,
     handleRefresh,
     handleRedoAttendance,
-  } = useLessonsLogic(onViewStudent, onRedoAttendance, initialDate, initialServiceTimeId);
+  } = useLessonsLogic(
+    onViewStudent,
+    onRedoAttendance,
+    initialDate,
+    initialServiceTimeId,
+  );
 
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
       {/* Header */}
-      <PageHeader
-        onBack={onBack}
-        title="Lições"
-        sticky={true}
-      />
+      <PageHeader onBack={onBack} title="Lições" sticky={true} />
 
       <div className="max-w-4xl mx-auto p-2 pb-20">
-
         {/* Search and Filter Bar */}
         {!isLoading && !error && (
           <div className="mb-4 space-y-2">
@@ -98,7 +99,7 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
                 value={searchQuery}
                 onChange={setSearchQuery}
                 placeholder="Procurar lição..."
-                onClear={() => setSearchQuery('')}
+                onClear={() => setSearchQuery("")}
                 className="flex-1"
               />
 
@@ -126,7 +127,9 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
         {/* Loading State */}
         {isLoading && !history && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`} />
+            <div
+              className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4 border-4 border-current border-t-transparent rounded-full`}
+            />
             <p className={`${theme.text.primary} text-base font-semibold`}>
               A carregar lições...
             </p>
@@ -135,11 +138,15 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
 
         {/* Error State */}
         {error && (
-          <div className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}>
+          <div
+            className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}
+          >
             <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
               Erro ao carregar lições
             </p>
-            <p className={`${theme.text.error} text-sm mb-4`}>{error.toString()}</p>
+            <p className={`${theme.text.error} text-sm mb-4`}>
+              {error.toString()}
+            </p>
             <button
               onClick={handleRefresh}
               className={`${buttonClasses.danger} px-5 py-3 text-sm`}
@@ -160,24 +167,28 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
         )}
 
         {/* Filtered Empty State - Has lessons but none match filters */}
-        {!isLoading && !error && totalLessons > 0 && history && history.length === 0 && (
-          <EmptyState
-            icon={<Search className="w-16 h-16" />}
-            title="Nenhuma lição encontrada"
-            description={
-              searchQuery
-                ? `Nenhuma lição corresponde a "${searchQuery}"`
-                : "Nenhuma lição corresponde aos filtros selecionados"
-            }
-            action={{
-              label: "Limpar Filtros",
-              onClick: () => {
-                setSearchQuery('');
-                handleClearFilters();
-              },
-            }}
-          />
-        )}
+        {!isLoading &&
+          !error &&
+          totalLessons > 0 &&
+          history &&
+          history.length === 0 && (
+            <EmptyState
+              icon={<Search className="w-16 h-16" />}
+              title="Nenhuma lição encontrada"
+              description={
+                searchQuery
+                  ? `Nenhuma lição corresponde a "${searchQuery}"`
+                  : "Nenhuma lição corresponde aos filtros selecionados"
+              }
+              action={{
+                label: "Limpar Filtros",
+                onClick: () => {
+                  setSearchQuery("");
+                  handleClearFilters();
+                },
+              }}
+            />
+          )}
 
         {/* Lesson List */}
         {!isLoading && !error && history && history.length > 0 && (
@@ -194,51 +205,27 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
 
             <div className="space-y-2">
               {history.map((group) => {
-              // Only auto-open and scroll if initialDate is provided
-              const shouldAutoOpen = !!(initialDate && group.date === initialDate);
+                // Only auto-open and scroll if initialDate is provided
+                const shouldAutoOpen = !!(
+                  initialDate && group.date === initialDate
+                );
 
-              return (
-                <DateGroupCard
-                  key={group.date}
-                  group={group}
-                  onQuickStatusChange={handleQuickStatusChange}
-                  onOpenNotes={handleOpenNotes}
-                  onOpenAddDialog={handleOpenAddDialog}
-                  onOpenDeleteDialog={handleOpenDeleteDialog}
-                  onViewStudent={handleViewStudent}
-                  onRedoAttendance={handleRedoAttendance}
-                  onDateClick={onDateClick}
-                  initialExpanded={shouldAutoOpen}
-                  shouldScrollIntoView={shouldAutoOpen}
-                />
-              );
-            })}
-
-            {/* Load More Button */}
-            {canLoadMore && (
-              <div className="flex justify-center pt-4">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={isLoading}
-                  className={`${buttonClasses.secondary} px-5 py-3 text-sm bg-white/90 hover:bg-white disabled:opacity-50 flex items-center gap-3`}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />A carregar...
-                    </>
-                  ) : (
-                    "Carregar Mais"
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* End of List Message */}
-            {!canLoadMore && history.length >= 5 && (
-              <div className="text-center py-4">
-                <p className={`${theme.text.white}/70 text-sm`}>Fim da lista</p>
-              </div>
-            )}
+                return (
+                  <DateGroupCard
+                    key={group.date}
+                    group={group}
+                    onQuickStatusChange={handleQuickStatusChange}
+                    onOpenNotes={handleOpenNotes}
+                    onOpenAddDialog={handleOpenAddDialog}
+                    onOpenDeleteDialog={handleOpenDeleteDialog}
+                    onViewStudent={handleViewStudent}
+                    onRedoAttendance={handleRedoAttendance}
+                    onDateClick={onDateClick}
+                    initialExpanded={shouldAutoOpen}
+                    shouldScrollIntoView={shouldAutoOpen}
+                  />
+                );
+              })}
             </div>
           </>
         )}
@@ -261,8 +248,9 @@ export function LessonsPage({ onBack, onViewStudent, onRedoAttendance, onDateCli
           serviceTimeId={addDialogServiceTimeId || 0}
           currentRecords={
             history
-              ?.flatMap(g => g.serviceTimes)
-              .find(st => st.schedule.id === addDialogScheduleId)?.records || []
+              ?.flatMap((g) => g.serviceTimes)
+              .find((st) => st.schedule.id === addDialogScheduleId)?.records ||
+            []
           }
           onAdd={handleAddStudent}
           onClose={handleCloseAddDialog}

@@ -17,7 +17,7 @@ export function useLessonDetailLogic(
   const queryClient = useQueryClient();
 
   // Fetch lessons - we'll extract the specific date from it
-  const { history, isLoading, error } = useLessons(100, 0); // Load all dates
+  const { history, isLoading, error } = useLessons(); // Load all dates
 
   // Find the specific date group from history
   const dateGroup = useMemo(() => {
