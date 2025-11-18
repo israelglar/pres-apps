@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Users, Loader2 } from "lucide-react";
+import { X, Users, Loader2, Copy } from "lucide-react";
 import { theme, buttonClasses } from "../../../config/theme";
 import type { Teacher, ScheduleAssignment } from "../../../types/database.types";
 import { getAllTeachers } from "../../../api/supabase/teachers";
@@ -10,6 +10,10 @@ interface TeacherAssignmentDialogProps {
   scheduleId: number;
   currentAssignments: (ScheduleAssignment & { teacher?: { name: string } })[];
   serviceTime?: string; // e.g., "09:00" or "11:00"
+  otherServiceTime?: {
+    time: string;
+    assignments: (ScheduleAssignment & { teacher?: { name: string } })[];
+  };
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -22,6 +26,7 @@ export function TeacherAssignmentDialog({
   scheduleId,
   currentAssignments,
   serviceTime,
+  otherServiceTime,
   onClose,
   onSuccess,
 }: TeacherAssignmentDialogProps) {
@@ -67,6 +72,17 @@ export function TeacherAssignmentDialog({
       }
       return newSet;
     });
+  };
+
+  const handleCopyFromOther = () => {
+    if (!otherServiceTime) return;
+
+    lightTap();
+    const otherTeacherIds = otherServiceTime.assignments
+      .map((a) => a.teacher_id)
+      .filter((id): id is number => id !== undefined);
+
+    setSelectedTeacherIds(new Set(otherTeacherIds));
   };
 
   const handleSave = async () => {
@@ -153,10 +169,24 @@ export function TeacherAssignmentDialog({
             )}
 
             {!isLoading && !error && (
-              <div className="space-y-2">
-                <p className={`${theme.text.onLightSecondary} text-xs mb-3`}>
-                  Selecione os professores para esta lição
-                </p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className={`${theme.text.onLightSecondary} text-xs`}>
+                    Selecione os professores para esta lição
+                  </p>
+
+                  {otherServiceTime && otherServiceTime.assignments.length > 0 && (
+                    <button
+                      onClick={handleCopyFromOther}
+                      disabled={isSaving}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.primary} hover:${theme.backgrounds.primaryLight} active:scale-95 transition-all ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                      title={`Copiar professores de ${otherServiceTime.time}`}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      Copiar de {otherServiceTime.time}
+                    </button>
+                  )}
+                </div>
 
                 {teachers.map((teacher) => {
                   const isSelected = selectedTeacherIds.has(teacher.id);

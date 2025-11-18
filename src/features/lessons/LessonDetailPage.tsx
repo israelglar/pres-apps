@@ -531,23 +531,38 @@ export function LessonDetailPage({
 
       {/* Teacher Assignment Dialog */}
       {isTeacherAssignmentDialogOpen &&
-        dateGroup?.serviceTimes[selectedServiceTimeIndex] && (
-          <TeacherAssignmentDialog
-            scheduleId={
-              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule.id
-            }
-            currentAssignments={
-              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
-                .assignments || []
-            }
-            serviceTime={
-              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
-                .service_time?.time.slice(0, 5)
-            }
-            onClose={handleCloseTeacherAssignmentDialog}
-            onSuccess={handleTeacherAssignmentSuccess}
-          />
-        )}
+        dateGroup?.serviceTimes[selectedServiceTimeIndex] && (() => {
+          // Get the other service time (if there are multiple)
+          const otherServiceTimeData = dateGroup.serviceTimes.length > 1
+            ? dateGroup.serviceTimes.find((_, idx) => idx !== selectedServiceTimeIndex)
+            : undefined;
+
+          return (
+            <TeacherAssignmentDialog
+              scheduleId={
+                dateGroup.serviceTimes[selectedServiceTimeIndex].schedule.id
+              }
+              currentAssignments={
+                dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
+                  .assignments || []
+              }
+              serviceTime={
+                dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
+                  .service_time?.time.slice(0, 5)
+              }
+              otherServiceTime={
+                otherServiceTimeData
+                  ? {
+                      time: otherServiceTimeData.schedule.service_time?.time.slice(0, 5) || "",
+                      assignments: otherServiceTimeData.schedule.assignments || [],
+                    }
+                  : undefined
+              }
+              onClose={handleCloseTeacherAssignmentDialog}
+              onSuccess={handleTeacherAssignmentSuccess}
+            />
+          );
+        })()}
     </div>
   );
 }
