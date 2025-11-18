@@ -540,6 +540,10 @@ export function LessonDetailPage({
               dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
                 .assignments || []
             }
+            serviceTime={
+              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
+                .service_time?.time.slice(0, 5)
+            }
             onClose={handleCloseTeacherAssignmentDialog}
             onSuccess={handleTeacherAssignmentSuccess}
           />

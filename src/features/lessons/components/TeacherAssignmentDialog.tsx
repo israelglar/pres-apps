@@ -9,6 +9,7 @@ import { lightTap, successVibration, errorVibration } from "../../../utils/hapti
 interface TeacherAssignmentDialogProps {
   scheduleId: number;
   currentAssignments: (ScheduleAssignment & { teacher?: { name: string } })[];
+  serviceTime?: string; // e.g., "09:00" or "11:00"
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -20,6 +21,7 @@ interface TeacherAssignmentDialogProps {
 export function TeacherAssignmentDialog({
   scheduleId,
   currentAssignments,
+  serviceTime,
   onClose,
   onSuccess,
 }: TeacherAssignmentDialogProps) {
@@ -108,9 +110,16 @@ export function TeacherAssignmentDialog({
               <div className={`${theme.backgrounds.primaryLight} p-2 rounded-xl`}>
                 <Users className={`w-5 h-5 ${theme.text.primary}`} />
               </div>
-              <h2 className={`text-lg font-bold ${theme.text.onLight}`}>
-                Gerir Professores
-              </h2>
+              <div>
+                <h2 className={`text-lg font-bold ${theme.text.onLight}`}>
+                  Gerir Professores
+                </h2>
+                {serviceTime && (
+                  <p className={`text-xs ${theme.text.onLightSecondary} mt-0.5`}>
+                    Horário: {serviceTime}
+                  </p>
+                )}
+              </div>
             </div>
             <button
               onClick={handleClose}

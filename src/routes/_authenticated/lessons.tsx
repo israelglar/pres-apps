@@ -1,12 +1,20 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { LessonsPage } from '../../features/lessons';
+import { z } from 'zod';
+
+// Define search params schema
+const lessonsSearchSchema = z.object({
+  scrollToDate: z.string().optional(), // Date to scroll to when returning
+});
 
 export const Route = createFileRoute('/_authenticated/lessons')({
   component: LessonsRoute,
+  validateSearch: (search) => lessonsSearchSchema.parse(search),
 });
 
 function LessonsRoute() {
   const navigate = useNavigate();
+  const { scrollToDate } = Route.useSearch();
 
   const handleBack = () => {
     window.history.back();
@@ -27,7 +35,11 @@ function LessonsRoute() {
   };
 
   const handleDateClick = (dateStr: string) => {
-    navigate({ to: '/lesson/$date', params: { date: dateStr } });
+    // Navigate to lesson detail
+    navigate({
+      to: '/lesson/$date',
+      params: { date: dateStr }
+    });
   };
 
   return (
@@ -36,6 +48,7 @@ function LessonsRoute() {
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}
       onDateClick={handleDateClick}
+      scrollToDate={scrollToDate}
     />
   );
 }

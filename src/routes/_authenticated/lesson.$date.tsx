@@ -19,7 +19,11 @@ function LessonDetailRoute() {
   const navigate = useNavigate()
 
   const handleBack = () => {
-    window.history.back()
+    // Navigate back to lessons page with scroll position
+    navigate({
+      to: '/lessons',
+      search: { scrollToDate: date },
+    })
   }
 
   const handleViewStudent = (studentId: number) => {
