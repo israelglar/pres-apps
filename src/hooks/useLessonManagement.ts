@@ -14,11 +14,11 @@ import type { LessonInsert, LessonUpdate } from '../types/database.types';
 import { queryKeys } from '../lib/queryKeys';
 
 /**
- * Fetch all lessons
+ * Fetch all lessons from catalog
  */
 export function useLessons() {
   return useQuery({
-    queryKey: queryKeys.lessons(),
+    queryKey: queryKeys.lessonCatalog(),
     queryFn: () => getAllLessons(),
     staleTime: 0,
     refetchOnMount: 'always',
@@ -34,8 +34,8 @@ export function useCreateLesson() {
   return useMutation({
     mutationFn: (lesson: LessonInsert) => createLesson(lesson),
     onSuccess: () => {
-      // Invalidate all lesson queries
-      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      // Invalidate lesson catalog queries
+      queryClient.invalidateQueries({ queryKey: ['lesson-catalog'] });
     },
   });
 }
@@ -50,8 +50,8 @@ export function useUpdateLesson() {
     mutationFn: ({ id, updates }: { id: number; updates: LessonUpdate }) =>
       updateLesson(id, updates),
     onSuccess: () => {
-      // Invalidate all lesson queries
-      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      // Invalidate lesson catalog queries
+      queryClient.invalidateQueries({ queryKey: ['lesson-catalog'] });
     },
   });
 }
@@ -65,8 +65,8 @@ export function useDeleteLesson() {
   return useMutation({
     mutationFn: (id: number) => deleteLesson(id),
     onSuccess: () => {
-      // Invalidate all lesson queries
-      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      // Invalidate lesson catalog queries
+      queryClient.invalidateQueries({ queryKey: ['lesson-catalog'] });
     },
   });
 }

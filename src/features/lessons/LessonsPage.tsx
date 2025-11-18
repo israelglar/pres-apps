@@ -1,5 +1,4 @@
 import { BookOpen, Plus, Search } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
@@ -23,7 +22,6 @@ interface LessonsPageProps {
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
   onDateClick: (date: string) => void;
-  scrollToDate?: string;
 }
 
 /**
@@ -35,12 +33,8 @@ export function LessonsPage({
   onViewStudent,
   onRedoAttendance,
   onDateClick,
-  scrollToDate,
 }: LessonsPageProps) {
   const navigate = useNavigate();
-
-  // Store refs for each lesson card to enable scrolling
-  const lessonRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Fetch unscheduled lessons
   const { data: unscheduledLessons = [], isLoading: isLoadingUnscheduled } =
@@ -93,19 +87,6 @@ export function LessonsPage({
     handleSubmitLessonForm,
     handleRefresh,
   } = useLessonsLogic(onViewStudent, onRedoAttendance);
-
-  // Scroll to the specified lesson when page loads
-  useEffect(() => {
-    if (scrollToDate && history && history.length > 0) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        const element = lessonRefs.current.get(scrollToDate);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
-    }
-  }, [scrollToDate, history]);
 
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
@@ -250,16 +231,7 @@ export function LessonsPage({
                 const showSeparator = isFuture && !prevIsFuture;
 
                 return (
-                  <div
-                    key={group.date}
-                    ref={(el) => {
-                      if (el) {
-                        lessonRefs.current.set(group.date, el);
-                      } else {
-                        lessonRefs.current.delete(group.date);
-                      }
-                    }}
-                  >
+                  <div key={group.date}>
                     {showSeparator && (
                       <div className={`flex items-center gap-3 py-4 px-2`}>
                         <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />

@@ -39,8 +39,11 @@ export const queryKeys = {
   absenceAlerts: (threshold: number, currentDate?: string) =>
     ["absence-alerts", threshold, currentDate] as const,
 
-  // Lessons
+  // Lessons (attendance history)
   lessons: () => ["lessons"] as const,
+
+  // Lesson Catalog (lesson management CRUD)
+  lessonCatalog: () => ["lesson-catalog"] as const,
 
   lesson: (id: number) => ["lesson", id] as const,
 } as const;
