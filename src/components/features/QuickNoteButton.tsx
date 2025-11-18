@@ -29,7 +29,7 @@ export function QuickNoteButton({ hasNote, onClick, className = '' }: QuickNoteB
           onClick();
         }
       }}
-      className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+      className={`p-2.5 rounded-lg transition-colors cursor-pointer ${
         hasNote
           ? `${theme.backgrounds.primaryLighter} ${theme.text.primary} hover:${theme.backgrounds.primaryLight}`
           : `${theme.backgrounds.neutralHover} ${theme.text.neutral} hover:${theme.text.neutralDark}`

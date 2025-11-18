@@ -78,7 +78,7 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
   return (
     <div
       onClick={handleRowTap}
-      className={`flex items-center justify-between p-2 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 transition-all hover:shadow-md cursor-pointer active:scale-98`}
+      className={`flex items-center justify-between p-2 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 hover:shadow-md cursor-pointer hover:brightness-95 active:brightness-90 transition-all`}
     >
       <div className="flex items-center gap-2 flex-1">
         {/* Status Icon */}

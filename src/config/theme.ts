@@ -249,15 +249,18 @@ export const theme = {
 
 /**
  * Pre-built button class strings
+ * Updated to remove active:scale-95 and use background color changes for better UX
  */
 export const buttonClasses = {
-  primary: `bg-blue-600 text-white rounded-xl font-semibold shadow-sm hover:bg-blue-700 active:bg-blue-800 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
+  primary: `bg-blue-600 text-white rounded-xl font-semibold shadow-sm hover:bg-blue-700 active:bg-blue-800 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`,
 
-  secondary: `bg-gray-100 text-gray-800 rounded-xl font-semibold border border-gray-200 hover:bg-gray-200 hover:shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
+  secondary: `bg-gray-100 text-gray-800 rounded-xl font-semibold border border-gray-200 hover:bg-gray-200 active:bg-gray-300 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`,
 
-  success: `bg-green-600 text-white rounded-xl font-semibold shadow-sm hover:bg-green-700 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-green-500`,
+  success: `bg-green-600 text-white rounded-xl font-semibold shadow-sm hover:bg-green-700 active:bg-green-800 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2`,
 
-  danger: `bg-red-600 text-white rounded-xl font-semibold shadow-sm hover:bg-red-700 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-red-500`,
+  danger: `bg-red-600 text-white rounded-xl font-semibold shadow-sm hover:bg-red-700 active:bg-red-800 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2`,
+
+  ghost: `text-blue-600 rounded-xl font-semibold hover:bg-blue-50 active:bg-blue-100 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`,
 } as const;
 
 /**

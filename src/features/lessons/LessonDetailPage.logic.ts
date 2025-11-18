@@ -50,17 +50,24 @@ export function useLessonDetailLogic(
     return default11hIndex !== -1 ? default11hIndex : 0;
   };
 
-  const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(
-    getInitialServiceTimeIndex()
-  );
+  const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(0);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Update selected service time index when dateGroup loads or initialServiceTimeId changes
+  // Initialize selected service time index only once when data first loads
   useEffect(() => {
-    if (dateGroup) {
+    if (dateGroup && !hasInitialized) {
       setSelectedServiceTimeIndex(getInitialServiceTimeIndex());
+      setHasInitialized(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateGroup, initialServiceTimeId]);
+  }, [dateGroup, hasInitialized]);
+
+  // Reset initialization when initialServiceTimeId changes (navigating to different service time)
+  useEffect(() => {
+    if (initialServiceTimeId !== undefined) {
+      setHasInitialized(false);
+    }
+  }, [initialServiceTimeId]);
 
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);

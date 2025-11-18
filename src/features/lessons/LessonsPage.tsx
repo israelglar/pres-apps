@@ -4,6 +4,7 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
 import { ItemCount } from "../../components/ui/ItemCount";
+import { LoadingState } from "../../components/ui/LoadingState";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { buttonClasses, theme } from "../../config/theme";
@@ -137,14 +138,7 @@ export function LessonsPage({
 
         {/* Loading State */}
         {isLoading && !history && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div
-              className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4 border-4 border-current border-t-transparent rounded-full`}
-            />
-            <p className={`${theme.text.primary} text-base font-semibold`}>
-              A carregar lições...
-            </p>
-          </div>
+          <LoadingState message="A carregar lições..." size="large" />
         )}
 
         {/* Error State */}

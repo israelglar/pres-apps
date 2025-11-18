@@ -70,7 +70,7 @@ export function LessonCardHeader({
     return (
       <button
         onClick={onClick}
-        className={`w-full text-left ${theme.backgrounds.white} ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99] ${className}`}
+        className={`w-full text-left ${theme.backgrounds.white} ${theme.backgrounds.neutralHover} active:bg-gray-100 transition-colors ${className}`}
       >
         {content}
       </button>

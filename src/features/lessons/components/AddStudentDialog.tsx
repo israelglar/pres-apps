@@ -96,7 +96,7 @@ export function AddStudentDialog({
                 <button
                   onClick={() => onCreateVisitor(searchQuery)}
                   disabled={isAdding}
-                  className={`flex items-center gap-2 px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+                  className={`flex items-center gap-2 px-5 py-3 ${theme.solids.primaryButton} ${theme.text.onPrimaryButton} rounded-xl text-sm font-medium hover:shadow-md ${theme.solids.primaryButtonHover} active:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <UserPlus className="w-4 h-4" />
                   Adicionar Visitante
@@ -110,7 +110,7 @@ export function AddStudentDialog({
                   key={student.id}
                   onClick={() => onAdd(student.id)}
                   disabled={isAdding}
-                  className={`w-full ${theme.backgrounds.white} border ${theme.borders.primary} rounded-xl p-3 hover:shadow-md ${theme.backgrounds.primaryHover} active:scale-[0.99] transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed`}
+                  className={`w-full ${theme.backgrounds.white} border ${theme.borders.primary} rounded-xl p-3 hover:shadow-md ${theme.backgrounds.primaryHover} active:bg-blue-100 transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg flex-shrink-0`}>

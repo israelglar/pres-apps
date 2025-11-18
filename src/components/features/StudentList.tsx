@@ -77,7 +77,7 @@ export const StudentList: React.FC<StudentListProps> = ({
                   ? record.status === "P"
                     ? `${theme.backgrounds.success} border ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
                     : `${theme.backgrounds.errorLight} border ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
-                  : `${theme.backgrounds.white} border ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all`
+                  : `${theme.backgrounds.white} border ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md ${theme.backgrounds.primaryHover} active:bg-blue-100 transition-colors`
             }`}
           >
             <div className="flex items-center gap-2.5">

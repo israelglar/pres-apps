@@ -46,7 +46,7 @@ export function DateGroupCard({
   return (
     <button
       onClick={handleCardClick}
-      className={`${theme.backgrounds.white} p-4 w-full text-left ${theme.backgrounds.neutralHover} transition-all active:scale-[0.99] flex items-center gap-3 rounded-2xl shadow-md`}
+      className={`${theme.backgrounds.white} p-4 w-full text-left ${theme.backgrounds.neutralHover} active:bg-gray-100 transition-colors flex items-center gap-3 rounded-2xl shadow-md`}
     >
       {/* Content */}
       <div className="flex-1">

@@ -78,7 +78,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
           value && (
             <button
               onClick={handleClear}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors"
               aria-label="Clear search"
             >
               <X className={`w-4 h-4 ${theme.text.neutral}`} />

@@ -313,8 +313,8 @@ export function LessonDetailPage({
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 ${
                             lessonIsFuture
                               ? `${theme.backgrounds.neutralLight} ${theme.text.neutral} cursor-not-allowed opacity-50`
-                              : `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} hover:shadow-md active:scale-[0.99]`
-                          } rounded-lg text-xs font-medium transition-all`}
+                              : `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} hover:shadow-md ${theme.solids.primaryButtonHover} active:bg-blue-800`
+                          } rounded-lg text-xs font-medium transition-colors`}
                         >
                           <UserPlus className="w-3.5 h-3.5" />
                           Adicionar Pré
@@ -328,8 +328,8 @@ export function LessonDetailPage({
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 ${
                             lessonIsFuture
                               ? `${theme.backgrounds.neutralLight} ${theme.text.neutral} cursor-not-allowed opacity-50`
-                              : `${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} active:scale-[0.99]`
-                          } rounded-lg text-xs font-medium transition-all`}
+                              : `${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} active:bg-blue-100`
+                          } rounded-lg text-xs font-medium transition-colors`}
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
                           Refazer

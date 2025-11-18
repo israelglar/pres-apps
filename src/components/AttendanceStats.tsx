@@ -3,7 +3,7 @@ import type { AttendanceStats as AttendanceStatsType } from "../utils/attendance
 
 interface AttendanceStatsProps {
   stats: AttendanceStatsType;
-  mode?: "inline" | "compact" | "detailed";
+  mode?: "inline" | "detailed";
   showAbsent?: boolean;
   showTotalPresent?: boolean;
 }
@@ -12,9 +12,8 @@ interface AttendanceStatsProps {
  * AttendanceStats - Reusable component for displaying attendance statistics
  *
  * Modes:
- * - inline: Small circles with numbers inline (for collapsed cards)
- * - compact: Small circles only, no absent (for quick attendance display)
- * - detailed: Full boxes with icons and labels (for expanded cards)
+ * - inline (default): Horizontal row with colored dots and numbers - for cards and compact displays
+ * - detailed: Vertical list with labels - for detail pages only
  */
 export function AttendanceStats({
   stats,
@@ -37,7 +36,7 @@ export function AttendanceStats({
   // Only show total if there's more than one category with values
   const shouldShowTotal = showTotalPresent && categoriesWithValues > 1;
 
-  // Inline mode - small circles with numbers
+  // Inline mode - small circles with numbers (default)
   if (mode === "inline") {
     return (
       <div className={`flex items-center gap-3 ${theme.text.neutral} text-xs h-5`}>
@@ -84,61 +83,6 @@ export function AttendanceStats({
               className={`w-1.5 h-1.5 rounded-full ${theme.indicators.absent}`}
             ></span>
             {stats.absent}
-          </span>
-        )}
-      </div>
-    );
-  }
-
-  // Compact mode - small circles only, centered
-  if (mode === "compact") {
-    return (
-      <div className="flex items-center justify-center gap-2 h-5">
-        {shouldShowTotal && (
-          <span
-            className={`flex items-center justify-center text-xs font-bold ${theme.text.primary} border ${theme.borders.primary} rounded px-1.5 h-5 min-w-[1.25rem]`}
-          >
-            {stats.totalPresent}
-          </span>
-        )}
-        {stats.present > 0 && (
-          <span
-            className={`flex items-center gap-1 text-xs ${theme.status.present.text} h-5`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.present}`}
-            ></span>
-            {stats.present}
-          </span>
-        )}
-        {stats.late > 0 && (
-          <span
-            className={`flex items-center gap-1 text-xs ${theme.status.late.text} h-5`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}
-            ></span>
-            {stats.late}
-          </span>
-        )}
-        {stats.excused > 0 && (
-          <span
-            className={`flex items-center gap-1 text-xs ${theme.status.excused.text} h-5`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}
-            ></span>
-            {stats.excused}
-          </span>
-        )}
-        {stats.visitors > 0 && (
-          <span
-            className={`flex items-center gap-1 text-xs ${theme.text.primary} h-5`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.visitor}`}
-            ></span>
-            {stats.visitors}
           </span>
         )}
       </div>

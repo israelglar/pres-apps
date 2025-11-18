@@ -1,9 +1,10 @@
-import { Loader2, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
 import { ItemCount } from "../../components/ui/ItemCount";
+import { LoadingState } from "../../components/ui/LoadingState";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { theme } from "../../config/theme";
@@ -240,14 +241,7 @@ export function StudentManagementPage({
         <div className="flex-1 overflow-y-auto px-5 pb-5">
           {/* Loading State */}
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Loader2
-                className={`w-16 h-16 ${theme.text.primary} animate-spin mb-4`}
-              />
-              <p className={`text-base ${theme.text.neutral} font-medium`}>
-                A carregar prés...
-              </p>
-            </div>
+            <LoadingState message="A carregar prés..." size="large" />
           )}
 
           {/* Error State */}

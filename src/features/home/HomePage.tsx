@@ -88,7 +88,7 @@ export function HomePage({
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
+            className={`p-3 ${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-colors`}
             aria-label="Menu"
           >
             <Menu className="w-5 h-5" />
@@ -204,7 +204,7 @@ export function HomePage({
                           {hasAttendance && (
                             <div className="flex items-center gap-2 mt-1.5">
                               {/* Stats with total */}
-                              <AttendanceStats stats={schedule.stats!} mode="compact" showAbsent={false} showTotalPresent={true} />
+                              <AttendanceStats stats={schedule.stats!} mode="inline" showAbsent={false} showTotalPresent={true} />
                             </div>
                           )}
                         </button>
