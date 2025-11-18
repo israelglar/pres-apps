@@ -19,6 +19,7 @@ import { Route as AuthenticatedManageStudentsRouteImport } from './routes/_authe
 import { Route as AuthenticatedLessonsRouteImport } from './routes/_authenticated/lessons'
 import { Route as AuthenticatedDateSelectionRouteImport } from './routes/_authenticated/date-selection'
 import { Route as AuthenticatedStudentsStudentIdRouteImport } from './routes/_authenticated/students.$studentId'
+import { Route as AuthenticatedLessonsLessonIdRouteImport } from './routes/_authenticated/lessons.$lessonId'
 import { Route as AuthenticatedLessonDateRouteImport } from './routes/_authenticated/lesson.$date'
 
 const LoginRoute = LoginRouteImport.update({
@@ -74,6 +75,12 @@ const AuthenticatedStudentsStudentIdRoute =
     path: '/students/$studentId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedLessonsLessonIdRoute =
+  AuthenticatedLessonsLessonIdRouteImport.update({
+    id: '/$lessonId',
+    path: '/$lessonId',
+    getParentRoute: () => AuthenticatedLessonsRoute,
+  } as any)
 const AuthenticatedLessonDateRoute = AuthenticatedLessonDateRouteImport.update({
   id: '/lesson/$date',
   path: '/lesson/$date',
@@ -84,24 +91,26 @@ export interface FileRoutesByFullPath {
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
-  '/lessons': typeof AuthenticatedLessonsRoute
+  '/lessons': typeof AuthenticatedLessonsRouteWithChildren
   '/manage-students': typeof AuthenticatedManageStudentsRoute
   '/marking': typeof AuthenticatedMarkingRoute
   '/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/': typeof AuthenticatedIndexRoute
   '/lesson/$date': typeof AuthenticatedLessonDateRoute
+  '/lessons/$lessonId': typeof AuthenticatedLessonsLessonIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRoutesByTo {
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/date-selection': typeof AuthenticatedDateSelectionRoute
-  '/lessons': typeof AuthenticatedLessonsRoute
+  '/lessons': typeof AuthenticatedLessonsRouteWithChildren
   '/manage-students': typeof AuthenticatedManageStudentsRoute
   '/marking': typeof AuthenticatedMarkingRoute
   '/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/': typeof AuthenticatedIndexRoute
   '/lesson/$date': typeof AuthenticatedLessonDateRoute
+  '/lessons/$lessonId': typeof AuthenticatedLessonsLessonIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRoutesById {
@@ -110,12 +119,13 @@ export interface FileRoutesById {
   '/dev-login': typeof DevLoginRoute
   '/login': typeof LoginRoute
   '/_authenticated/date-selection': typeof AuthenticatedDateSelectionRoute
-  '/_authenticated/lessons': typeof AuthenticatedLessonsRoute
+  '/_authenticated/lessons': typeof AuthenticatedLessonsRouteWithChildren
   '/_authenticated/manage-students': typeof AuthenticatedManageStudentsRoute
   '/_authenticated/marking': typeof AuthenticatedMarkingRoute
   '/_authenticated/search-marking': typeof AuthenticatedSearchMarkingRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/lesson/$date': typeof AuthenticatedLessonDateRoute
+  '/_authenticated/lessons/$lessonId': typeof AuthenticatedLessonsLessonIdRoute
   '/_authenticated/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/search-marking'
     | '/'
     | '/lesson/$date'
+    | '/lessons/$lessonId'
     | '/students/$studentId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/search-marking'
     | '/'
     | '/lesson/$date'
+    | '/lessons/$lessonId'
     | '/students/$studentId'
   id:
     | '__root__'
@@ -155,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated/search-marking'
     | '/_authenticated/'
     | '/_authenticated/lesson/$date'
+    | '/_authenticated/lessons/$lessonId'
     | '/_authenticated/students/$studentId'
   fileRoutesById: FileRoutesById
 }
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsStudentIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/lessons/$lessonId': {
+      id: '/_authenticated/lessons/$lessonId'
+      path: '/$lessonId'
+      fullPath: '/lessons/$lessonId'
+      preLoaderRoute: typeof AuthenticatedLessonsLessonIdRouteImport
+      parentRoute: typeof AuthenticatedLessonsRoute
+    }
     '/_authenticated/lesson/$date': {
       id: '/_authenticated/lesson/$date'
       path: '/lesson/$date'
@@ -246,9 +266,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedLessonsRouteChildren {
+  AuthenticatedLessonsLessonIdRoute: typeof AuthenticatedLessonsLessonIdRoute
+}
+
+const AuthenticatedLessonsRouteChildren: AuthenticatedLessonsRouteChildren = {
+  AuthenticatedLessonsLessonIdRoute: AuthenticatedLessonsLessonIdRoute,
+}
+
+const AuthenticatedLessonsRouteWithChildren =
+  AuthenticatedLessonsRoute._addFileChildren(AuthenticatedLessonsRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedDateSelectionRoute: typeof AuthenticatedDateSelectionRoute
-  AuthenticatedLessonsRoute: typeof AuthenticatedLessonsRoute
+  AuthenticatedLessonsRoute: typeof AuthenticatedLessonsRouteWithChildren
   AuthenticatedManageStudentsRoute: typeof AuthenticatedManageStudentsRoute
   AuthenticatedMarkingRoute: typeof AuthenticatedMarkingRoute
   AuthenticatedSearchMarkingRoute: typeof AuthenticatedSearchMarkingRoute
@@ -259,7 +290,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDateSelectionRoute: AuthenticatedDateSelectionRoute,
-  AuthenticatedLessonsRoute: AuthenticatedLessonsRoute,
+  AuthenticatedLessonsRoute: AuthenticatedLessonsRouteWithChildren,
   AuthenticatedManageStudentsRoute: AuthenticatedManageStudentsRoute,
   AuthenticatedMarkingRoute: AuthenticatedMarkingRoute,
   AuthenticatedSearchMarkingRoute: AuthenticatedSearchMarkingRoute,

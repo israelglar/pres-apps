@@ -43,7 +43,6 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
     if (import.meta.env.DEV) {
       const devDate = localStorage.getItem('devDate');
       if (devDate && /^\d{4}-\d{2}-\d{2}$/.test(devDate)) {
-        console.log('🔧 DEV: Using mock date:', devDate);
         return devDate;
       }
     }

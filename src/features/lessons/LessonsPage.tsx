@@ -1,5 +1,6 @@
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen, Plus, Search } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
@@ -12,7 +13,10 @@ import { AddStudentDialog } from "./components/AddStudentDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 import { DateGroupCard } from "./components/DateGroupCard";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
+import { LessonFormModal } from "./components/LessonFormModal";
 import { NotesDialog } from "./components/NotesDialog";
+import { UnscheduledLessonCard } from "./components/UnscheduledLessonCard";
+import { useUnscheduledLessons } from "./hooks/useUnscheduledLessons";
 
 interface LessonsPageProps {
   onBack: () => void;
@@ -33,8 +37,15 @@ export function LessonsPage({
   onDateClick,
   scrollToDate,
 }: LessonsPageProps) {
+  const navigate = useNavigate();
+
   // Store refs for each lesson card to enable scrolling
   const lessonRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  // Fetch unscheduled lessons
+  const { data: unscheduledLessons = [], isLoading: isLoadingUnscheduled } =
+    useUnscheduledLessons();
+
   const {
     history,
     totalLessons,
@@ -53,6 +64,10 @@ export function LessonsPage({
     isCreateVisitorDialogOpen,
     isCreatingVisitor,
     visitorInitialName,
+    isLessonFormModalOpen,
+    editingLesson,
+    isCreatingLesson,
+    isUpdatingLesson,
     searchQuery,
     setSearchQuery,
     timePeriodFilter,
@@ -73,6 +88,9 @@ export function LessonsPage({
     handleOpenCreateVisitorDialog,
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
+    handleAddLesson,
+    handleCloseLessonForm,
+    handleSubmitLessonForm,
     handleRefresh,
   } = useLessonsLogic(onViewStudent, onRedoAttendance);
 
@@ -92,7 +110,17 @@ export function LessonsPage({
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
       {/* Header */}
-      <PageHeader onBack={onBack} title="Lições" sticky={true} />
+      <PageHeader
+        onBack={onBack}
+        title="Lições"
+        rightAction={{
+          icon: <Plus className="w-5 h-5" />,
+          label: "Adicionar",
+          onClick: handleAddLesson,
+          disabled: isCreatingLesson,
+        }}
+        sticky={true}
+      />
 
       <div className="max-w-4xl mx-auto p-2 pb-20">
         {/* Search and Filter Bar */}
@@ -249,6 +277,36 @@ export function LessonsPage({
                 );
               })}
             </div>
+
+            {/* Unscheduled Lessons Section */}
+            {!isLoadingUnscheduled && unscheduledLessons.length > 0 && (
+              <>
+                {/* Separator */}
+                <div className={`flex items-center gap-3 py-6 px-2 mt-4`}>
+                  <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                  <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
+                    Lições Não Agendadas
+                  </span>
+                  <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                </div>
+
+                {/* Unscheduled Lessons Cards */}
+                <div className="space-y-3">
+                  {unscheduledLessons.map((lesson) => (
+                    <UnscheduledLessonCard
+                      key={lesson.id}
+                      lesson={lesson}
+                      onClick={(lessonId) =>
+                        navigate({
+                          to: "/lessons/$lessonId",
+                          params: { lessonId: lessonId.toString() },
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
@@ -298,6 +356,16 @@ export function LessonsPage({
           onCancel={handleCloseCreateVisitorDialog}
           isCreating={isCreatingVisitor}
           initialName={visitorInitialName}
+        />
+      )}
+
+      {/* Lesson Form Modal */}
+      {isLessonFormModalOpen && (
+        <LessonFormModal
+          lesson={editingLesson}
+          onClose={handleCloseLessonForm}
+          onSubmit={handleSubmitLessonForm}
+          isSubmitting={isCreatingLesson || isUpdatingLesson}
         />
       )}
     </div>

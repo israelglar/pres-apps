@@ -15,7 +15,6 @@ function StudentDetailRoute() {
 
   const handleEditSuccess = () => {
     // Optional: show toast or notification
-    console.log('Student updated successfully')
   }
 
   const handleDeleteSuccess = () => {

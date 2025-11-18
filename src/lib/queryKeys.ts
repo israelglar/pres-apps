@@ -38,4 +38,9 @@ export const queryKeys = {
   // Alerts
   absenceAlerts: (threshold: number, currentDate?: string) =>
     ["absence-alerts", threshold, currentDate] as const,
+
+  // Lessons
+  lessons: () => ["lessons"] as const,
+
+  lesson: (id: number) => ["lesson", id] as const,
 } as const;

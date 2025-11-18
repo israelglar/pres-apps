@@ -22,7 +22,8 @@ export function useLessonDetailLogic(
 
   // Find the specific date group from history
   const dateGroup = useMemo(() => {
-    return history?.find(group => group.date === date);
+    const found = history?.find(group => group.date === date);
+    return found;
   }, [history, date]);
 
   // Edit attendance mutation

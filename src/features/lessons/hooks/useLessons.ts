@@ -39,6 +39,8 @@ export interface LessonGroup {
  * Orders oldest first (ascending)
  */
 export function useLessons() {
+  const queryClient = useQueryClient();
+
   const { data: response, isLoading, error, refetch } = useQuery({
     queryKey: LESSONS_QUERY_KEY,
     queryFn: async (): Promise<{
@@ -99,7 +101,42 @@ export function useLessons() {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    // Validate and fix data structure before returning to components
+    select: (data: any) => {
+      // If data has correct structure, return as-is
+      if (data && typeof data === 'object' && !Array.isArray(data) && data.history && data.totalCount !== undefined) {
+        return data as { history: LessonGroup[]; totalCount: number };
+      }
+
+      // If data is corrupted (wrong structure), clear cache and return undefined
+      // This will cause the query to refetch with correct structure
+      console.error('[useLessons] CORRUPTED DATA DETECTED IN SELECT! Clearing cache...', {
+        data,
+        isArray: Array.isArray(data),
+        type: typeof data,
+      });
+
+      // Clear the corrupted cache asynchronously (don't block this render)
+      setTimeout(() => {
+        console.warn('[useLessons] Removing corrupted cache and invalidating query');
+        queryClient.removeQueries({ queryKey: LESSONS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
+      }, 0);
+
+      // Return undefined to indicate no valid data
+      return undefined;
+    },
   });
+
+  // Debug: Log if response exists but data is missing (after query returns)
+  if (response && (!response.history || response.totalCount === undefined)) {
+    console.error('[useLessons] WARNING: Query returned invalid structure!', {
+      response,
+      hasHistory: 'history' in response,
+      hasTotalCount: 'totalCount' in response,
+      isArray: Array.isArray(response),
+    });
+  }
 
   return {
     history: response?.history,
@@ -139,14 +176,18 @@ export function useEditAttendance() {
       const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
-      queryClient.setQueriesData(
-        { queryKey: LESSONS_QUERY_KEY },
-        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
-          if (!old) return old;
+      queryClient.setQueryData(
+        LESSONS_QUERY_KEY,
+        (old: any) => {
+          // Validate cache structure - if corrupted, don't update
+          if (!old || typeof old !== 'object' || Array.isArray(old) || !old.history || !Array.isArray(old.history)) {
+            console.warn('[useEditAttendance] Skipping optimistic update - invalid cache structure');
+            return old;
+          }
 
           return {
             ...old,
-            history: old.history.map(group => ({
+            history: old.history.map((group: LessonGroup) => ({
               ...group,
               serviceTimes: group.serviceTimes.map(serviceTime => ({
                 ...serviceTime,
@@ -243,14 +284,18 @@ export function useAddAttendance() {
       const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
-      queryClient.setQueriesData(
-        { queryKey: LESSONS_QUERY_KEY },
-        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
-          if (!old) return old;
+      queryClient.setQueryData(
+        LESSONS_QUERY_KEY,
+        (old: any) => {
+          // Validate cache structure - if corrupted, don't update
+          if (!old || typeof old !== 'object' || Array.isArray(old) || !old.history || !Array.isArray(old.history)) {
+            console.warn('[useAddAttendance] Skipping optimistic update - invalid cache structure');
+            return old;
+          }
 
           return {
             ...old,
-            history: old.history.map(group => ({
+            history: old.history.map((group: LessonGroup) => ({
               ...group,
               serviceTimes: group.serviceTimes.map(serviceTime => {
                 if (serviceTime.schedule.id !== variables.scheduleId) return serviceTime;
@@ -337,14 +382,18 @@ export function useDeleteAttendance() {
       const previousHistory = queryClient.getQueryData(LESSONS_QUERY_KEY);
 
       // Optimistically update the cache
-      queryClient.setQueriesData(
-        { queryKey: LESSONS_QUERY_KEY },
-        (old: { history: LessonGroup[], totalCount: number, mostRecentIndex: number } | undefined) => {
-          if (!old) return old;
+      queryClient.setQueryData(
+        LESSONS_QUERY_KEY,
+        (old: any) => {
+          // Validate cache structure - if corrupted, don't update
+          if (!old || typeof old !== 'object' || Array.isArray(old) || !old.history || !Array.isArray(old.history)) {
+            console.warn('[useDeleteAttendance] Skipping optimistic update - invalid cache structure');
+            return old;
+          }
 
           return {
             ...old,
-            history: old.history.map(group => ({
+            history: old.history.map((group: LessonGroup) => ({
               ...group,
               serviceTimes: group.serviceTimes.map(serviceTime => {
                 const newRecords = serviceTime.records.filter(record => record.id !== variables.recordId);

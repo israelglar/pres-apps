@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
-import type { AttendanceRecordWithRelations, Teacher } from '../../types/database.types';
+import type { AttendanceRecordWithRelations, Teacher, Lesson, LessonInsert, LessonUpdate } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { getAllTeachers } from '../../api/supabase/teachers';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLessonManagement } from '../../hooks/useLessonManagement';
 
 /**
  * Business logic for Lessons Page
@@ -28,6 +29,9 @@ export function useLessonsLogic(
   // Delete attendance mutation
   const { deleteAttendance, isDeleting } = useDeleteAttendance();
 
+  // Lesson management (for creating/editing lessons in catalog)
+  const { createLesson, updateLesson, isCreating: isCreatingLesson, isUpdating: isUpdatingLesson } = useLessonManagement();
+
   // Dialog state
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordWithRelations | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -49,6 +53,10 @@ export function useLessonsLogic(
   const [isCreateVisitorDialogOpen, setIsCreateVisitorDialogOpen] = useState(false);
   const [isCreatingVisitor, setIsCreatingVisitor] = useState(false);
   const [visitorInitialName, setVisitorInitialName] = useState('');
+
+  // Lesson form modal state
+  const [isLessonFormModalOpen, setIsLessonFormModalOpen] = useState(false);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -120,11 +128,13 @@ export function useLessonsLogic(
 
   // Apply filters to history
   const filteredLessons = useMemo(() => {
-    if (!history) return [];
+    if (!history) {
+      return [];
+    }
 
     const today = new Date().toISOString().split('T')[0];
 
-    return history.filter((group) => {
+    const filtered = history.filter((group) => {
       // Search filter - search in lesson name
       if (searchQuery) {
         const lessonName = group.serviceTimes[0]?.schedule.lesson?.name || '';
@@ -154,6 +164,8 @@ export function useLessonsLogic(
 
       return true;
     });
+
+    return filtered;
   }, [history, searchQuery, timePeriodFilter, attendanceFilter, teacherFilter]);
 
   /**
@@ -383,6 +395,57 @@ export function useLessonsLogic(
     }
   };
 
+  /**
+   * Open lesson form modal for creating a new lesson
+   */
+  const handleAddLesson = () => {
+    lightTap();
+    setEditingLesson(null); // null = create mode
+    setIsLessonFormModalOpen(true);
+  };
+
+  /**
+   * Open lesson form modal for editing an existing lesson
+   */
+  const handleEditLesson = (lesson: Lesson) => {
+    lightTap();
+    setEditingLesson(lesson);
+    setIsLessonFormModalOpen(true);
+  };
+
+  /**
+   * Close lesson form modal
+   */
+  const handleCloseLessonForm = () => {
+    lightTap();
+    setIsLessonFormModalOpen(false);
+    // Clear state after animation
+    setTimeout(() => setEditingLesson(null), 300);
+  };
+
+  /**
+   * Submit lesson form (create or update)
+   */
+  const handleSubmitLessonForm = async (data: LessonInsert | LessonUpdate) => {
+    try {
+      if (editingLesson) {
+        // Edit mode
+        await updateLesson({ id: editingLesson.id, updates: data });
+      } else {
+        // Create mode
+        await createLesson(data as LessonInsert);
+      }
+
+      // Refresh the schedules data to reflect any changes
+      await refetch();
+
+      handleCloseLessonForm();
+      successVibration();
+    } catch (error) {
+      console.error('Failed to save lesson:', error);
+      // Error will be shown by mutation hooks
+    }
+  };
 
   /**
    * Refresh all data
@@ -457,6 +520,12 @@ export function useLessonsLogic(
     isCreatingVisitor,
     visitorInitialName,
 
+    // Lesson form modal state
+    isLessonFormModalOpen,
+    editingLesson,
+    isCreatingLesson,
+    isUpdatingLesson,
+
     // Search and filter state
     searchQuery,
     setSearchQuery,
@@ -487,6 +556,10 @@ export function useLessonsLogic(
     handleOpenCreateVisitorDialog,
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
+    handleAddLesson,
+    handleEditLesson,
+    handleCloseLessonForm,
+    handleSubmitLessonForm,
     handleViewStudent,
     handleRefresh,
     handleRedoAttendance,
