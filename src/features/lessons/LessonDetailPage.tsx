@@ -77,7 +77,12 @@ export function LessonDetailPage({
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
-  } = useLessonDetailLogic(date, initialServiceTimeId, onViewStudent, onRedoAttendance);
+  } = useLessonDetailLogic(
+    date,
+    initialServiceTimeId,
+    onViewStudent,
+    onRedoAttendance,
+  );
 
   // Format date for display (short format: "10 nov 2025")
   const formatDate = (dateStr: string) => {
@@ -224,16 +229,14 @@ export function LessonDetailPage({
                           .schedule.assignments
                       }
                     />
-                    {!lessonIsFuture && (
-                      <button
-                        onClick={handleOpenTeacherAssignmentDialog}
-                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
-                        title="Gerir Professores"
-                      >
-                        <Users className="w-3 h-3" />
-                        Gerir
-                      </button>
-                    )}
+                    <button
+                      onClick={handleOpenTeacherAssignmentDialog}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
+                      title="Gerir Professores"
+                    >
+                      <Users className="w-3 h-3" />
+                      Gerir
+                    </button>
                   </div>
                 )}
 
@@ -326,14 +329,18 @@ export function LessonDetailPage({
             {dateGroup.serviceTimes.length > 1 && (
               <div className="bg-white rounded-2xl shadow-md p-3">
                 <div className="flex items-center gap-3">
-                  <span className={`${theme.text.primary} font-bold text-sm whitespace-nowrap`}>
+                  <span
+                    className={`${theme.text.primary} font-bold text-sm whitespace-nowrap`}
+                  >
                     Horário
                   </span>
                   <div className="flex gap-1.5 flex-1">
                     {dateGroup.serviceTimes.map((serviceTimeData, index) => {
                       const timeFormatted =
-                        serviceTimeData.schedule.service_time?.time.slice(0, 5) ||
-                        "N/A";
+                        serviceTimeData.schedule.service_time?.time.slice(
+                          0,
+                          5,
+                        ) || "N/A";
                       const isSelected = selectedServiceTimeIndex === index;
 
                       return (
