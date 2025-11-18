@@ -48,7 +48,7 @@ function UnscheduledLessonRoute() {
           </p>
           <button
             onClick={handleBack}
-            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryHover} active:scale-95 transition-all`}
+            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryHover} transition-all`}
           >
             Voltar
           </button>
@@ -87,7 +87,7 @@ function UnscheduledLessonRoute() {
           </p>
           <button
             onClick={handleBack}
-            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryHover} active:scale-95 transition-all`}
+            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryHover} transition-all`}
           >
             Voltar
           </button>

@@ -193,7 +193,7 @@ export function LessonDetailPage({
         {/* Error State */}
         {error && (
           <div
-            className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}
+            className={`${theme.backgrounds.error} border ${theme.borders.error} rounded-2xl p-5 text-center`}
           >
             <p className={`${theme.text.error} font-semibold mb-2 text-sm`}>
               Erro ao carregar lição
@@ -328,7 +328,7 @@ export function LessonDetailPage({
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 ${
                             lessonIsFuture
                               ? `${theme.backgrounds.neutralLight} ${theme.text.neutral} cursor-not-allowed opacity-50`
-                              : `${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} active:scale-[0.99]`
+                              : `${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} active:scale-[0.99]`
                           } rounded-lg text-xs font-medium transition-all`}
                         >
                           <RotateCcw className="w-3.5 h-3.5" />

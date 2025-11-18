@@ -35,7 +35,7 @@ function StudentDetailRoute() {
           </p>
           <button
             onClick={handleBack}
-            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryActive} active:scale-95 transition-all`}
+            className={`px-5 py-3 ${theme.backgrounds.primary} ${theme.text.white} rounded-lg font-semibold ${theme.backgrounds.primaryActive} transition-all`}
           >
             Voltar
           </button>

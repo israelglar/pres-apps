@@ -26,7 +26,7 @@ export function LoginPage() {
     >
       <div className="w-full max-w-md">
         {/* Login Card */}
-        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-5 border-2 ${theme.borders.primaryLight}`}>
+        <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-5 border ${theme.borders.primaryLight}`}>
           {/* Header */}
           <div className="text-center mb-5">
             <h1 className={`text-3xl font-bold ${theme.text.primary} mb-2`}>
@@ -39,7 +39,7 @@ export function LoginPage() {
 
           {/* Error Message */}
           {error && (
-            <div className={`mb-5 p-5 ${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-xl`}>
+            <div className={`mb-5 p-5 ${theme.backgrounds.errorLight} border ${theme.borders.error} rounded-xl`}>
               <p className={`text-sm ${theme.text.error} font-semibold`}>{error}</p>
             </div>
           )}

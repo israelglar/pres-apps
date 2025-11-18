@@ -19,7 +19,7 @@ interface PageHeaderProps {
   // Styling flexibility
   sticky?: boolean; // Enable sticky positioning (default: true)
   className?: string;
-  variant?: 'default' | 'minimal'; // minimal = iOS style, white background, back button only
+  variant?: "default" | "minimal"; // minimal = iOS style, white background, back button only (default)
 }
 
 /**
@@ -40,12 +40,12 @@ export function PageHeader({
   rightAction,
   sticky = true,
   className = "",
-  variant = 'default',
+  variant = "minimal",
 }: PageHeaderProps) {
   const stickyClasses = sticky ? "sticky top-0 z-10" : "";
 
   // Minimal variant - iOS style
-  if (variant === 'minimal') {
+  if (variant === "minimal") {
     return (
       <header
         className={`${stickyClasses} bg-white border-b ${theme.borders.neutralLight} ${className}`.trim()}
@@ -136,9 +136,17 @@ export function PageHeader({
       {/* Title Section */}
       {title && (
         <div className="px-4 pb-3">
-          <h1 className={`text-xl font-semibold ${theme.text.onPrimaryButton} mb-0.5 leading-snug`}>{title}</h1>
+          <h1
+            className={`text-xl font-semibold ${theme.text.onPrimaryButton} mb-0.5 leading-snug`}
+          >
+            {title}
+          </h1>
           {subtitle && (
-            <p className={`text-sm ${theme.text.onPrimaryButton} opacity-90 leading-snug`}>{subtitle}</p>
+            <p
+              className={`text-sm ${theme.text.onPrimaryButton} opacity-90 leading-snug`}
+            >
+              {subtitle}
+            </p>
           )}
         </div>
       )}

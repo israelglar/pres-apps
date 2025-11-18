@@ -124,7 +124,7 @@ function DevLoginPage() {
               key={user.email}
               onClick={() => handleQuickLogin(user.email, user.password)}
               disabled={loading !== null}
-              className={`w-full p-5 ${theme.solids.neutralButton} ${theme.solids.devCardHover} border-2 ${theme.borders.neutralLight} ${theme.borders.primaryHover} rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left`}
+              className={`w-full p-5 ${theme.solids.neutralButton} ${theme.solids.devCardHover} border ${theme.borders.neutralLight} ${theme.borders.primaryHover} rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left`}
             >
               <div className="flex items-start gap-4">
                 <div className="text-3xl flex-shrink-0">{user.icon}</div>

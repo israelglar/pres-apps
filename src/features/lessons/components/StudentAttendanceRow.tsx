@@ -120,7 +120,7 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
             selectionTap();
             onViewStudent(record.student_id);
           }}
-          className={`p-1.5 rounded-lg ${theme.text.primary} hover:bg-gray-100 active:scale-95 transition-all`}
+          className={`p-1.5 rounded-lg ${theme.text.primary} hover:bg-gray-100 transition-all`}
           aria-label="Ver detalhes do pré"
         >
           <User className="w-3.5 h-3.5" />

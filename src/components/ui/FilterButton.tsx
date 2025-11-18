@@ -26,7 +26,7 @@ export function FilterButton({
       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all flex-shrink-0 ${
         isOpen || isActive
           ? `${theme.solids.primaryButton} ${theme.text.onPrimaryButton} shadow-md`
-          : `${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:shadow-md`
+          : `${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primary} hover:shadow-md`
       } ${className}`}
     >
       <Filter className="w-4 h-4" />

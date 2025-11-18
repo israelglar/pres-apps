@@ -24,7 +24,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl max-w-md w-full p-5 max-h-[90vh] overflow-y-auto border-2 ${theme.borders.primaryLight} animate-scale-in`}>
+      <div className={`${theme.backgrounds.primaryLighter} rounded-2xl shadow-2xl max-w-md w-full p-5 max-h-[90vh] overflow-y-auto border ${theme.borders.primaryLight} animate-scale-in`}>
         {/* Header */}
         <div className={`${theme.solids.primaryButton} p-5 flex items-center justify-between -m-5 mb-5 rounded-t-2xl`}>
           <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
               <button
                 key={key}
                 onClick={() => themeManager.setTheme(key as any)}
-                className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all border-2 ${
+                className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                   currentTheme === key
                     ? `${theme.solids.primaryButton} ${theme.borders.primary} ${theme.text.onPrimaryButton} shadow-md`
                     : `${theme.backgrounds.white} ${theme.borders.primaryLight} ${theme.text.primary} hover:shadow-md ${theme.borders.primaryHover}`
@@ -79,7 +79,7 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
             onClick={() => {
               window.location.href = '/dev-login';
             }}
-            className={`w-full ${theme.backgrounds.warningLight} ${theme.text.warning} rounded-xl px-4 py-3 hover:shadow-md transition-all flex items-center justify-center gap-2 border-2 ${theme.borders.warning}`}
+            className={`w-full ${theme.backgrounds.warningLight} ${theme.text.warning} rounded-xl px-4 py-3 hover:shadow-md transition-all flex items-center justify-center gap-2 border ${theme.borders.warning}`}
           >
             <LogOut className="w-4 h-4" />
             <span className="font-semibold text-sm">Dev Login</span>
@@ -102,10 +102,10 @@ export function DevTools({ isOpen, onClose }: DevToolsProps) {
               }
               window.location.reload();
             }}
-            className={`w-full px-4 py-3 rounded-xl text-sm ${theme.text.primary} ${theme.backgrounds.white} border-2 ${theme.borders.primary} focus:ring-4 ${theme.rings.primary} transition-all`}
+            className={`w-full px-4 py-3 rounded-xl text-sm ${theme.text.primary} ${theme.backgrounds.white} border ${theme.borders.primary} focus:ring-4 ${theme.rings.primary} transition-all`}
           />
           {localStorage.getItem('devDate') && (
-            <div className={`mt-2 p-3 ${theme.backgrounds.primaryLighter} rounded-xl border-2 ${theme.borders.primary}`}>
+            <div className={`mt-2 p-3 ${theme.backgrounds.primaryLighter} rounded-xl border ${theme.borders.primary}`}>
               <p className={`text-xs ${theme.text.primary} mb-2`}>
                 Currently mocking:{' '}
                 <strong>{localStorage.getItem('devDate')}</strong>

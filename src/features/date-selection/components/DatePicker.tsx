@@ -46,7 +46,7 @@ export function DatePicker({
 }: DatePickerProps) {
   return (
     <div className="flex-shrink-0 px-4 pt-4 pb-2">
-      <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md`}>
+      <div className={`${theme.backgrounds.white} rounded-xl border ${theme.borders.primaryLight} shadow-md`}>
         {/* Custom Select Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -70,7 +70,7 @@ export function DatePicker({
           {isOpen && (
             <div
               ref={dropdownListRef}
-              className={`absolute z-10 w-full mt-2 bg-white border-2 ${theme.borders.primary} rounded-xl shadow-2xl max-h-80 overflow-y-auto`}
+              className={`absolute z-10 w-full mt-2 bg-white border ${theme.borders.primary} rounded-xl shadow-2xl max-h-80 overflow-y-auto`}
             >
               {filteredSundays.length === 0 ? (
                 <div className="text-center py-8">

@@ -88,7 +88,7 @@ export function HomePage({
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
+            className={`p-2 ${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all`}
             aria-label="Menu"
           >
             <Menu className="w-5 h-5" />
@@ -101,7 +101,7 @@ export function HomePage({
                 className="fixed inset-0 z-40"
                 onClick={() => setShowUserMenu(false)}
               />
-              <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 min-w-[200px]`}>
+              <div className={`absolute right-0 top-full mt-2 ${theme.backgrounds.white} rounded-xl border ${theme.borders.primary} shadow-sm z-50 min-w-[200px]`}>
                 <div className={`px-4 py-3 border-b ${theme.borders.neutralLight}`}>
                   <p className={`text-xs ${theme.text.neutral} mb-1`}>Olá,</p>
                   <p className={`font-semibold text-sm ${theme.text.neutralDarker}`}>
@@ -145,7 +145,7 @@ export function HomePage({
             // LESSON DAY LAYOUT - Quick attendance flow
             <div className="space-y-4">
               {/* Lesson Details Card */}
-              <div className={`${theme.backgrounds.white} rounded-xl shadow-md p-5 border-2 ${theme.borders.primaryLight}`}>
+              <div className={`${theme.backgrounds.white} rounded-xl shadow-sm p-5 border ${theme.borders.primaryLight}`}>
                 <div className="mb-4">
                   <p className={`text-xs ${theme.text.primary} font-bold uppercase tracking-wide mb-2 flex items-center gap-2`}>
                     <Calendar className="w-4 h-4" />
@@ -192,7 +192,7 @@ export function HomePage({
                         <button
                           key={schedule.service_time_id}
                           onClick={() => onQuickStart?.(logic.today, schedule.service_time_id!)}
-                          className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border-2 ${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover} transition-all cursor-pointer`}
+                          className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border ${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover} transition-all cursor-pointer`}
                         >
                           {/* Top: Clock + Time */}
                           <div className="flex items-center gap-1.5 text-xs">
@@ -213,21 +213,10 @@ export function HomePage({
                   </div>
                 </div>
               </div>
-
-              {/* Choose Another Date Button */}
-              <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
-                <button
-                  onClick={onNavigate}
-                  className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-2`}
-                >
-                  <Calendar className={`w-5 h-5 ${theme.text.primary}`} />
-                  <span className={`font-semibold text-sm ${theme.text.primary}`}>Escolher Outra Data</span>
-                </button>
-              </div>
             </div>
           ) : (
             // REGULAR LAYOUT - Date selection flow
-            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-sm border ${theme.borders.primaryLight}`}>
               <button
                 onClick={logic.handleStartClick}
                 className={`w-full px-5 py-4 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-3`}
@@ -253,7 +242,7 @@ export function HomePage({
           {/* Action Cards Grid */}
           <div className="grid grid-cols-2 gap-3">
             {/* Manage Students Button */}
-            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-sm border ${theme.borders.primaryLight}`}>
               <button
                 onClick={onManageStudents}
                 className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-1.5`}
@@ -264,7 +253,7 @@ export function HomePage({
             </div>
 
             {/* Lessons Button */}
-            <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight}`}>
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-sm border ${theme.borders.primaryLight}`}>
               <button
                 onClick={onViewHistory}
                 className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex flex-col items-center justify-center gap-1.5`}
@@ -276,7 +265,7 @@ export function HomePage({
 
             {/* PWA Button - Show if app can be installed and not already running in PWA mode */}
             {!logic.isRunningInPWA && logic.canInstall && (
-              <div className={`${theme.backgrounds.white} rounded-xl shadow-md border-2 ${theme.borders.primaryLight} col-span-2`}>
+              <div className={`${theme.backgrounds.white} rounded-xl shadow-sm border ${theme.borders.primaryLight} col-span-2`}>
                 <button
                   onClick={logic.promptInstall}
                   className={`w-full p-3 ${theme.backgrounds.primaryHover} rounded-xl transition-all flex items-center justify-center gap-2`}
@@ -295,7 +284,7 @@ export function HomePage({
       {/* Loading Overlay - only show when user clicked and we're waiting for data */}
       {logic.waitingForData && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 text-center">
+          <div className="bg-white rounded-2xl shadow-sm max-w-md w-full p-5 text-center">
             {logic.dataError ? (
               <>
                 <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">

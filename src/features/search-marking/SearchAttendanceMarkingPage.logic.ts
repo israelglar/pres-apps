@@ -1,7 +1,7 @@
-import Fuse from "fuse.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
+import { useFuseSearch } from "../../hooks/useFuseSearch";
 import type { AttendanceRecord, Student } from "../../types/attendance.types";
 import { selectionTap, successVibration } from "../../utils/haptics";
 
@@ -81,28 +81,18 @@ export const useSearchAttendanceMarkingLogic = ({
     return { unmarkedStudents: unmarked, markedStudents: marked };
   }, [allStudents, attendanceRecords]);
 
-  // Setup Fuse.js for fuzzy search on unmarked students
-  const fuse = useMemo(() => {
-    return new Fuse(unmarkedStudents, {
-      keys: ["name"],
-      threshold: 0.3, // 0 = perfect match, 1 = match anything
-      includeScore: true,
-      ignoreDiacritics: true,
-    });
-  }, [unmarkedStudents]);
+  // Use shared Fuse search hook for fuzzy search on unmarked students
+  const { results: searchedUnmarkedStudents } = useFuseSearch({
+    items: unmarkedStudents,
+    searchQuery,
+    keys: ["name"],
+    threshold: 0.3,
+  });
 
   // Filter students based on search query
   const displayedStudents = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return [...unmarkedStudents, ...markedStudents];
-    }
-
-    // Search only among unmarked students
-    const searchResults = fuse.search(searchQuery);
-    const filteredUnmarked = searchResults.map((result) => result.item);
-
-    return [...filteredUnmarked, ...markedStudents];
-  }, [searchQuery, unmarkedStudents, markedStudents, fuse]);
+    return [...searchedUnmarkedStudents, ...markedStudents];
+  }, [searchedUnmarkedStudents, markedStudents]);
 
   const handleMarkPresent = (student: Student) => {
     selectionTap();

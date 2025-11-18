@@ -251,19 +251,19 @@ export const theme = {
  * Pre-built button class strings
  */
 export const buttonClasses = {
-  primary: `bg-blue-600 text-white rounded-xl font-semibold shadow-sm hover:bg-blue-700 active:bg-blue-800 hover:shadow-md active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
+  primary: `bg-blue-600 text-white rounded-xl font-semibold shadow-sm hover:bg-blue-700 active:bg-blue-800 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
 
-  secondary: `bg-gray-100 text-gray-800 rounded-xl font-semibold border-2 border-gray-200 hover:bg-gray-200 hover:shadow-sm active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
+  secondary: `bg-gray-100 text-gray-800 rounded-xl font-semibold border border-gray-200 hover:bg-gray-200 hover:shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-blue-500`,
 
-  success: `bg-green-600 text-white rounded-xl font-semibold shadow-sm hover:bg-green-700 hover:shadow-md active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-green-500`,
+  success: `bg-green-600 text-white rounded-xl font-semibold shadow-sm hover:bg-green-700 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-green-500`,
 
-  danger: `bg-red-600 text-white rounded-xl font-semibold shadow-sm hover:bg-red-700 hover:shadow-md active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-red-500`,
+  danger: `bg-red-600 text-white rounded-xl font-semibold shadow-sm hover:bg-red-700 hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-red-500`,
 } as const;
 
 /**
  * Pre-built input class string
  */
-export const inputClasses = `border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white shadow-sm text-gray-900`;
+export const inputClasses = `border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white shadow-sm text-gray-900`;
 
 /**
  * Theme management stub (for backward compatibility)

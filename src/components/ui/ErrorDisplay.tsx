@@ -20,7 +20,7 @@ export const ErrorDisplay = ({ message, onRetry }: ErrorDisplayProps) => {
           <p className={`${theme.text.neutral} mb-8`}>{message}</p>
           <button
             onClick={onRetry}
-            className={`w-full px-6 py-4 ${theme.solids.activeItem} ${theme.text.white} rounded-xl font-semibold text-lg hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2`}
+            className={`w-full px-6 py-4 ${theme.solids.activeItem} ${theme.text.white} rounded-xl font-semibold text-lg hover:shadow-lg transition-all flex items-center justify-center gap-2`}
           >
             <RefreshCw className="w-5 h-5" />
             Tentar Novamente

@@ -26,7 +26,7 @@ export function ServiceTimeSelector({
 }: ServiceTimeSelectorProps) {
   return (
     <div
-      className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-3`}
+      className={`${theme.backgrounds.white} rounded-xl border ${theme.borders.primaryLight} shadow-md p-3`}
     >
       <p
         className={`text-xs ${theme.text.primary} font-bold uppercase tracking-wide mb-2 flex items-center gap-2`}
@@ -43,7 +43,7 @@ export function ServiceTimeSelector({
             <div key={serviceTime.id} className="space-y-2">
               <button
                 onClick={() => onSelectServiceTime(serviceTime.id)}
-                className={`w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border-2 transition-all ${
+                className={`w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border transition-all ${
                   selectedServiceTimeId === serviceTime.id
                     ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                     : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`

@@ -4,10 +4,10 @@
  */
 
 import { useQueryClient } from "@tanstack/react-query";
-import Fuse from "fuse.js";
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { addVisitor } from "../api/supabase/students";
 import { selectionTap } from "../utils/haptics";
+import { useFuseSearch } from "./useFuseSearch";
 
 // Minimal Student interface for visitor management
 export interface Student {
@@ -55,15 +55,21 @@ export function useVisitorManagement(
   const [isAddingVisitor, setIsAddingVisitor] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fuse.js instance for searching existing visitors
-  const fuse = useMemo(() => {
-    return new Fuse(visitorStudents, {
-      keys: ["name"],
-      threshold: 0.3, // Same as main search
-      includeScore: true,
-      ignoreDiacritics: true,
-    });
-  }, [visitorStudents]);
+  // Use shared Fuse search hook for searching existing visitors
+  const { results: fuseSearchResults } = useFuseSearch({
+    items: visitorStudents,
+    searchQuery,
+    keys: ["name"],
+    threshold: 0.3,
+  });
+
+  // Sync Fuse search results with local state
+  useEffect(() => {
+    if (searchQuery.trim() !== "") {
+      setSearchResults(fuseSearchResults);
+      setShowResults(true);
+    }
+  }, [fuseSearchResults, searchQuery]);
 
   const openVisitorDialog = () => {
     setIsVisitorDialogOpen(true);
@@ -87,12 +93,7 @@ export function useVisitorManagement(
     if (query.trim() === "") {
       setSearchResults([]);
       setShowResults(false);
-      return;
     }
-
-    const results = fuse.search(query);
-    setSearchResults(results.map((r) => r.item));
-    setShowResults(true);
   };
 
   const handleSelectVisitor = (visitor: Student) => {

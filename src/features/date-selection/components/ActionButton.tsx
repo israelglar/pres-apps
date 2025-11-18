@@ -26,7 +26,7 @@ export function ActionButton({
         /* Future Date - Show "Ver Detalhes" button */
         <button
           onClick={() => onViewLesson(formatDateForUrl(selectedDate))}
-          className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2`}
+          className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primary} hover:${theme.backgrounds.primaryLight} rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2`}
         >
           Ver Detalhes
           <ExternalLink className="w-4 h-4" />

@@ -8,7 +8,7 @@ interface LessonInfoCardProps {
 
 export function LessonInfoCard({ selectedSchedule }: LessonInfoCardProps) {
   return (
-    <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-3`}>
+    <div className={`${theme.backgrounds.white} rounded-xl border ${theme.borders.primaryLight} shadow-md p-3`}>
       <p className={`text-xs ${theme.text.primary} font-bold uppercase tracking-wide mb-2 flex items-center gap-2`}>
         <Calendar className="w-4 h-4" />
         Lição

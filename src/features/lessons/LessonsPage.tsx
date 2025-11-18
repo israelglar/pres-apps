@@ -15,7 +15,6 @@ import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { LessonFormModal } from "./components/LessonFormModal";
 import { NotesDialog } from "./components/NotesDialog";
 import { UnscheduledLessonCard } from "./components/UnscheduledLessonCard";
-import { useUnscheduledLessons } from "./hooks/useUnscheduledLessons";
 
 interface LessonsPageProps {
   onBack: () => void;
@@ -36,15 +35,13 @@ export function LessonsPage({
 }: LessonsPageProps) {
   const navigate = useNavigate();
 
-  // Fetch unscheduled lessons
-  const { data: unscheduledLessons = [], isLoading: isLoadingUnscheduled } =
-    useUnscheduledLessons();
-
   const {
     history,
     totalLessons,
     isLoading,
     error,
+    unscheduledLessons,
+    isLoadingUnscheduled,
     isEditing,
     isNotesDialogOpen,
     selectedRecordForNotes,
@@ -153,7 +150,7 @@ export function LessonsPage({
         {/* Error State */}
         {error && (
           <div
-            className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-2xl p-5 text-center`}
+            className={`${theme.backgrounds.error} border ${theme.borders.error} rounded-2xl p-5 text-center`}
           >
             <p className={`${theme.text.error} font-semibold mb-2 text-base`}>
               Erro ao carregar lições
@@ -185,7 +182,8 @@ export function LessonsPage({
           !error &&
           totalLessons > 0 &&
           history &&
-          history.length === 0 && (
+          history.length === 0 &&
+          unscheduledLessons.length === 0 && (
             <EmptyState
               icon={<Search className="w-16 h-16" />}
               title="Nenhuma lição encontrada"
@@ -205,56 +203,61 @@ export function LessonsPage({
           )}
 
         {/* Lesson List */}
-        {!isLoading && !error && history && history.length > 0 && (
+        {!isLoading && !error && (history.length > 0 || unscheduledLessons.length > 0) && (
           <>
-            {/* Item Count */}
-            <ItemCount
-              totalCount={totalLessons}
-              filteredCount={history.length}
-              itemLabel="lição"
-              itemLabelPlural="lições"
-              isFiltered={hasActiveFilters || searchQuery.length > 0}
-              className="mb-4"
-            />
+            {/* Item Count - only show if there are scheduled lessons */}
+            {history && history.length > 0 && (
+              <ItemCount
+                totalCount={totalLessons}
+                filteredCount={history.length}
+                itemLabel="lição"
+                itemLabelPlural="lições"
+                isFiltered={hasActiveFilters || searchQuery.length > 0}
+                className="mb-4"
+              />
+            )}
 
-            <div className="space-y-2">
-              {history.map((group, index) => {
-                // Check if this is a future lesson
-                const today = new Date().toISOString().split('T')[0];
-                const isFuture = group.date > today;
+            {/* Scheduled Lessons */}
+            {history && history.length > 0 && (
+              <div className="space-y-2">
+                {history.map((group, index) => {
+                  // Check if this is a future lesson
+                  const today = new Date().toISOString().split('T')[0];
+                  const isFuture = group.date > today;
 
-                // Check if previous lesson was not future (or this is first item)
-                const prevGroup = index > 0 ? history[index - 1] : null;
-                const prevIsFuture = prevGroup ? prevGroup.date > today : false;
+                  // Check if previous lesson was not future (or this is first item)
+                  const prevGroup = index > 0 ? history[index - 1] : null;
+                  const prevIsFuture = prevGroup ? prevGroup.date > today : false;
 
-                // Show separator if this is the first future lesson
-                const showSeparator = isFuture && !prevIsFuture;
+                  // Show separator if this is the first future lesson
+                  const showSeparator = isFuture && !prevIsFuture;
 
-                return (
-                  <div key={group.date}>
-                    {showSeparator && (
-                      <div className={`flex items-center gap-3 py-4 px-2`}>
-                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
-                        <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
-                          Lições Futuras
-                        </span>
-                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
-                      </div>
-                    )}
-                    <DateGroupCard
-                      group={group}
-                      onDateClick={onDateClick}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                  return (
+                    <div key={group.date}>
+                      {showSeparator && (
+                        <div className={`flex items-center gap-3 py-4 px-2`}>
+                          <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                          <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
+                            Lições Futuras
+                          </span>
+                          <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                        </div>
+                      )}
+                      <DateGroupCard
+                        group={group}
+                        onDateClick={onDateClick}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Unscheduled Lessons Section */}
             {!isLoadingUnscheduled && unscheduledLessons.length > 0 && (
               <>
                 {/* Separator */}
-                <div className={`flex items-center gap-3 py-6 px-2 mt-4`}>
+                <div className={`flex items-center gap-3 py-6 px-2 ${history.length > 0 ? 'mt-4' : ''}`}>
                   <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
                   <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
                     Lições Não Agendadas

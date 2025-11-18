@@ -79,7 +79,7 @@ export function CreateVisitorDialog({
               placeholder="Nome completo..."
               disabled={isCreating}
               autoFocus
-              className={`w-full px-4 py-3 rounded-xl border-2 ${
+              className={`w-full px-4 py-3 rounded-xl border ${
                 error
                   ? `${theme.borders.error} ${theme.backgrounds.error}`
                   : `${theme.borders.primary} focus:${theme.borders.primaryFocus}`

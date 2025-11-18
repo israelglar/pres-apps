@@ -61,7 +61,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
             rightContent ? 'pr-16' : value ? 'pr-12' : 'pr-4'
           } py-3 rounded-xl text-sm ${theme.backgrounds.white} ${
             theme.text.onLight
-          } placeholder-gray-400 border-2 ${theme.borders.primaryLight} ${
+          } placeholder-gray-400 border ${theme.borders.primaryLight} ${
             theme.borders.primaryHover
           } focus:outline-none focus:ring-2 ${
             theme.rings.primary

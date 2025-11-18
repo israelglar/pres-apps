@@ -6,6 +6,8 @@ import { addVisitor } from '../../api/supabase/students';
 import { getAllTeachers } from '../../api/supabase/teachers';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useLessonManagement } from '../../hooks/useLessonManagement';
+import { useUnscheduledLessons } from './hooks/useUnscheduledLessons';
+import { useFuseSearch } from '../../hooks/useFuseSearch';
 
 /**
  * Business logic for Lessons Page
@@ -19,6 +21,9 @@ export function useLessonsLogic(
 
   // Fetch all lessons at once (no pagination)
   const { history, isLoading, error, refetch } = useLessons();
+
+  // Fetch unscheduled lessons
+  const { data: unscheduledLessons = [], isLoading: isLoadingUnscheduled } = useUnscheduledLessons();
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -121,23 +126,29 @@ export function useLessonsLogic(
     if (groupId === 'teacher') setTeacherFilter(value);
   };
 
-  // Apply filters to history
-  const filteredLessons = useMemo(() => {
-    if (!history) {
-      return [];
-    }
+  // Create searchable items for scheduled lessons (with lesson names)
+  const searchableScheduledLessons = useMemo(() => {
+    if (!history) return [];
 
+    return history.map((group) => ({
+      ...group,
+      // Extract lesson name for searching
+      lessonName: group.serviceTimes[0]?.schedule.lesson?.name || '',
+    }));
+  }, [history]);
+
+  // Use Fuse search for scheduled lessons
+  const { results: searchedScheduledLessons } = useFuseSearch({
+    items: searchableScheduledLessons,
+    searchQuery,
+    keys: ['lessonName'],
+  });
+
+  // Apply non-search filters to scheduled lessons
+  const filteredLessons = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
 
-    const filtered = history.filter((group) => {
-      // Search filter - search in lesson name
-      if (searchQuery) {
-        const lessonName = group.serviceTimes[0]?.schedule.lesson?.name || '';
-        if (!lessonName.toLowerCase().includes(searchQuery.toLowerCase())) {
-          return false;
-        }
-      }
-
+    const filtered = searchedScheduledLessons.filter((group) => {
       // Time period filter
       if (timePeriodFilter === 'past' && group.date >= today) return false;
       if (timePeriodFilter === 'today' && group.date !== today) return false;
@@ -161,7 +172,14 @@ export function useLessonsLogic(
     });
 
     return filtered;
-  }, [history, searchQuery, timePeriodFilter, attendanceFilter, teacherFilter]);
+  }, [searchedScheduledLessons, timePeriodFilter, attendanceFilter, teacherFilter]);
+
+  // Use Fuse search for unscheduled lessons
+  const { results: filteredUnscheduledLessons } = useFuseSearch({
+    items: unscheduledLessons || [],
+    searchQuery,
+    keys: ['name'],
+  });
 
   /**
    * Open edit dialog for a specific attendance record
@@ -489,6 +507,10 @@ export function useLessonsLogic(
     totalLessons: history?.length || 0, // Track total unfiltered count for ItemCount
     isLoading,
     error,
+
+    // Unscheduled lessons data
+    unscheduledLessons: filteredUnscheduledLessons,
+    isLoadingUnscheduled,
 
     // Dialog state
     isDialogOpen,

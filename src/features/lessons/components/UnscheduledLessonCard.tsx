@@ -19,7 +19,7 @@ export function UnscheduledLessonCard({
   return (
     <button
       onClick={() => onClick(lesson.id)}
-      className={`w-full ${theme.backgrounds.white} rounded-2xl shadow-lg p-5 mb-3 transition-all hover:shadow-xl active:scale-[0.98]`}
+      className={`w-full ${theme.backgrounds.white} rounded-2xl shadow-sm p-5 mb-3 transition-all hover:shadow-md active:scale-[0.98]`}
     >
       <div className="flex items-start gap-4">
         {/* Icon */}

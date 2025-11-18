@@ -78,7 +78,7 @@ function AppContent() {
       {import.meta.env.DEV && (
         <button
           onClick={() => setShowDevTools(true)}
-          className={`fixed bottom-4 left-4 p-2 ${theme.backgrounds.white} ${theme.text.primary} border-2 ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all z-50`}
+          className={`fixed bottom-4 left-4 p-2 ${theme.backgrounds.white} ${theme.text.primary} border ${theme.borders.primaryLight} rounded-lg ${theme.backgrounds.primaryHover} hover:shadow-md transition-all z-50`}
           aria-label="Dev Tools"
           title="Dev Tools"
         >

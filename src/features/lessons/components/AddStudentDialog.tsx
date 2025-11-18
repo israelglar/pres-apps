@@ -110,7 +110,7 @@ export function AddStudentDialog({
                   key={student.id}
                   onClick={() => onAdd(student.id)}
                   disabled={isAdding}
-                  className={`w-full ${theme.backgrounds.white} border-2 ${theme.borders.primary} rounded-xl p-3 hover:shadow-md ${theme.backgrounds.primaryHover} active:scale-[0.99] transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed`}
+                  className={`w-full ${theme.backgrounds.white} border ${theme.borders.primary} rounded-xl p-3 hover:shadow-md ${theme.backgrounds.primaryHover} active:scale-[0.99] transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`${theme.backgrounds.primaryLight} p-1.5 rounded-lg flex-shrink-0`}>

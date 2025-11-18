@@ -34,7 +34,7 @@ export function StudentDetailHeader({
   return (
     <div className="space-y-3">
       {/* Student Info Card */}
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-5 hover:shadow-xl transition-shadow`}>
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow`}>
         {/* Header with Name and Action Icons */}
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Name and Badges */}

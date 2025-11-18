@@ -11,7 +11,7 @@ export function AttendanceSummaryCard({
 }: AttendanceSummaryCardProps) {
   return (
     <div
-      className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-3`}
+      className={`${theme.backgrounds.white} rounded-xl border ${theme.borders.primaryLight} shadow-md p-3`}
     >
       <label
         className={`block ${theme.text.primary} font-bold mb-2 text-xs uppercase tracking-wide flex items-center gap-2`}
@@ -24,7 +24,7 @@ export function AttendanceSummaryCard({
       <div className="grid grid-cols-2 gap-2 mb-2">
         {/* Total Present */}
         <div
-          className={`${theme.backgrounds.successLight} border-2 ${theme.borders.success} rounded-lg p-2 text-center`}
+          className={`${theme.backgrounds.successLight} border ${theme.borders.success} rounded-lg p-2 text-center`}
         >
           <div className="flex items-center justify-center gap-1">
             <CheckCircle2 className={`w-3.5 h-3.5 ${theme.text.success}`} />
@@ -39,7 +39,7 @@ export function AttendanceSummaryCard({
 
         {/* Total Absent */}
         <div
-          className={`${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-lg p-2 text-center`}
+          className={`${theme.backgrounds.errorLight} border ${theme.borders.error} rounded-lg p-2 text-center`}
         >
           <div className="flex items-center justify-center gap-1">
             <UserX className={`w-3.5 h-3.5 ${theme.text.error}`} />

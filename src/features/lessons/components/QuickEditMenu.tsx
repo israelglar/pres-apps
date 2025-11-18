@@ -107,7 +107,7 @@ export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteD
           e.stopPropagation(); // Prevent row tap event
           setIsOpen(!isOpen);
         }}
-        className={`p-1.5 rounded-lg ${theme.text.neutral} hover:bg-gray-100 active:scale-95 transition-all`}
+        className={`p-1.5 rounded-lg ${theme.text.neutral} hover:bg-gray-100 transition-all`}
         aria-label="Mais opções"
       >
         <MoreVertical className="w-3.5 h-3.5" />

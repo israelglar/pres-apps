@@ -253,7 +253,7 @@ export function StudentManagementPage({
           {/* Error State */}
           {isError && (
             <div
-              className={`${theme.backgrounds.errorLight} border-2 ${theme.borders.error} rounded-xl p-6`}
+              className={`${theme.backgrounds.errorLight} border ${theme.borders.error} rounded-xl p-6`}
             >
               <p className={`${theme.text.error} font-bold mb-2`}>
                 Erro ao carregar prés

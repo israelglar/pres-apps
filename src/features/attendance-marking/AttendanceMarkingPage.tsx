@@ -121,7 +121,7 @@ export const AttendanceMarkingPage = ({
           <div className="flex-shrink-0 p-5 pb-3">
             <button
               onClick={visitorManagement.openVisitorDialog}
-              className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium border-2 ${theme.borders.primary} hover:shadow-md transition-all flex items-center justify-center gap-2`}
+              className={`w-full px-5 py-3 ${theme.backgrounds.white} ${theme.text.primary} rounded-xl text-sm font-medium border ${theme.borders.primary} hover:shadow-md transition-all flex items-center justify-center gap-2`}
             >
               <UserPlus className="w-4 h-4" />
               <span>Adicionar Visitante</span>
@@ -169,7 +169,7 @@ export const AttendanceMarkingPage = ({
 
                 return (
                   <div
-                    className={`${theme.backgrounds.primaryLighter} rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8 border-2 ${theme.borders.primaryLight}`}
+                    className={`${theme.backgrounds.primaryLighter} rounded-3xl shadow-2xl mb-6 relative overflow-hidden p-8 border ${theme.borders.primaryLight}`}
                     onTouchStart={hasAlert ? undefined : onTouchStart}
                     onTouchMove={hasAlert ? undefined : onTouchMove}
                     onTouchEnd={hasAlert ? undefined : onTouchEnd}
@@ -334,7 +334,7 @@ export const AttendanceMarkingPage = ({
               <div className="hidden md:grid grid-cols-2 gap-4">
                 <button
                   onClick={() => handleMark("F")}
-                  className={`${theme.solids.errorButton} ${theme.solids.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
+                  className={`${theme.solids.errorButton} ${theme.solids.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 group`}
                 >
                   <div className="text-center">
                     <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>
@@ -346,7 +346,7 @@ export const AttendanceMarkingPage = ({
 
                 <button
                   onClick={() => handleMark("P")}
-                  className={`${theme.solids.activeItem} ${theme.solids.primaryButtonHover} rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all p-5 group`}
+                  className={`${theme.solids.activeItem} ${theme.solids.primaryButtonHover} rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 group`}
                 >
                   <div className="text-center">
                     <div className={`${theme.backgrounds.whiteTransparent} backdrop-blur-sm rounded-full p-2 inline-flex mb-3 group-hover:scale-110 transition-transform`}>

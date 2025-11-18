@@ -72,12 +72,12 @@ export const StudentList: React.FC<StudentListProps> = ({
             onClick={() => onStudentClick(student, isMarked)}
             className={`w-full px-4 py-3 rounded-xl text-left flex items-center justify-between transition-all duration-200 shadow-sm ${
               isCurrent && !isMarked
-                ? `${theme.backgrounds.primaryLighter} border-2 ${theme.borders.primary} shadow-md`
+                ? `${theme.backgrounds.primaryLighter} border ${theme.borders.primary} shadow-md`
                 : isMarked
                   ? record.status === "P"
-                    ? `${theme.backgrounds.success} border-2 ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
-                    : `${theme.backgrounds.errorLight} border-2 ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
-                  : `${theme.backgrounds.white} border-2 ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all`
+                    ? `${theme.backgrounds.success} border ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
+                    : `${theme.backgrounds.errorLight} border ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
+                  : `${theme.backgrounds.white} border ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md active:scale-98 transition-all`
             }`}
           >
             <div className="flex items-center gap-2.5">

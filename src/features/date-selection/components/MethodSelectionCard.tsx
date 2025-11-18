@@ -17,7 +17,7 @@ export function MethodSelectionCard({
   onCloseMethodInfo,
 }: MethodSelectionCardProps) {
   return (
-    <div className={`${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primaryLight} shadow-md p-3`}>
+    <div className={`${theme.backgrounds.white} rounded-xl border ${theme.borders.primaryLight} shadow-md p-3`}>
       <p className={`text-xs ${theme.text.primary} font-bold uppercase tracking-wide mb-2 flex items-center gap-2`}>
         <Search className="w-4 h-4" />
         Método
@@ -28,7 +28,7 @@ export function MethodSelectionCard({
           <button
             type="button"
             onClick={() => onSelectMethod("search")}
-            className={`w-full p-2 rounded-xl border-2 transition-all ${
+            className={`w-full p-2 rounded-xl border transition-all ${
               selectedMethod === "search"
                 ? `${theme.borders.secondary} ${theme.backgrounds.secondaryLight50} shadow-md`
                 : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
@@ -57,7 +57,7 @@ export function MethodSelectionCard({
                 className="fixed inset-0 z-40"
                 onClick={onCloseMethodInfo}
               />
-              <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
+              <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border ${theme.borders.secondary} shadow-2xl z-50 animate-fade-in`}>
                 <p className={`text-sm ${theme.text.neutral}`}>
                   Ideal para registar pela ordem em que estão sentados.
                 </p>
@@ -71,7 +71,7 @@ export function MethodSelectionCard({
           <button
             type="button"
             onClick={() => onSelectMethod("swipe")}
-            className={`w-full p-2 rounded-xl border-2 transition-all ${
+            className={`w-full p-2 rounded-xl border transition-all ${
               selectedMethod === "swipe"
                 ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                 : `${theme.borders.primaryLight} ${theme.backgrounds.white} hover:shadow-md ${theme.borders.primaryHover}`
@@ -100,7 +100,7 @@ export function MethodSelectionCard({
                 className="fixed inset-0 z-40"
                 onClick={onCloseMethodInfo}
               />
-              <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border-2 ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
+              <div className={`fixed left-1/2 -translate-x-1/2 bottom-32 w-72 max-w-[calc(100vw-2rem)] p-4 ${theme.backgrounds.white} rounded-xl border ${theme.borders.primary} shadow-2xl z-50 animate-fade-in`}>
                 <p className={`text-sm ${theme.text.neutral}`}>
                   Percorre todos para marcar presente ou falta.
                 </p>

@@ -138,7 +138,7 @@ export function UnscheduledLessonPage({
 
         {/* Info Box */}
         <div
-          className={`${theme.backgrounds.primaryLighter} ${theme.borders.primaryLight} border-2 rounded-2xl p-4`}
+          className={`${theme.backgrounds.primaryLighter} ${theme.borders.primaryLight} border rounded-2xl p-4`}
         >
           <p className={`text-sm ${theme.text.primaryDarker} leading-relaxed`}>
             Esta lição ainda não foi agendada. Escolha uma data e hora do culto

@@ -84,7 +84,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
             {/* Search Results Dropdown - Only show if there are results */}
             {visitorManagement.showResults &&
               visitorManagement.searchResults.length > 0 && (
-                <div className={`absolute z-10 w-full mt-1 ${theme.backgrounds.white} border-2 ${theme.borders.neutralLight} rounded-xl shadow-lg max-h-48 overflow-y-auto`}>
+                <div className={`absolute z-10 w-full mt-1 ${theme.backgrounds.white} border ${theme.borders.neutralLight} rounded-xl shadow-lg max-h-48 overflow-y-auto`}>
                   <ul className="py-1">
                     {visitorManagement.searchResults.map((visitor) => (
                       <li
@@ -120,7 +120,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
           {/* Selected Visitor Card */}
           {visitorManagement.selectedVisitor && (
             <div
-              className={`p-3 ${theme.solids.cardPrimary} rounded-xl border-2 ${theme.borders.successLight}`}
+              className={`p-3 ${theme.solids.cardPrimary} rounded-xl border ${theme.borders.successLight}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     onClick={() =>
                       visitorManagement.setFirstTimeAtChurch("yes")
                     }
-                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border transition-all ${
                       visitorManagement.firstTimeAtChurch === "yes"
                         ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                         : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
@@ -181,7 +181,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                     onClick={() =>
                       visitorManagement.setFirstTimeAtChurch("no")
                     }
-                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                    className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border transition-all ${
                       visitorManagement.firstTimeAtChurch === "no"
                         ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                         : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
@@ -204,7 +204,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       onClick={() =>
                         visitorManagement.setWillComeRegularly("yes")
                       }
-                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border transition-all ${
                         visitorManagement.willComeRegularly === "yes"
                           ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                           : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`
@@ -217,7 +217,7 @@ export const VisitorDialog: React.FC<VisitorDialogProps> = ({
                       onClick={() =>
                         visitorManagement.setWillComeRegularly("no")
                       }
-                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border-2 transition-all ${
+                      className={`flex-1 px-5 py-3 text-sm font-bold rounded-xl border transition-all ${
                         visitorManagement.willComeRegularly === "no"
                           ? `${theme.solids.primaryButton} ${theme.text.white} border-transparent`
                           : `${theme.backgrounds.white} ${theme.borders.neutral} ${theme.text.neutralDark} ${theme.backgrounds.neutralHover}`

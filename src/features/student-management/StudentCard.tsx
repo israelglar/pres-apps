@@ -54,7 +54,7 @@ export function StudentCard({ student, onClick, hasAlert = false }: StudentCardP
   return (
     <button
       onClick={() => onClick(student)}
-      className={`w-full ${theme.backgrounds.white} rounded-xl shadow-lg p-3 hover:shadow-xl ${theme.backgrounds.neutralHover} active:scale-[0.99] transition-all cursor-pointer text-left`}
+      className={`w-full ${theme.backgrounds.white} rounded-xl shadow-sm p-3 hover:shadow-md ${theme.backgrounds.neutralHover} active:scale-[0.99] transition-all cursor-pointer text-left`}
     >
       <div className="flex items-center justify-between gap-2">
         {/* Student Info */}

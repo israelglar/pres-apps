@@ -19,7 +19,7 @@ export function AttendanceTimelineList({
   // Empty state
   if (!isLoading && records.length === 0) {
     return (
-      <div className={`${theme.backgrounds.white} rounded-2xl shadow-lg p-5 text-center`}>
+      <div className={`${theme.backgrounds.white} rounded-2xl shadow-sm p-5 text-center`}>
         <div className="flex flex-col items-center gap-3">
           <div className={`w-12 h-12 rounded-full ${theme.backgrounds.neutral} flex items-center justify-center`}>
             <CalendarX className={`w-6 h-6 ${theme.text.neutralLight}`} />

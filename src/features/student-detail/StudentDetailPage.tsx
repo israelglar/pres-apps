@@ -113,7 +113,7 @@ export function StudentDetailPage({
           </p>
           <button
             onClick={onBack}
-            className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 active:bg-blue-800 transition-all shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             Voltar
           </button>
@@ -165,7 +165,7 @@ export function StudentDetailPage({
 
         {/* Absence Alert */}
         {hasAbsenceAlert && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 flex items-start gap-3 shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start gap-3 shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
             <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-red-900 mb-1">

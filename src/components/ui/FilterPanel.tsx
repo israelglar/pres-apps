@@ -38,7 +38,7 @@ export function FilterPanel({
 
   return (
     <div
-      className={`${theme.backgrounds.white} rounded-xl p-3 space-y-2.5 border-2 ${theme.borders.primaryLight} shadow-md ${className}`}
+      className={`${theme.backgrounds.white} rounded-xl p-3 space-y-2.5 border ${theme.borders.primaryLight} shadow-md ${className}`}
     >
       {filterGroups.map((group) => (
         <div key={group.id}>

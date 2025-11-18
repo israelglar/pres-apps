@@ -160,7 +160,7 @@ export function TeacherAssignmentDialog({
 
             {error && (
               <div
-                className={`${theme.backgrounds.error} border-2 ${theme.borders.error} rounded-xl p-4 mb-4`}
+                className={`${theme.backgrounds.error} border ${theme.borders.error} rounded-xl p-4 mb-4`}
               >
                 <p className={`${theme.text.error} font-semibold text-sm`}>
                   {error}
@@ -179,7 +179,7 @@ export function TeacherAssignmentDialog({
                     <button
                       onClick={handleCopyFromOther}
                       disabled={isSaving}
-                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.primary} hover:${theme.backgrounds.primaryLight} active:scale-95 transition-all ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.primary} hover:${theme.backgrounds.primaryLight} transition-all ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
                       title={`Copiar professores de ${otherServiceTime.time}`}
                     >
                       <Copy className="w-3.5 h-3.5" />
@@ -196,7 +196,7 @@ export function TeacherAssignmentDialog({
                       key={teacher.id}
                       onClick={() => handleToggleTeacher(teacher.id)}
                       disabled={isSaving}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${
                         isSelected
                           ? `${theme.borders.primary} ${theme.backgrounds.primaryLighter} shadow-md`
                           : `${theme.borders.neutralLight} ${theme.backgrounds.white} hover:${theme.borders.primary} hover:shadow-md`
@@ -204,7 +204,7 @@ export function TeacherAssignmentDialog({
                     >
                       {/* Checkbox */}
                       <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
                           isSelected
                             ? `${theme.borders.primary} ${theme.backgrounds.primary}`
                             : `${theme.borders.neutral} ${theme.backgrounds.white}`
