@@ -65,6 +65,7 @@ export function useAttendanceData() {
       date,
       serviceTimeId,
       records,
+      markedBy,
     }: {
       date: string;
       serviceTimeId: number;
@@ -73,7 +74,8 @@ export function useAttendanceData() {
         status: 'present' | 'absent' | 'excused' | 'late';
         notes?: string;
       }>;
-    }) => bulkUpdateAttendance(date, serviceTimeId, records),
+      markedBy?: number | null;
+    }) => bulkUpdateAttendance(date, serviceTimeId, records, markedBy),
     onSuccess: async () => {
       // Invalidate relevant caches after successful save
       // Using Promise.all ensures all invalidations complete before mutation resolves
@@ -206,7 +208,8 @@ export function useAttendanceSubmit() {
   const handleComplete = async (
     records: Array<{ studentId: number; status: string; notes?: string }>,
     selectedDate: string,
-    serviceTimeId: number = 2 // Default to 11h service
+    serviceTimeId: number = 2, // Default to 11h service
+    markedBy?: number | null
   ) => {
     // Transform records to match new API format
     const attendanceRecords = records.map((record) => ({
@@ -220,6 +223,7 @@ export function useAttendanceSubmit() {
       date: selectedDate,
       serviceTimeId,
       records: attendanceRecords,
+      markedBy,
     });
 
     // Wait a moment to show success message

@@ -79,7 +79,8 @@ export async function bulkSaveAttendance(
     status: 'present' | 'absent' | 'excused' | 'late';
     service_time_id?: number;
     notes?: string;
-  }>
+  }>,
+  markedBy?: number | null
 ): Promise<AttendanceRecord[]> {
   try {
     // Step 1: Delete ALL existing records for this schedule
@@ -98,7 +99,7 @@ export async function bulkSaveAttendance(
       status: record.status,
       service_time_id: record.service_time_id || null,
       notes: record.notes || null,
-      marked_by: null, // TODO: Add teacher ID when auth is implemented
+      marked_by: markedBy || null,
       marked_at: new Date().toISOString(),
     }));
 

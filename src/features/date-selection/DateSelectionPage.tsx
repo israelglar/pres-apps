@@ -2,6 +2,7 @@ import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { EmptyState } from "../../components/ui/EmptyState";
 import type { Schedule } from "../../schemas/attendance.schema";
+import type { ScheduleAssignment } from "../../types/database.types";
 import { useDateSelectionLogic } from "./DateSelectionPage.logic";
 import type { AttendanceStats } from "../../utils/attendance";
 import { useEffect } from "react";
@@ -28,7 +29,7 @@ interface DateSelectionPageProps {
   getSchedule: (
     date: string,
     serviceTimeId: number | null
-  ) => Schedule | undefined;
+  ) => (Schedule & { assignments?: (ScheduleAssignment & { teacher?: { name: string } })[] }) | undefined;
   getAvailableDates: (serviceTimeId?: number | null) => Date[];
   attendanceStats?: AttendanceStats;
   onDateChange?: (date: Date) => void;
@@ -182,6 +183,11 @@ export function DateSelectionPage({
                   const dateStr = logic.selectedDate.toISOString().split("T")[0];
                   const schedule = getSchedule(dateStr, serviceTimeId);
                   return schedule?.has_attendance || false;
+                }}
+                getServiceTimeAssignments={(serviceTimeId) => {
+                  const dateStr = logic.selectedDate.toISOString().split("T")[0];
+                  const schedule = getSchedule(dateStr, serviceTimeId);
+                  return schedule?.assignments || [];
                 }}
                 onSelectServiceTime={(serviceTimeId) =>
                   logic.setSelectedServiceTimeId(serviceTimeId)

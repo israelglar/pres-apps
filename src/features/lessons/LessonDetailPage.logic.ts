@@ -59,6 +59,9 @@ export function useLessonDetailLogic(
   const [isCreatingVisitor, setIsCreatingVisitor] = useState(false);
   const [visitorInitialName, setVisitorInitialName] = useState('');
 
+  // Teacher assignment dialog state
+  const [isTeacherAssignmentDialogOpen, setIsTeacherAssignmentDialogOpen] = useState(false);
+
   /**
    * Quick status change (no dialog) - used by tap-to-cycle and quick menu
    * Auto-saves immediately with optimistic updates
@@ -250,6 +253,32 @@ export function useLessonDetailLogic(
   };
 
   /**
+   * Open teacher assignment dialog
+   */
+  const handleOpenTeacherAssignmentDialog = () => {
+    lightTap();
+    setIsTeacherAssignmentDialogOpen(true);
+  };
+
+  /**
+   * Close teacher assignment dialog
+   */
+  const handleCloseTeacherAssignmentDialog = () => {
+    lightTap();
+    setIsTeacherAssignmentDialogOpen(false);
+  };
+
+  /**
+   * Handle successful teacher assignment update
+   * Refreshes the data to show updated assignments
+   */
+  const handleTeacherAssignmentSuccess = () => {
+    successVibration();
+    // Invalidate lessons query to refetch with updated assignments
+    queryClient.invalidateQueries({ queryKey: ['lessons'] });
+  };
+
+  /**
    * View student detail page
    */
   const handleViewStudent = (studentId: number) => {
@@ -312,6 +341,9 @@ export function useLessonDetailLogic(
     isCreatingVisitor,
     visitorInitialName,
 
+    // Teacher assignment dialog state
+    isTeacherAssignmentDialogOpen,
+
     // Selected service time
     selectedServiceTimeIndex,
 
@@ -329,6 +361,9 @@ export function useLessonDetailLogic(
     handleOpenCreateVisitorDialog,
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
+    handleOpenTeacherAssignmentDialog,
+    handleCloseTeacherAssignmentDialog,
+    handleTeacherAssignmentSuccess,
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,

@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
-import type { AttendanceRecordWithRelations } from '../../types/database.types';
+import type { AttendanceRecordWithRelations, Teacher } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
+import { getAllTeachers } from '../../api/supabase/teachers';
 import { useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -11,9 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
  */
 export function useLessonsLogic(
   onViewStudent?: (studentId: number) => void,
-  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
-  initialDate?: string,
-  initialServiceTimeId?: number
+  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void
 ) {
   const queryClient = useQueryClient();
 
@@ -55,7 +54,20 @@ export function useLessonsLogic(
   const [searchQuery, setSearchQuery] = useState('');
   const [timePeriodFilter, setTimePeriodFilter] = useState('all'); // 'past' | 'today' | 'future' | 'all'
   const [attendanceFilter, setAttendanceFilter] = useState('all'); // 'has-attendance' | 'no-attendance' | 'all'
+  const [teacherFilter, setTeacherFilter] = useState('all'); // 'all' | teacher ID
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Teachers list for filter
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+
+  // Fetch teachers for filter
+  useEffect(() => {
+    getAllTeachers()
+      .then(setTeachers)
+      .catch((error) => {
+        console.error('Failed to fetch teachers:', error);
+      });
+  }, []);
 
   // Filter groups configuration
   const filterGroups = [
@@ -78,19 +90,32 @@ export function useLessonsLogic(
         { value: 'no-attendance', label: 'Sem Presenças' },
       ],
     },
+    {
+      id: 'teacher',
+      label: 'Professor',
+      options: [
+        { value: 'all', label: 'Todos' },
+        ...teachers.map((teacher) => ({
+          value: teacher.id.toString(),
+          label: teacher.name,
+        })),
+      ],
+    },
   ];
 
   // Helper functions for filtering
-  const hasActiveFilters = timePeriodFilter !== 'all' || attendanceFilter !== 'all';
+  const hasActiveFilters = timePeriodFilter !== 'all' || attendanceFilter !== 'all' || teacherFilter !== 'all';
 
   const handleClearFilters = () => {
     setTimePeriodFilter('all');
     setAttendanceFilter('all');
+    setTeacherFilter('all');
   };
 
   const handleFilterChange = (groupId: string, value: string) => {
     if (groupId === 'timePeriod') setTimePeriodFilter(value);
     if (groupId === 'attendance') setAttendanceFilter(value);
+    if (groupId === 'teacher') setTeacherFilter(value);
   };
 
   // Apply filters to history
@@ -118,9 +143,18 @@ export function useLessonsLogic(
       if (attendanceFilter === 'has-attendance' && !hasAttendance) return false;
       if (attendanceFilter === 'no-attendance' && hasAttendance) return false;
 
+      // Teacher filter - check if the selected teacher is assigned to any service time
+      if (teacherFilter !== 'all') {
+        const teacherId = parseInt(teacherFilter);
+        const hasTeacher = group.serviceTimes.some(st =>
+          st.schedule.assignments?.some(assignment => assignment.teacher_id === teacherId)
+        );
+        if (!hasTeacher) return false;
+      }
+
       return true;
     });
-  }, [history, searchQuery, timePeriodFilter, attendanceFilter]);
+  }, [history, searchQuery, timePeriodFilter, attendanceFilter, teacherFilter]);
 
   /**
    * Open edit dialog for a specific attendance record
@@ -428,16 +462,13 @@ export function useLessonsLogic(
     setSearchQuery,
     timePeriodFilter,
     attendanceFilter,
+    teacherFilter,
     isFilterOpen,
     setIsFilterOpen,
     filterGroups,
     hasActiveFilters,
     handleFilterChange,
     handleClearFilters,
-
-    // Initial navigation params
-    initialDate,
-    initialServiceTimeId,
 
     // Actions
     handleOpenEdit,

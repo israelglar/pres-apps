@@ -121,7 +121,8 @@ export async function bulkUpdateAttendance(
     student_id: number;
     status: 'present' | 'absent' | 'excused' | 'late';
     notes?: string;
-  }>
+  }>,
+  markedBy?: number | null
 ) {
   try {
     // First, find or create the schedule for this date/service time
@@ -159,7 +160,7 @@ export async function bulkUpdateAttendance(
       service_time_id: serviceTimeId,
     }));
 
-    const savedRecords = await supabaseBulkSave(schedule.id, recordsWithServiceTime);
+    const savedRecords = await supabaseBulkSave(schedule.id, recordsWithServiceTime, markedBy);
 
     return { success: true, count: savedRecords.length };
   } catch (error) {

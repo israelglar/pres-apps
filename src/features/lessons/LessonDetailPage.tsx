@@ -4,8 +4,10 @@ import {
   Loader2,
   RotateCcw,
   UserPlus,
+  Users,
 } from "lucide-react";
 import { AttendanceStats } from "../../components/AttendanceStats";
+import { TeacherList } from "../../components/features/TeacherList";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { theme } from "../../config/theme";
@@ -16,6 +18,7 @@ import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { NotesDialog } from "./components/NotesDialog";
 import { StatusGroupSeparator } from "./components/StatusGroupSeparator";
 import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
+import { TeacherAssignmentDialog } from "./components/TeacherAssignmentDialog";
 
 interface LessonDetailPageProps {
   date: string;
@@ -51,6 +54,7 @@ export function LessonDetailPage({
     isCreateVisitorDialogOpen,
     isCreatingVisitor,
     visitorInitialName,
+    isTeacherAssignmentDialogOpen,
     selectedServiceTimeIndex,
     handleQuickStatusChange,
     handleOpenNotes,
@@ -65,6 +69,9 @@ export function LessonDetailPage({
     handleOpenCreateVisitorDialog,
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
+    handleOpenTeacherAssignmentDialog,
+    handleCloseTeacherAssignmentDialog,
+    handleTeacherAssignmentSuccess,
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
@@ -205,6 +212,28 @@ export function LessonDetailPage({
                   {dateGroup.serviceTimes[0]?.schedule.lesson?.name ||
                     "Sem lição"}
                 </h2>
+
+                {/* Teacher Assignments */}
+                {dateGroup.serviceTimes[selectedServiceTimeIndex]?.schedule && (
+                  <div className="mb-2 flex items-center gap-2">
+                    <TeacherList
+                      assignments={
+                        dateGroup.serviceTimes[selectedServiceTimeIndex]
+                          .schedule.assignments
+                      }
+                    />
+                    {!lessonIsFuture && (
+                      <button
+                        onClick={handleOpenTeacherAssignmentDialog}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
+                        title="Gerir Professores"
+                      >
+                        <Users className="w-3 h-3" />
+                        Gerir
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {/* Lesson Link */}
                 {dateGroup.serviceTimes[0]?.schedule.lesson?.resource_url && (
@@ -490,6 +519,22 @@ export function LessonDetailPage({
           initialName={visitorInitialName}
         />
       )}
+
+      {/* Teacher Assignment Dialog */}
+      {isTeacherAssignmentDialogOpen &&
+        dateGroup?.serviceTimes[selectedServiceTimeIndex] && (
+          <TeacherAssignmentDialog
+            scheduleId={
+              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule.id
+            }
+            currentAssignments={
+              dateGroup.serviceTimes[selectedServiceTimeIndex].schedule
+                .assignments || []
+            }
+            onClose={handleCloseTeacherAssignmentDialog}
+            onSuccess={handleTeacherAssignmentSuccess}
+          />
+        )}
     </div>
   );
 }

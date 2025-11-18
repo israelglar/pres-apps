@@ -17,9 +17,7 @@ interface LessonsPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
-  onDateClick?: (date: string) => void;
-  initialDate?: string;
-  initialServiceTimeId?: number;
+  onDateClick: (date: string) => void;
 }
 
 /**
@@ -31,8 +29,6 @@ export function LessonsPage({
   onViewStudent,
   onRedoAttendance,
   onDateClick,
-  initialDate,
-  initialServiceTimeId,
 }: LessonsPageProps) {
   const {
     history,
@@ -56,34 +52,24 @@ export function LessonsPage({
     setSearchQuery,
     timePeriodFilter,
     attendanceFilter,
+    teacherFilter,
     isFilterOpen,
     setIsFilterOpen,
     filterGroups,
     hasActiveFilters,
     handleFilterChange,
     handleClearFilters,
-    handleQuickStatusChange,
-    handleOpenNotes,
     handleCloseNotes,
     handleSubmitNotes,
-    handleOpenAddDialog,
     handleCloseAddDialog,
     handleAddStudent,
-    handleOpenDeleteDialog,
     handleCloseDeleteDialog,
     handleConfirmDelete,
     handleOpenCreateVisitorDialog,
     handleCloseCreateVisitorDialog,
     handleCreateVisitor,
-    handleViewStudent,
     handleRefresh,
-    handleRedoAttendance,
-  } = useLessonsLogic(
-    onViewStudent,
-    onRedoAttendance,
-    initialDate,
-    initialServiceTimeId,
-  );
+  } = useLessonsLogic(onViewStudent, onRedoAttendance);
 
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
@@ -116,6 +102,7 @@ export function LessonsPage({
               activeFilters={{
                 timePeriod: timePeriodFilter,
                 attendance: attendanceFilter,
+                teacher: teacherFilter,
               }}
               onFilterChange={handleFilterChange}
               onClearFilters={handleClearFilters}
@@ -204,29 +191,13 @@ export function LessonsPage({
             />
 
             <div className="space-y-2">
-              {history.map((group) => {
-                // Only auto-open and scroll if initialDate is provided
-                const shouldAutoOpen = !!(
-                  initialDate && group.date === initialDate
-                );
-
-                return (
-                  <DateGroupCard
-                    key={group.date}
-                    group={group}
-                    onQuickStatusChange={handleQuickStatusChange}
-                    onOpenNotes={handleOpenNotes}
-                    onOpenAddDialog={handleOpenAddDialog}
-                    onOpenDeleteDialog={handleOpenDeleteDialog}
-                    onViewStudent={handleViewStudent}
-                    onRedoAttendance={handleRedoAttendance}
-                    onDateClick={onDateClick}
-                    initialExpanded={shouldAutoOpen}
-                    shouldScrollIntoView={shouldAutoOpen}
-                    initialServiceTimeId={shouldAutoOpen ? initialServiceTimeId : undefined}
-                  />
-                );
-              })}
+              {history.map((group) => (
+                <DateGroupCard
+                  key={group.date}
+                  group={group}
+                  onDateClick={onDateClick}
+                />
+              ))}
             </div>
           </>
         )}

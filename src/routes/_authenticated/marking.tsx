@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { AttendanceMarkingPage } from '../../features/attendance-marking'
 import { useAttendanceData, useAttendanceSubmit } from '../../hooks/useAttendanceData'
+import { useAuth } from '../../contexts/AuthContext'
 
 type MarkingSearch = {
   date: string
@@ -30,6 +31,7 @@ function MarkingRoute() {
   const { date, serviceTimeId } = Route.useSearch()
   const { students, visitorStudents, lessonNames, serviceTimes } = useAttendanceData()
   const { handleComplete } = useAttendanceSubmit()
+  const { teacher } = useAuth()
 
   const onComplete = async (records: AttendanceRecord[]) => {
     // Transform records from component format to API format
@@ -38,7 +40,7 @@ function MarkingRoute() {
       status: r.status === 'P' ? 'present' : 'absent',
       notes: r.notes,
     }))
-    await handleComplete(apiRecords, date, serviceTimeId)
+    await handleComplete(apiRecords, date, serviceTimeId, teacher?.id)
     navigate({ to: '/', replace: true })
   }
 
