@@ -102,6 +102,7 @@ export function useLessonDetailLogic(
       eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
       notes: string | null;
       resourceUrl: string | null;
+      lessonName: string | null;
     }) => {
       // Update schedule
       const scheduleUpdate = await updateSchedule(data.scheduleId, {
@@ -112,9 +113,10 @@ export function useLessonDetailLogic(
         notes: data.notes,
       });
 
-      // Update lesson resource_url if lessonId exists
+      // Update lesson (name and resource_url) if lessonId exists
       if (data.lessonId) {
         await updateLesson(data.lessonId, {
+          name: data.lessonName || undefined,
           resource_url: data.resourceUrl,
         });
       }
@@ -402,6 +404,7 @@ export function useLessonDetailLogic(
     eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
     notes: string | null;
     resourceUrl: string | null;
+    lessonName: string | null;
   }) => {
     const currentSchedule = dateGroup?.serviceTimes[selectedServiceTimeIndex]?.schedule;
     if (!currentSchedule) return;

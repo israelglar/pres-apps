@@ -15,19 +15,21 @@ interface EditScheduleDialogProps {
     eventType: string;
     notes: string | null;
     resourceUrl: string | null;
+    lessonName: string | null;
   }) => void;
   isSubmitting: boolean;
 }
 
 /**
- * Edit Schedule Dialog - Edit an existing schedule
+ * Edit Schedule Dialog - Edit an existing schedule and lesson
  *
  * Fields:
+ * - Lesson Name (optional - edits the lesson)
  * - Date (required)
  * - Service Time (required - 09:00 or 11:00)
  * - Event Type (optional - defaults to 'regular')
  * - Notes (optional)
- * - Resource URL (optional - curriculum link)
+ * - Resource URL (optional - curriculum link, edits the lesson)
  */
 export function EditScheduleDialog({
   schedule,
@@ -48,6 +50,7 @@ export function EditScheduleDialog({
     eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
     notes: string;
     resourceUrl: string;
+    lessonName: string;
   }>({
     date: schedule.date,
     lessonId: schedule.lesson_id,
@@ -55,6 +58,7 @@ export function EditScheduleDialog({
     eventType: (schedule.event_type as "regular" | "family_service" | "cancelled" | "retreat" | "party") || "regular",
     notes: schedule.notes || "",
     resourceUrl: schedule.lesson?.resource_url || "",
+    lessonName: schedule.lesson?.name || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -88,6 +92,7 @@ export function EditScheduleDialog({
       eventType: formData.eventType,
       notes: formData.notes.trim() || null,
       resourceUrl: formData.resourceUrl.trim() || null,
+      lessonName: formData.lessonName.trim() || null,
     });
   };
 
@@ -115,18 +120,25 @@ export function EditScheduleDialog({
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            {/* Lesson Name (Read-only) */}
+            {/* Lesson Name */}
             <div>
               <label
+                htmlFor="lessonName"
                 className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
               >
-                Lição
+                Nome da Lição
               </label>
-              <div
-                className={`w-full px-4 py-3 text-sm ${theme.backgrounds.neutralLight} ${theme.text.neutralDarker} rounded-xl`}
-              >
-                {schedule.lesson?.name || "Sem lição"}
-              </div>
+              <input
+                type="text"
+                id="lessonName"
+                value={formData.lessonName}
+                onChange={(e) =>
+                  setFormData({ ...formData, lessonName: e.target.value })
+                }
+                className={`w-full px-4 py-3 text-sm ${inputClasses}`}
+                placeholder="Nome da lição"
+                disabled={isSubmitting}
+              />
             </div>
 
             {/* Date Field */}
