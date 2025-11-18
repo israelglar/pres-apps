@@ -55,8 +55,8 @@ export function useStudents(
 
       return studentsWithAlerts;
     },
-    staleTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 1 * 60 * 1000, // 1 minute - students don't change frequently
+    refetchOnMount: true, // Only refetch if stale
   });
 }
 

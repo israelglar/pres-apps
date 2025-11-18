@@ -83,9 +83,9 @@ export function useAbsenceAlerts({
       return await getAbsenceAlertsForSchedule(threshold, currentDate);
     },
     enabled: enabled,
-    staleTime: 0, // Always consider data stale - recalculate on every mount
+    staleTime: 2 * 60 * 1000, // 2 minutes - alerts don't change that frequently
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
-    refetchOnMount: 'always', // Always refetch on mount, even if data exists
+    refetchOnMount: true, // Only refetch if stale
   });
 
   // Convert array to map for easy lookup
