@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { UnscheduledLessonPage } from '../../features/lessons/UnscheduledLessonPage';
 import { theme } from '@/config/theme';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ export const Route = createFileRoute('/_authenticated/lessons/$lessonId')({
 
 function UnscheduledLessonRoute() {
   const { lessonId } = Route.useParams();
-  const navigate = useNavigate();
 
   // Parse lessonId to number
   const lessonIdNum = parseInt(lessonId, 10);
@@ -28,7 +27,9 @@ function UnscheduledLessonRoute() {
   });
 
   const handleBack = () => {
-    navigate({ to: '/lessons' });
+    // Use browser back navigation to avoid creating new history entry
+    // and prevent navigation loops with parent/child routes
+    window.history.back();
   };
 
   // Handle invalid lesson ID
