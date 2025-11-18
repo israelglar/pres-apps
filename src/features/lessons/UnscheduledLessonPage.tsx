@@ -1,12 +1,12 @@
+import { useNavigate } from "@tanstack/react-router";
 import { Calendar, ExternalLink } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { buttonClasses, theme } from "../../config/theme";
 import type { Lesson } from "../../types/database.types";
+import { successVibration } from "../../utils/haptics";
 import { ScheduleDialog } from "./components/ScheduleDialog";
 import { useCreateSchedule } from "./hooks/useScheduleMutations";
-import { successVibration } from "../../utils/haptics";
 
 interface UnscheduledLessonPageProps {
   lesson: Lesson;
@@ -54,11 +54,14 @@ export function UnscheduledLessonPage({
   };
 
   return (
-    <div
-      className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}
-    >
+    <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
       {/* Header */}
-      <PageHeader onBack={onBack} title={lesson.name} sticky={true} />
+      <PageHeader
+        onBack={onBack}
+        title={lesson.name}
+        sticky={true}
+        variant="minimal"
+      />
 
       <div className="max-w-4xl mx-auto p-5 pb-20">
         {/* Lesson Details Card */}
@@ -88,7 +91,9 @@ export function UnscheduledLessonPage({
           )}
 
           {/* Lesson Name */}
-          <h2 className={`text-2xl font-bold ${theme.text.neutralDarkest} mb-4`}>
+          <h2
+            className={`text-2xl font-bold ${theme.text.neutralDarkest} mb-4`}
+          >
             {lesson.name}
           </h2>
 
@@ -113,7 +118,9 @@ export function UnscheduledLessonPage({
               >
                 Descrição
               </h3>
-              <p className={`text-sm ${theme.text.neutralDark} leading-relaxed`}>
+              <p
+                className={`text-sm ${theme.text.neutralDark} leading-relaxed`}
+              >
                 {lesson.description}
               </p>
             </div>

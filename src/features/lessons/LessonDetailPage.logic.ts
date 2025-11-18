@@ -5,6 +5,7 @@ import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { updateSchedule } from '../../api/supabase/schedules';
+import { updateLesson } from '../../api/supabase/lessons';
 
 /**
  * Business logic for Lesson Detail Page
@@ -100,14 +101,25 @@ export function useLessonDetailLogic(
       serviceTimeId: number;
       eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
       notes: string | null;
+      resourceUrl: string | null;
     }) => {
-      return updateSchedule(data.scheduleId, {
+      // Update schedule
+      const scheduleUpdate = await updateSchedule(data.scheduleId, {
         date: data.date,
         lesson_id: data.lessonId,
         service_time_id: data.serviceTimeId,
         event_type: data.eventType as "regular" | "family_service" | "cancelled" | "retreat" | "party",
         notes: data.notes,
       });
+
+      // Update lesson resource_url if lessonId exists
+      if (data.lessonId) {
+        await updateLesson(data.lessonId, {
+          resource_url: data.resourceUrl,
+        });
+      }
+
+      return scheduleUpdate;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
@@ -389,6 +401,7 @@ export function useLessonDetailLogic(
     serviceTimeId: number;
     eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
     notes: string | null;
+    resourceUrl: string | null;
   }) => {
     const currentSchedule = dateGroup?.serviceTimes[selectedServiceTimeIndex]?.schedule;
     if (!currentSchedule) return;

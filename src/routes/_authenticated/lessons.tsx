@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import { LessonsPage } from '../../features/lessons';
 
 export const Route = createFileRoute('/_authenticated/lessons')({
@@ -7,6 +7,10 @@ export const Route = createFileRoute('/_authenticated/lessons')({
 
 function LessonsRoute() {
   const navigate = useNavigate();
+  const matchRoute = useMatchRoute();
+
+  // Check if we're viewing a specific lesson detail (child route)
+  const isViewingLesson = matchRoute({ to: '/lessons/$lessonId' });
 
   const handleBack = () => {
     window.history.back();
@@ -34,6 +38,12 @@ function LessonsRoute() {
     });
   };
 
+  // If viewing a specific lesson, render the child route
+  if (isViewingLesson) {
+    return <Outlet />;
+  }
+
+  // Otherwise, render the lessons list page
   return (
     <LessonsPage
       onBack={handleBack}

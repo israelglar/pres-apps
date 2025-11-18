@@ -14,6 +14,7 @@ interface EditScheduleDialogProps {
     serviceTimeId: number;
     eventType: string;
     notes: string | null;
+    resourceUrl: string | null;
   }) => void;
   isSubmitting: boolean;
 }
@@ -26,6 +27,7 @@ interface EditScheduleDialogProps {
  * - Service Time (required - 09:00 or 11:00)
  * - Event Type (optional - defaults to 'regular')
  * - Notes (optional)
+ * - Resource URL (optional - curriculum link)
  */
 export function EditScheduleDialog({
   schedule,
@@ -45,12 +47,14 @@ export function EditScheduleDialog({
     serviceTimeId: number;
     eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
     notes: string;
+    resourceUrl: string;
   }>({
     date: schedule.date,
     lessonId: schedule.lesson_id,
     serviceTimeId: schedule.service_time_id || serviceTimes[0]?.id || 0,
     eventType: (schedule.event_type as "regular" | "family_service" | "cancelled" | "retreat" | "party") || "regular",
     notes: schedule.notes || "",
+    resourceUrl: schedule.lesson?.resource_url || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,6 +87,7 @@ export function EditScheduleDialog({
       serviceTimeId: formData.serviceTimeId,
       eventType: formData.eventType,
       notes: formData.notes.trim() || null,
+      resourceUrl: formData.resourceUrl.trim() || null,
     });
   };
 
@@ -228,6 +233,27 @@ export function EditScheduleDialog({
                 className={`w-full px-4 py-3 text-sm ${inputClasses} resize-none`}
                 rows={4}
                 placeholder="Notas sobre este culto (opcional)"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Resource URL Field */}
+            <div>
+              <label
+                htmlFor="resourceUrl"
+                className={`block ${theme.text.neutralDarker} font-bold mb-2 text-xs`}
+              >
+                URL do Currículo
+              </label>
+              <input
+                type="url"
+                id="resourceUrl"
+                value={formData.resourceUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, resourceUrl: e.target.value })
+                }
+                className={`w-full px-4 py-3 text-sm ${inputClasses}`}
+                placeholder="https://exemplo.com/licao"
                 disabled={isSubmitting}
               />
             </div>
