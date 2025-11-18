@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
  */
 export function useLessonDetailLogic(
   date: string,
+  initialServiceTimeId?: number,
   onViewStudent?: (studentId: number) => void,
   onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void
 ) {
@@ -33,13 +34,36 @@ export function useLessonDetailLogic(
   // Delete attendance mutation
   const { deleteAttendance, isDeleting } = useDeleteAttendance();
 
-  // Find the index of 11:00 service time, default to 0 if not found
-  const default11hIndex = dateGroup?.serviceTimes.findIndex(
-    st => st.schedule.service_time?.time === '11:00:00'
-  ) ?? 0;
+  // Determine initial service time index
+  const getInitialServiceTimeIndex = () => {
+    if (!dateGroup) return 0;
+
+    // If initialServiceTimeId is provided, find its index
+    if (initialServiceTimeId) {
+      const index = dateGroup.serviceTimes.findIndex(
+        st => st.schedule.service_time_id === initialServiceTimeId
+      );
+      if (index !== -1) return index;
+    }
+
+    // Otherwise, find the index of 11:00 service time, default to 0 if not found
+    const default11hIndex = dateGroup.serviceTimes.findIndex(
+      st => st.schedule.service_time?.time === '11:00:00'
+    );
+    return default11hIndex !== -1 ? default11hIndex : 0;
+  };
+
   const [selectedServiceTimeIndex, setSelectedServiceTimeIndex] = useState(
-    default11hIndex !== -1 ? default11hIndex : 0
+    getInitialServiceTimeIndex()
   );
+
+  // Update selected service time index when dateGroup loads or initialServiceTimeId changes
+  useEffect(() => {
+    if (dateGroup) {
+      setSelectedServiceTimeIndex(getInitialServiceTimeIndex());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateGroup, initialServiceTimeId]);
 
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);

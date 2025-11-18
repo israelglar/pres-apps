@@ -4,6 +4,7 @@ import {
   formatShortDate,
   getDateLabel,
 } from "../../../components/lesson-cards";
+import { TeacherList } from "../../../components/features/TeacherList";
 import { theme } from "../../../config/theme";
 import { lightTap } from "../../../utils/haptics";
 import type { LessonGroup } from "../hooks/useLessons";
@@ -34,6 +35,14 @@ export function DateGroupCard({
   const lessonName =
     group.serviceTimes[0]?.schedule.lesson?.name || "Sem lição";
 
+  // Collect all unique teacher assignments across all service times
+  const allAssignments = group.serviceTimes
+    .flatMap((st) => st.schedule.assignments || [])
+    .filter((assignment, index, self) =>
+      // Remove duplicates by teacher_id
+      index === self.findIndex((a) => a.teacher_id === assignment.teacher_id)
+    );
+
   return (
     <button
       onClick={handleCardClick}
@@ -48,7 +57,7 @@ export function DateGroupCard({
           >
             {lessonName}
           </h3>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <span className={`${theme.text.onLightSecondary} text-xs`}>
               {formattedDate}
             </span>
@@ -60,6 +69,12 @@ export function DateGroupCard({
               </span>
             )}
           </div>
+          {/* Teachers */}
+          {allAssignments.length > 0 && (
+            <div className="mt-2">
+              <TeacherList assignments={allAssignments} emptyMessage="" />
+            </div>
+          )}
         </div>
 
         {/* Summary Stats - Show stats for each service time that has attendance */}

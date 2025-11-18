@@ -46,24 +46,11 @@ function DateSelectionRoute() {
     }
   }
 
-  const handleViewHistory = () => {
-    if (selectedDate && selectedServiceTimeId) {
-      navigate({
-        to: '/lessons',
-        search: {
-          date: selectedDate.toISOString().split('T')[0],
-          serviceTimeId: selectedServiceTimeId
-        }
-      })
-    } else {
-      navigate({ to: '/lessons' })
-    }
-  }
-
   const handleViewLesson = (date: string) => {
     navigate({
       to: '/lesson/$date',
-      params: { date }
+      params: { date },
+      search: selectedServiceTimeId ? { serviceTimeId: selectedServiceTimeId } : undefined
     })
   }
 
@@ -75,7 +62,6 @@ function DateSelectionRoute() {
     <DateSelectionPage
       onDateSelected={handleDateSelected}
       onBack={handleBack}
-      onViewHistory={handleViewHistory}
       onViewLesson={handleViewLesson}
       serviceTimes={serviceTimes}
       getSchedule={getSchedule}

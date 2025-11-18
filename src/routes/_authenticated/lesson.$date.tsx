@@ -1,13 +1,21 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { LessonDetailPage } from '../../features/lessons'
 import { theme } from '@/config/theme'
+import { z } from 'zod'
+
+// Define search params schema
+const lessonDetailSearchSchema = z.object({
+  serviceTimeId: z.number().optional(),
+})
 
 export const Route = createFileRoute('/_authenticated/lesson/$date')({
   component: LessonDetailRoute,
+  validateSearch: (search) => lessonDetailSearchSchema.parse(search),
 })
 
 function LessonDetailRoute() {
   const { date } = Route.useParams()
+  const { serviceTimeId } = Route.useSearch()
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -53,6 +61,7 @@ function LessonDetailRoute() {
   return (
     <LessonDetailPage
       date={date}
+      initialServiceTimeId={serviceTimeId}
       onBack={handleBack}
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}

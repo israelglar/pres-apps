@@ -22,6 +22,7 @@ import { TeacherAssignmentDialog } from "./components/TeacherAssignmentDialog";
 
 interface LessonDetailPageProps {
   date: string;
+  initialServiceTimeId?: number;
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
@@ -33,6 +34,7 @@ interface LessonDetailPageProps {
  */
 export function LessonDetailPage({
   date,
+  initialServiceTimeId,
   onBack,
   onViewStudent,
   onRedoAttendance,
@@ -75,7 +77,7 @@ export function LessonDetailPage({
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
-  } = useLessonDetailLogic(date, onViewStudent, onRedoAttendance);
+  } = useLessonDetailLogic(date, initialServiceTimeId, onViewStudent, onRedoAttendance);
 
   // Format date for display (short format: "10 nov 2025")
   const formatDate = (dateStr: string) => {

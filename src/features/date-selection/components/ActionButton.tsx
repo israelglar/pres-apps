@@ -6,7 +6,6 @@ interface ActionButtonProps {
   isFutureDate: boolean;
   selectedDate: Date;
   onContinue: () => void;
-  onViewHistory?: () => void;
   onViewLesson?: (date: string) => void;
 }
 
@@ -15,7 +14,6 @@ export function ActionButton({
   isFutureDate,
   selectedDate,
   onContinue,
-  onViewHistory,
   onViewLesson,
 }: ActionButtonProps) {
   const formatDateForUrl = (date: Date) => {
@@ -33,10 +31,10 @@ export function ActionButton({
           Ver Detalhes
           <ExternalLink className="w-4 h-4" />
         </button>
-      ) : hasAttendance ? (
+      ) : hasAttendance && onViewLesson ? (
         /* View/Edit Button - When attendance is marked */
         <button
-          onClick={onViewHistory}
+          onClick={() => onViewLesson(formatDateForUrl(selectedDate))}
           className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
         >
           Ver/Editar Presenças

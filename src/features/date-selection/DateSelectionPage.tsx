@@ -23,7 +23,6 @@ interface DateSelectionPageProps {
     serviceTimeId: number
   ) => void;
   onBack: () => void;
-  onViewHistory?: () => void;
   onViewLesson?: (date: string) => void;
   serviceTimes: Array<{ id: number; name: string; time: string }>;
   getSchedule: (
@@ -48,7 +47,6 @@ interface DateSelectionPageProps {
 export function DateSelectionPage({
   onDateSelected,
   onBack,
-  onViewHistory,
   onViewLesson,
   serviceTimes,
   getSchedule,
@@ -228,7 +226,6 @@ export function DateSelectionPage({
               logic.selectedServiceTimeId
             )
           }
-          onViewHistory={onViewHistory}
           onViewLesson={onViewLesson}
         />
       </div>
