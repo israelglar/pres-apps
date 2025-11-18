@@ -3,7 +3,8 @@ import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } 
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { updateSchedule } from '../../api/supabase/schedules';
 
 /**
  * Business logic for Lesson Detail Page
@@ -86,6 +87,32 @@ export function useLessonDetailLogic(
 
   // Teacher assignment dialog state
   const [isTeacherAssignmentDialogOpen, setIsTeacherAssignmentDialogOpen] = useState(false);
+
+  // Edit schedule dialog state
+  const [isEditScheduleDialogOpen, setIsEditScheduleDialogOpen] = useState(false);
+
+  // Edit schedule mutation
+  const editScheduleMutation = useMutation({
+    mutationFn: async (data: {
+      scheduleId: number;
+      date: string;
+      lessonId: number | null;
+      serviceTimeId: number;
+      eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
+      notes: string | null;
+    }) => {
+      return updateSchedule(data.scheduleId, {
+        date: data.date,
+        lesson_id: data.lessonId,
+        service_time_id: data.serviceTimeId,
+        event_type: data.eventType as "regular" | "family_service" | "cancelled" | "retreat" | "party",
+        notes: data.notes,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    },
+  });
 
   /**
    * Quick status change (no dialog) - used by tap-to-cycle and quick menu
@@ -337,6 +364,48 @@ export function useLessonDetailLogic(
     setSelectedServiceTimeIndex(index);
   };
 
+  /**
+   * Open edit schedule dialog
+   */
+  const handleOpenEditScheduleDialog = () => {
+    lightTap();
+    setIsEditScheduleDialogOpen(true);
+  };
+
+  /**
+   * Close edit schedule dialog
+   */
+  const handleCloseEditScheduleDialog = () => {
+    lightTap();
+    setIsEditScheduleDialogOpen(false);
+  };
+
+  /**
+   * Submit edit schedule form
+   */
+  const handleEditScheduleSubmit = async (data: {
+    date: string;
+    lessonId: number | null;
+    serviceTimeId: number;
+    eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
+    notes: string | null;
+  }) => {
+    const currentSchedule = dateGroup?.serviceTimes[selectedServiceTimeIndex]?.schedule;
+    if (!currentSchedule) return;
+
+    try {
+      await editScheduleMutation.mutateAsync({
+        scheduleId: currentSchedule.id,
+        ...data,
+      });
+      successVibration();
+      handleCloseEditScheduleDialog();
+    } catch (error) {
+      console.error('Failed to edit schedule:', error);
+      // Error handling is done by the mutation hook
+    }
+  };
+
   return {
     // Data
     dateGroup,
@@ -369,6 +438,10 @@ export function useLessonDetailLogic(
     // Teacher assignment dialog state
     isTeacherAssignmentDialogOpen,
 
+    // Edit schedule dialog state
+    isEditScheduleDialogOpen,
+    isEditingSchedule: editScheduleMutation.isPending,
+
     // Selected service time
     selectedServiceTimeIndex,
 
@@ -392,5 +465,8 @@ export function useLessonDetailLogic(
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
+    handleOpenEditScheduleDialog,
+    handleCloseEditScheduleDialog,
+    handleEditScheduleSubmit,
   };
 }

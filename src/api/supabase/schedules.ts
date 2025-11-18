@@ -152,6 +152,28 @@ export async function createSchedule(schedule: ScheduleInsert): Promise<Schedule
 }
 
 /**
+ * Update an existing schedule
+ */
+export async function updateSchedule(
+  scheduleId: number,
+  updates: Partial<ScheduleInsert>
+): Promise<Schedule> {
+  try {
+    const { data, error } = await supabase
+      .from('schedules')
+      .update(updates)
+      .eq('id', scheduleId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
  * Get all unique dates that have schedules
  */
 export async function getScheduleDates(): Promise<string[]> {

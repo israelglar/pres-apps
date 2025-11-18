@@ -2,6 +2,7 @@ import {
   Calendar,
   ExternalLink,
   Loader2,
+  Pencil,
   RotateCcw,
   UserPlus,
   Users,
@@ -15,6 +16,7 @@ import { useLessonDetailLogic } from "./LessonDetailPage.logic";
 import { AddStudentDialog } from "./components/AddStudentDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
+import { EditScheduleDialog } from "./components/EditScheduleDialog";
 import { NotesDialog } from "./components/NotesDialog";
 import { StatusGroupSeparator } from "./components/StatusGroupSeparator";
 import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
@@ -57,6 +59,8 @@ export function LessonDetailPage({
     isCreatingVisitor,
     visitorInitialName,
     isTeacherAssignmentDialogOpen,
+    isEditScheduleDialogOpen,
+    isEditingSchedule,
     selectedServiceTimeIndex,
     handleQuickStatusChange,
     handleOpenNotes,
@@ -77,6 +81,9 @@ export function LessonDetailPage({
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
+    handleOpenEditScheduleDialog,
+    handleCloseEditScheduleDialog,
+    handleEditScheduleSubmit,
   } = useLessonDetailLogic(
     date,
     initialServiceTimeId,
@@ -214,6 +221,14 @@ export function LessonDetailPage({
                       {dateLabel}
                     </span>
                   )}
+                  <button
+                    onClick={handleOpenEditScheduleDialog}
+                    className={`ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
+                    title="Editar Lição"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Editar
+                  </button>
                 </div>
                 <h2 className={`text-lg font-bold ${theme.text.onLight} mb-2`}>
                   {dateGroup.serviceTimes[0]?.schedule.lesson?.name ||
@@ -563,6 +578,17 @@ export function LessonDetailPage({
             />
           );
         })()}
+
+      {/* Edit Schedule Dialog */}
+      {isEditScheduleDialogOpen &&
+        dateGroup?.serviceTimes[selectedServiceTimeIndex] && (
+          <EditScheduleDialog
+            schedule={dateGroup.serviceTimes[selectedServiceTimeIndex].schedule}
+            onClose={handleCloseEditScheduleDialog}
+            onSubmit={handleEditScheduleSubmit}
+            isSubmitting={isEditingSchedule}
+          />
+        )}
     </div>
   );
 }
