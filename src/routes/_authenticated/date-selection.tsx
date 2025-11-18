@@ -47,11 +47,19 @@ function DateSelectionRoute() {
   }
 
   const handleViewLesson = (date: string) => {
-    navigate({
-      to: '/lesson/$date',
-      params: { date },
-      search: selectedServiceTimeId ? { serviceTimeId: selectedServiceTimeId } : undefined
-    })
+    // Get the schedule for this date to extract the lesson ID
+    const schedule = selectedServiceTimeId ? getSchedule(date, selectedServiceTimeId) : null
+
+    if (schedule?.lesson_id) {
+      navigate({
+        to: '/lesson/$lessonId',
+        params: { lessonId: schedule.lesson_id.toString() },
+        search: {
+          date,
+          serviceTimeId: selectedServiceTimeId || undefined
+        }
+      })
+    }
   }
 
   const handleBack = () => {

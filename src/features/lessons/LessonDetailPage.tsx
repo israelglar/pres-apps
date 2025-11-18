@@ -15,6 +15,7 @@ import { theme } from "../../config/theme";
 import { useLessonDetailLogic } from "./LessonDetailPage.logic";
 import { AddStudentDialog } from "./components/AddStudentDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
+import { DateSelector } from "./components/DateSelector";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { EditScheduleDialog } from "./components/EditScheduleDialog";
 import { NotesDialog } from "./components/NotesDialog";
@@ -23,26 +24,32 @@ import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
 import { TeacherAssignmentDialog } from "./components/TeacherAssignmentDialog";
 
 interface LessonDetailPageProps {
-  date: string;
+  lessonId: number;
+  selectedDate?: string;
   initialServiceTimeId?: number;
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
+  onDateChange: (date: string) => void;
 }
 
 /**
  * Lesson Detail Page
- * Shows detailed attendance for a specific date with all service times
+ * Shows detailed attendance for a specific lesson across multiple dates
  */
 export function LessonDetailPage({
-  date,
+  lessonId,
+  selectedDate,
   initialServiceTimeId,
   onBack,
   onViewStudent,
   onRedoAttendance,
+  onDateChange,
 }: LessonDetailPageProps) {
   const {
     dateGroup,
+    availableDates,
+    currentDate,
     isLoading,
     error,
     isEditing,
@@ -81,19 +88,22 @@ export function LessonDetailPage({
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
+    handleDateChange,
     handleOpenEditScheduleDialog,
     handleCloseEditScheduleDialog,
     handleEditScheduleSubmit,
   } = useLessonDetailLogic(
-    date,
+    lessonId,
+    selectedDate,
     initialServiceTimeId,
     onViewStudent,
     onRedoAttendance,
+    onDateChange,
   );
 
   // Format date for display (short format: "10 nov 2025")
   const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
+    const d = new Date(dateStr + 'T00:00:00'); // Avoid timezone issues
     const day = d.getDate();
     const monthNames = [
       "jan",
@@ -122,18 +132,20 @@ export function LessonDetailPage({
 
   // Check if date is today
   const isToday = () => {
+    if (!currentDate) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const checkDate = parseLocalDate(date);
+    const checkDate = parseLocalDate(currentDate);
     checkDate.setHours(0, 0, 0, 0);
     return checkDate.getTime() === today.getTime();
   };
 
   // Check if date is in the future
   const isFutureLesson = () => {
+    if (!currentDate) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const checkDate = parseLocalDate(date);
+    const checkDate = parseLocalDate(currentDate);
     checkDate.setHours(0, 0, 0, 0);
     return checkDate.getTime() > today.getTime();
   };
@@ -142,9 +154,10 @@ export function LessonDetailPage({
 
   // Check if date is the most recent past Sunday (Domingo Passado)
   const isPreviousSunday = () => {
+    if (!currentDate) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const checkDate = parseLocalDate(date);
+    const checkDate = parseLocalDate(currentDate);
     checkDate.setHours(0, 0, 0, 0);
 
     // Must be in the past (not today)
@@ -170,7 +183,7 @@ export function LessonDetailPage({
   };
 
   const dateLabel = getDateLabel();
-  const formattedDate = formatDate(date);
+  const formattedDate = currentDate ? formatDate(currentDate) : '';
 
   return (
     <div className={`fixed inset-0 ${theme.backgrounds.page} overflow-y-auto`}>
@@ -270,6 +283,15 @@ export function LessonDetailPage({
                   </a>
                 )}
               </div>
+
+              {/* Date Selector - Show only when multiple dates available */}
+              {availableDates.length > 1 && (
+                <DateSelector
+                  availableDates={availableDates}
+                  currentDate={currentDate}
+                  onDateChange={handleDateChange}
+                />
+              )}
 
               {/* Statistics and Actions - Only show for single service time or selected service time */}
               {dateGroup.serviceTimes[selectedServiceTimeIndex] &&

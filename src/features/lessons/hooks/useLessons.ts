@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAllSchedules, getScheduleByDate } from '../../../api/supabase/schedules';
+import { getAllSchedules, getScheduleByDate, getSchedulesByLessonId } from '../../../api/supabase/schedules';
 import {
   updateAttendanceRecord,
   createAttendanceRecord,
@@ -172,6 +172,64 @@ export function useLessonByDate(date: string) {
 
   return {
     dateGroup,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+
+/**
+ * Custom hook to fetch all schedules for a specific lesson
+ * Used by LessonDetailPage when supporting multiple dates per lesson
+ * Returns all dates grouped by date, with a selected date
+ */
+export function useLessonById(lessonId: number, selectedDate?: string) {
+  const { data: schedules, isLoading, error, refetch } = useQuery({
+    queryKey: ['lesson-id', lessonId],
+    queryFn: () => getSchedulesByLessonId(lessonId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Group schedules by date
+  const schedulesByDate: Record<string, ScheduleWithRelations[]> = {};
+  const availableDates: string[] = [];
+
+  if (schedules) {
+    schedules.forEach((schedule) => {
+      if (!schedulesByDate[schedule.date]) {
+        schedulesByDate[schedule.date] = [];
+        availableDates.push(schedule.date);
+      }
+      schedulesByDate[schedule.date].push(schedule);
+    });
+  }
+
+  // Determine which date to show
+  // Priority: 1) selectedDate param, 2) most recent date
+  const currentDate = selectedDate && availableDates.includes(selectedDate)
+    ? selectedDate
+    : availableDates[0] || '';
+
+  // Transform selected date's schedules into LessonGroup format
+  const dateGroup: LessonGroup | undefined = currentDate && schedulesByDate[currentDate] ? {
+    date: currentDate,
+    serviceTimes: schedulesByDate[currentDate].map((schedule) => {
+      const records = (schedule.attendance_records || []) as AttendanceRecordWithRelations[];
+      return {
+        schedule,
+        records,
+        stats: calculateStats(records),
+      };
+    }).sort((a, b) =>
+      (a.schedule.service_time?.time || '').localeCompare(b.schedule.service_time?.time || '')
+    ),
+  } : undefined;
+
+  return {
+    dateGroup,
+    availableDates,
+    currentDate,
     isLoading,
     error,
     refetch,

@@ -1,5 +1,4 @@
 import { BookOpen, Plus, Search } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { FilterButton } from "../../components/ui/FilterButton";
 import { FilterPanel } from "../../components/ui/FilterPanel";
@@ -11,17 +10,16 @@ import { buttonClasses, theme } from "../../config/theme";
 import { useLessonsLogic } from "./LessonsPage.logic";
 import { AddStudentDialog } from "./components/AddStudentDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
-import { DateGroupCard } from "./components/DateGroupCard";
+import { UnifiedLessonCard } from "./components/UnifiedLessonCard";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
 import { LessonFormModal } from "./components/LessonFormModal";
 import { NotesDialog } from "./components/NotesDialog";
-import { UnscheduledLessonCard } from "./components/UnscheduledLessonCard";
 
 interface LessonsPageProps {
   onBack: () => void;
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
-  onDateClick: (date: string) => void;
+  onLessonClick: (lessonId: number, date: string) => void;
 }
 
 /**
@@ -32,17 +30,16 @@ export function LessonsPage({
   onBack,
   onViewStudent,
   onRedoAttendance,
-  onDateClick,
+  onLessonClick,
 }: LessonsPageProps) {
-  const navigate = useNavigate();
-
   const {
-    history,
+    scheduledLessons,
+    unscheduledLessons,
     totalLessons,
+    scheduledCount,
+    unscheduledCount,
     isLoading,
     error,
-    unscheduledLessons,
-    isLoadingUnscheduled,
     isEditing,
     isNotesDialogOpen,
     selectedRecordForNotes,
@@ -137,7 +134,7 @@ export function LessonsPage({
         )}
 
         {/* Loading State */}
-        {isLoading && !history && (
+        {isLoading && !scheduledLessons && (
           <LoadingState message="A carregar lições..." size="large" />
         )}
 
@@ -175,8 +172,8 @@ export function LessonsPage({
         {!isLoading &&
           !error &&
           totalLessons > 0 &&
-          history &&
-          history.length === 0 &&
+          scheduledLessons &&
+          scheduledLessons.length === 0 &&
           unscheduledLessons.length === 0 && (
             <EmptyState
               icon={<Search className="w-16 h-16" />}
@@ -197,80 +194,59 @@ export function LessonsPage({
           )}
 
         {/* Lesson List */}
-        {!isLoading && !error && (history.length > 0 || unscheduledLessons.length > 0) && (
+        {!isLoading && !error && (scheduledLessons.length > 0 || unscheduledLessons.length > 0) && (
           <>
-            {/* Item Count - only show if there are scheduled lessons */}
-            {history && history.length > 0 && (
-              <ItemCount
-                totalCount={totalLessons}
-                filteredCount={history.length}
-                itemLabel="lição"
-                itemLabelPlural="lições"
-                isFiltered={hasActiveFilters || searchQuery.length > 0}
-                className="mb-4"
-              />
-            )}
+            {/* Item Count */}
+            <ItemCount
+              totalCount={totalLessons}
+              filteredCount={scheduledLessons.length + unscheduledLessons.length}
+              itemLabel="lição"
+              itemLabelPlural="lições"
+              isFiltered={hasActiveFilters || searchQuery.length > 0}
+              className="mb-4"
+            />
 
-            {/* Scheduled Lessons */}
-            {history && history.length > 0 && (
-              <div className="space-y-2">
-                {history.map((group, index) => {
-                  // Check if this is a future lesson
-                  const today = new Date().toISOString().split('T')[0];
-                  const isFuture = group.date > today;
+            {/* Scheduled Lessons Section */}
+            {scheduledLessons && scheduledLessons.length > 0 && (
+              <>
+                {/* Section Header */}
+                <div className={`flex items-center gap-3 py-2 px-2 mb-2`}>
+                  <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
+                    Lições Agendadas ({scheduledCount})
+                  </span>
+                </div>
 
-                  // Check if previous lesson was not future (or this is first item)
-                  const prevGroup = index > 0 ? history[index - 1] : null;
-                  const prevIsFuture = prevGroup ? prevGroup.date > today : false;
-
-                  // Show separator if this is the first future lesson
-                  const showSeparator = isFuture && !prevIsFuture;
-
-                  return (
-                    <div key={group.date}>
-                      {showSeparator && (
-                        <div className={`flex items-center gap-3 py-4 px-2`}>
-                          <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
-                          <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
-                            Lições Futuras
-                          </span>
-                          <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
-                        </div>
-                      )}
-                      <DateGroupCard
-                        group={group}
-                        onDateClick={onDateClick}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+                <div className="space-y-2 mb-6">
+                  {scheduledLessons.map((unifiedLesson) => (
+                    <UnifiedLessonCard
+                      key={unifiedLesson.lesson.id}
+                      unifiedLesson={unifiedLesson}
+                      onLessonClick={onLessonClick}
+                    />
+                  ))}
+                </div>
+              </>
             )}
 
             {/* Unscheduled Lessons Section */}
-            {!isLoadingUnscheduled && unscheduledLessons.length > 0 && (
+            {unscheduledLessons.length > 0 && (
               <>
                 {/* Separator */}
-                <div className={`flex items-center gap-3 py-6 px-2 ${history.length > 0 ? 'mt-4' : ''}`}>
+                <div className={`flex items-center gap-3 py-4 px-2 ${scheduledLessons.length > 0 ? 'mt-4' : ''}`}>
                   <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
                   <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
-                    Lições Não Agendadas
+                    Lições Não Agendadas ({unscheduledCount})
                   </span>
                   <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
                 </div>
 
                 {/* Unscheduled Lessons Cards */}
-                <div className="space-y-3">
-                  {unscheduledLessons.map((lesson) => (
-                    <UnscheduledLessonCard
-                      key={lesson.id}
-                      lesson={lesson}
-                      onClick={(lessonId) =>
-                        navigate({
-                          to: "/lessons/$lessonId",
-                          params: { lessonId: lessonId.toString() },
-                        })
-                      }
+                <div className="space-y-2">
+                  {unscheduledLessons.map((unifiedLesson) => (
+                    <UnifiedLessonCard
+                      key={unifiedLesson.lesson.id}
+                      unifiedLesson={unifiedLesson}
+                      onLessonClick={onLessonClick}
                     />
                   ))}
                 </div>
@@ -296,10 +272,10 @@ export function LessonsPage({
           scheduleId={addDialogScheduleId}
           serviceTimeId={addDialogServiceTimeId || 0}
           currentRecords={
-            history
-              ?.flatMap((g) => g.serviceTimes)
-              .find((st) => st.schedule.id === addDialogScheduleId)?.records ||
-            []
+            scheduledLessons
+              ?.flatMap((ul) => ul.schedules)
+              .find((s) => s.id === addDialogScheduleId)
+              ?.attendance_records as any[] || []
           }
           onAdd={handleAddStudent}
           onClose={handleCloseAddDialog}

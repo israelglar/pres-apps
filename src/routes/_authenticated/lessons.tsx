@@ -30,11 +30,12 @@ function LessonsRoute() {
     });
   };
 
-  const handleDateClick = (dateStr: string) => {
+  const handleLessonClick = (lessonId: number, dateStr: string) => {
     // Navigate to lesson detail
     navigate({
-      to: '/lesson/$date',
-      params: { date: dateStr }
+      to: '/lesson/$lessonId',
+      params: { lessonId: lessonId.toString() },
+      search: { date: dateStr }
     });
   };
 
@@ -49,7 +50,7 @@ function LessonsRoute() {
       onBack={handleBack}
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}
-      onDateClick={handleDateClick}
+      onLessonClick={handleLessonClick}
     />
   );
 }

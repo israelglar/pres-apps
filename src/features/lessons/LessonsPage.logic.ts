@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
-import type { AttendanceRecordWithRelations, Lesson, LessonInsert, LessonUpdate } from '../../types/database.types';
+import { useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
+import type { AttendanceRecordWithRelations, Lesson, LessonInsert, LessonUpdate, ScheduleWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { getAllTeachers } from '../../api/supabase/teachers';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useLessonManagement } from '../../hooks/useLessonManagement';
-import { useUnscheduledLessons } from './hooks/useUnscheduledLessons';
+import { useLessonsUnified } from './hooks/useLessonsUnified';
 import { useFuseSearch } from '../../hooks/useFuseSearch';
 
 /**
@@ -19,11 +19,16 @@ export function useLessonsLogic(
 ) {
   const queryClient = useQueryClient();
 
-  // Fetch all lessons at once (no pagination)
-  const { history, isLoading, error, refetch } = useLessons();
-
-  // Fetch unscheduled lessons
-  const { data: unscheduledLessons = [], isLoading: isLoadingUnscheduled } = useUnscheduledLessons();
+  // Fetch all unified lessons (one entry per unique lesson with schedules aggregated)
+  const {
+    unifiedLessons,
+    totalCount,
+    scheduledCount,
+    unscheduledCount,
+    isLoading,
+    error,
+    refetch
+  } = useLessonsUnified();
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -126,44 +131,46 @@ export function useLessonsLogic(
     if (groupId === 'teacher') setTeacherFilter(value);
   };
 
-  // Create searchable items for scheduled lessons (with lesson names)
-  const searchableScheduledLessons = useMemo(() => {
-    if (!history) return [];
-
-    return history.map((group) => ({
-      ...group,
-      // Extract lesson name for searching
-      lessonName: group.serviceTimes[0]?.schedule.lesson?.name || '',
-    }));
-  }, [history]);
-
-  // Use Fuse search for scheduled lessons
-  const { results: searchedScheduledLessons } = useFuseSearch({
-    items: searchableScheduledLessons,
+  // Use Fuse search on all unified lessons
+  const { results: searchedLessons } = useFuseSearch({
+    items: unifiedLessons || [],
     searchQuery,
-    keys: ['lessonName'],
+    keys: ['lesson.name'],
   });
 
-  // Apply non-search filters to scheduled lessons
+  // Apply filters to unified lessons
   const filteredLessons = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
 
-    const filtered = searchedScheduledLessons.filter((group) => {
-      // Time period filter
-      if (timePeriodFilter === 'past' && group.date >= today) return false;
-      if (timePeriodFilter === 'today' && group.date !== today) return false;
-      if (timePeriodFilter === 'future' && group.date <= today) return false;
+    const filtered = searchedLessons.filter((unifiedLesson) => {
+      // Time period filter - check if ANY schedule matches the period
+      if (timePeriodFilter !== 'all' && unifiedLesson.isScheduled) {
+        const hasMatchingSchedule = unifiedLesson.schedules.some(schedule => {
+          if (timePeriodFilter === 'past') return schedule.date < today;
+          if (timePeriodFilter === 'today') return schedule.date === today;
+          if (timePeriodFilter === 'future') return schedule.date > today;
+          return false;
+        });
+        if (!hasMatchingSchedule) return false;
+      }
 
-      // Attendance filter
-      const hasAttendance = group.serviceTimes.some(st => st.records.length > 0);
-      if (attendanceFilter === 'has-attendance' && !hasAttendance) return false;
-      if (attendanceFilter === 'no-attendance' && hasAttendance) return false;
+      // If filtering by time period and lesson is unscheduled, exclude it
+      if (timePeriodFilter !== 'all' && !unifiedLesson.isScheduled) return false;
 
-      // Teacher filter - check if the selected teacher is assigned to any service time
+      // Attendance filter - check if ANY schedule has attendance
+      if (attendanceFilter !== 'all') {
+        const hasAttendance = unifiedLesson.schedules.some(schedule =>
+          (schedule.attendance_records as any[])?.length > 0
+        );
+        if (attendanceFilter === 'has-attendance' && !hasAttendance) return false;
+        if (attendanceFilter === 'no-attendance' && hasAttendance) return false;
+      }
+
+      // Teacher filter - check if ANY schedule has the selected teacher assigned
       if (teacherFilter !== 'all') {
         const teacherId = parseInt(teacherFilter);
-        const hasTeacher = group.serviceTimes.some(st =>
-          st.schedule.assignments?.some(assignment => assignment.teacher_id === teacherId)
+        const hasTeacher = unifiedLesson.schedules.some(schedule =>
+          schedule.assignments?.some(assignment => assignment.teacher_id === teacherId)
         );
         if (!hasTeacher) return false;
       }
@@ -172,14 +179,18 @@ export function useLessonsLogic(
     });
 
     return filtered;
-  }, [searchedScheduledLessons, timePeriodFilter, attendanceFilter, teacherFilter]);
+  }, [searchedLessons, timePeriodFilter, attendanceFilter, teacherFilter]);
 
-  // Use Fuse search for unscheduled lessons
-  const { results: filteredUnscheduledLessons } = useFuseSearch({
-    items: unscheduledLessons || [],
-    searchQuery,
-    keys: ['name'],
-  });
+  // Separate scheduled and unscheduled for display
+  const scheduledLessons = useMemo(() =>
+    filteredLessons.filter(ul => ul.isScheduled),
+    [filteredLessons]
+  );
+
+  const unscheduledLessons = useMemo(() =>
+    filteredLessons.filter(ul => !ul.isScheduled),
+    [filteredLessons]
+  );
 
   /**
    * Open edit dialog for a specific attendance record
@@ -486,31 +497,28 @@ export function useLessonsLogic(
   const handleRedoAttendance = (scheduleId: number) => {
     lightTap();
 
-    // Find the schedule in history (now grouped by date with multiple service times)
-    const dateGroup = history?.find(g =>
-      g.serviceTimes.some(st => st.schedule.id === scheduleId)
-    );
-    if (!dateGroup || !onRedoAttendance) return;
+    // Find the schedule in unified lessons
+    let foundSchedule: ScheduleWithRelations | undefined = undefined;
+    for (const unifiedLesson of unifiedLessons || []) {
+      foundSchedule = unifiedLesson.schedules.find(s => s.id === scheduleId);
+      if (foundSchedule) break;
+    }
 
-    // Find the specific service time
-    const serviceTimeData = dateGroup.serviceTimes.find(st => st.schedule.id === scheduleId);
-    if (!serviceTimeData || !serviceTimeData.schedule.service_time_id) return;
+    if (!foundSchedule || !foundSchedule.service_time_id || !onRedoAttendance) return;
 
     // Navigate to search marking with the schedule's date and service time
-    const serviceTimeId = serviceTimeData.schedule.service_time_id;
-    onRedoAttendance(dateGroup.date, serviceTimeId);
+    onRedoAttendance(foundSchedule.date, foundSchedule.service_time_id);
   };
 
   return {
     // Data
-    history: filteredLessons, // Use filtered lessons instead of raw history
-    totalLessons: history?.length || 0, // Track total unfiltered count for ItemCount
+    scheduledLessons, // Filtered scheduled lessons
+    unscheduledLessons, // Filtered unscheduled lessons
+    totalLessons: totalCount, // Total unique lessons (fixed counter!)
+    scheduledCount,
+    unscheduledCount,
     isLoading,
     error,
-
-    // Unscheduled lessons data
-    unscheduledLessons: filteredUnscheduledLessons,
-    isLoadingUnscheduled,
 
     // Dialog state
     isDialogOpen,

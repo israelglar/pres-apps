@@ -5,17 +5,18 @@ import { z } from 'zod'
 
 // Define search params schema
 const lessonDetailSearchSchema = z.object({
+  date: z.string().optional(),
   serviceTimeId: z.number().optional(),
 })
 
-export const Route = createFileRoute('/_authenticated/lesson/$date')({
+export const Route = createFileRoute('/_authenticated/lesson/$lessonId')({
   component: LessonDetailRoute,
   validateSearch: (search) => lessonDetailSearchSchema.parse(search),
 })
 
 function LessonDetailRoute() {
-  const { date } = Route.useParams()
-  const { serviceTimeId } = Route.useSearch()
+  const { lessonId } = Route.useParams()
+  const { date, serviceTimeId } = Route.useSearch()
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -38,16 +39,25 @@ function LessonDetailRoute() {
     })
   }
 
-  // Validate date format (YYYY-MM-DD)
-  const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(date)
+  const handleDateChange = (newDate: string) => {
+    navigate({
+      to: '/lesson/$lessonId',
+      params: { lessonId },
+      search: { date: newDate, serviceTimeId },
+    })
+  }
 
-  if (!isValidDate) {
+  // Validate lessonId is a number
+  const parsedLessonId = parseInt(lessonId, 10)
+  const isValidLessonId = !isNaN(parsedLessonId) && parsedLessonId > 0
+
+  if (!isValidLessonId) {
     return (
       <div className={`fixed inset-0 ${theme.solids.background} flex items-center justify-center`}>
         <div className={`${theme.backgrounds.white} rounded-2xl shadow-2xl p-8 max-w-md text-center`}>
-          <h2 className={`text-xl font-bold ${theme.text.neutralDarkest} mb-2`}>Data Inválida</h2>
+          <h2 className={`text-xl font-bold ${theme.text.neutralDarkest} mb-2`}>Lição Inválida</h2>
           <p className={`text-sm ${theme.text.neutral} mb-5`}>
-            A data fornecida não é válida.
+            O identificador da lição não é válido.
           </p>
           <button
             onClick={handleBack}
@@ -62,11 +72,13 @@ function LessonDetailRoute() {
 
   return (
     <LessonDetailPage
-      date={date}
+      lessonId={parsedLessonId}
+      selectedDate={date}
       initialServiceTimeId={serviceTimeId}
       onBack={handleBack}
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}
+      onDateChange={handleDateChange}
     />
   )
 }

@@ -21,18 +21,18 @@ function getFirstName(fullName: string): string {
 export function TeacherBadge({ name, role, className = '' }: TeacherBadgeProps) {
   const firstName = getFirstName(name);
 
-  // Use primary color for lead teachers, secondary for assistants
+  // Use lighter colors with less rounded corners
   const bgColor = role === 'assistant'
-    ? theme.backgrounds.secondary
-    : theme.backgrounds.primary;
+    ? theme.backgrounds.secondaryLight100
+    : theme.backgrounds.primaryLight;
 
   const textColor = role === 'assistant'
-    ? theme.text.onSecondary
-    : theme.text.onPrimary;
+    ? theme.text.secondaryDark
+    : theme.text.primaryDark;
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${bgColor} ${textColor} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${bgColor} ${textColor} ${className}`}
       title={name} // Full name on hover
     >
       {firstName}

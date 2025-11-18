@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLessonByDate, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
+import { useLessonById, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
@@ -9,18 +9,20 @@ import { updateLesson } from '../../api/supabase/lessons';
 
 /**
  * Business logic for Lesson Detail Page
- * Handles state management and operations for a specific date's lesson
+ * Handles state management and operations for a specific lesson across multiple dates
  */
 export function useLessonDetailLogic(
-  date: string,
+  lessonId: number,
+  selectedDate?: string,
   initialServiceTimeId?: number,
   onViewStudent?: (studentId: number) => void,
-  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void
+  onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
+  onDateChange?: (date: string) => void
 ) {
   const queryClient = useQueryClient();
 
-  // Fetch only this date's lesson data (optimized - no need to load all dates)
-  const { dateGroup, isLoading, error } = useLessonByDate(date);
+  // Fetch all schedules for this lesson
+  const { dateGroup, availableDates, currentDate, isLoading, error } = useLessonById(lessonId, selectedDate);
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -125,9 +127,9 @@ export function useLessonDetailLogic(
       return scheduleUpdate;
     },
     onSuccess: () => {
-      // Invalidate both the main lessons list and this specific date
+      // Invalidate both the main lessons list and this specific lesson
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
-      queryClient.invalidateQueries({ queryKey: ['lesson-date', date] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-id', lessonId] });
     },
   });
 
@@ -345,7 +347,17 @@ export function useLessonDetailLogic(
     successVibration();
     // Invalidate lessons query to refetch with updated assignments
     queryClient.invalidateQueries({ queryKey: ['lessons'] });
-    queryClient.invalidateQueries({ queryKey: ['lesson-date', date] });
+    queryClient.invalidateQueries({ queryKey: ['lesson-id', lessonId] });
+  };
+
+  /**
+   * Handle date change from DateSelector
+   */
+  const handleDateChange = (newDate: string) => {
+    lightTap();
+    if (onDateChange) {
+      onDateChange(newDate);
+    }
   };
 
   /**
@@ -371,7 +383,7 @@ export function useLessonDetailLogic(
 
     // Navigate to search marking with the schedule's date and service time
     const serviceTimeId = serviceTimeData.schedule.service_time_id;
-    onRedoAttendance(date, serviceTimeId);
+    onRedoAttendance(currentDate, serviceTimeId);
   };
 
   /**
@@ -429,6 +441,8 @@ export function useLessonDetailLogic(
   return {
     // Data
     dateGroup,
+    availableDates,
+    currentDate,
     isLoading,
     error,
 
@@ -485,6 +499,7 @@ export function useLessonDetailLogic(
     handleViewStudent,
     handleRedoAttendance,
     handleServiceTimeChange,
+    handleDateChange,
     handleOpenEditScheduleDialog,
     handleCloseEditScheduleDialog,
     handleEditScheduleSubmit,

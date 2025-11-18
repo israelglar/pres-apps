@@ -47,7 +47,11 @@ export function UnscheduledLessonPage({
       setIsScheduleDialogOpen(false);
 
       // Navigate to the newly scheduled lesson's detail page
-      navigate({ to: "/lesson/$date", params: { date: data.date } });
+      navigate({
+        to: "/lesson/$lessonId",
+        params: { lessonId: lesson.id.toString() },
+        search: { date: data.date }
+      });
     } catch (error) {
       console.error("Failed to schedule lesson:", error);
     }

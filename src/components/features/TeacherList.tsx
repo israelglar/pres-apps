@@ -27,9 +27,16 @@ export function TeacherList({
     );
   }
 
+  // Sort alphabetically by teacher name
+  const sortedAssignments = [...validAssignments].sort((a, b) => {
+    const nameA = a.teacher?.name || '';
+    const nameB = b.teacher?.name || '';
+    return nameA.localeCompare(nameB);
+  });
+
   return (
     <div className={`flex flex-wrap gap-2 items-center ${className}`}>
-      {validAssignments.map((assignment) => (
+      {sortedAssignments.map((assignment) => (
         <TeacherBadge
           key={assignment.id}
           name={assignment.teacher!.name}

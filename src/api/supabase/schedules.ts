@@ -143,6 +143,50 @@ export async function getScheduleByDate(date: string): Promise<ScheduleWithRelat
 }
 
 /**
+ * Get all schedules for a specific lesson
+ */
+export async function getSchedulesByLessonId(lessonId: number): Promise<ScheduleWithRelations[]> {
+  try {
+    const { data, error } = await supabase
+      .from('schedules')
+      .select(`
+        *,
+        lesson:lessons(*),
+        service_time:service_times(*),
+        assignments:schedule_assignments(
+          *,
+          teacher:teachers(*)
+        ),
+        attendance_records(
+          *,
+          student:students(*)
+        )
+      `)
+      .eq('lesson_id', lessonId)
+      .order('date', { ascending: false })
+      .order('service_time_id', { ascending: true });
+
+    if (error) throw error;
+
+    // Transform data to compute has_attendance and attendance_count
+    const transformedData = (data || []).map((schedule) => {
+      const attendanceRecords = schedule.attendance_records || [];
+      const attendanceCount = attendanceRecords.length;
+
+      return {
+        ...schedule,
+        has_attendance: attendanceCount > 0,
+        attendance_count: attendanceCount,
+      };
+    });
+
+    return transformedData;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
  * Create a new schedule
  */
 export async function createSchedule(schedule: ScheduleInsert): Promise<Schedule> {
