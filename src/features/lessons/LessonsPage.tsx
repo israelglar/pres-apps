@@ -191,13 +191,36 @@ export function LessonsPage({
             />
 
             <div className="space-y-2">
-              {history.map((group) => (
-                <DateGroupCard
-                  key={group.date}
-                  group={group}
-                  onDateClick={onDateClick}
-                />
-              ))}
+              {history.map((group, index) => {
+                // Check if this is a future lesson
+                const today = new Date().toISOString().split('T')[0];
+                const isFuture = group.date > today;
+
+                // Check if previous lesson was not future (or this is first item)
+                const prevGroup = index > 0 ? history[index - 1] : null;
+                const prevIsFuture = prevGroup ? prevGroup.date > today : false;
+
+                // Show separator if this is the first future lesson
+                const showSeparator = isFuture && !prevIsFuture;
+
+                return (
+                  <div key={group.date}>
+                    {showSeparator && (
+                      <div className={`flex items-center gap-3 py-4 px-2`}>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                        <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
+                          Lições Futuras
+                        </span>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                      </div>
+                    )}
+                    <DateGroupCard
+                      group={group}
+                      onDateClick={onDateClick}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
