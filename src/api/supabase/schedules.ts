@@ -25,7 +25,10 @@ export async function getAllSchedules(): Promise<ScheduleWithRelations[]> {
           *,
           teacher:teachers(*)
         ),
-        attendance_records(id)
+        attendance_records(
+          *,
+          student:students(*)
+        )
       `)
       .order('date', { ascending: false });
 
@@ -67,7 +70,10 @@ export async function getScheduleByDateAndService(
           *,
           teacher:teachers(*)
         ),
-        attendance_records(id)
+        attendance_records(
+          *,
+          student:students(*)
+        )
       `)
       .eq('date', date)
       .eq('service_time_id', serviceTimeId)
@@ -108,7 +114,10 @@ export async function getScheduleByDate(date: string): Promise<ScheduleWithRelat
           *,
           teacher:teachers(*)
         ),
-        attendance_records(id)
+        attendance_records(
+          *,
+          student:students(*)
+        )
       `)
       .eq('date', date)
       .order('service_time_id', { ascending: true });

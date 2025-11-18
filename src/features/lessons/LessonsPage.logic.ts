@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
-import type { AttendanceRecordWithRelations, Teacher, Lesson, LessonInsert, LessonUpdate } from '../../types/database.types';
+import type { AttendanceRecordWithRelations, Lesson, LessonInsert, LessonUpdate } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { getAllTeachers } from '../../api/supabase/teachers';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useLessonManagement } from '../../hooks/useLessonManagement';
 
 /**
@@ -65,17 +65,12 @@ export function useLessonsLogic(
   const [teacherFilter, setTeacherFilter] = useState('all'); // 'all' | teacher ID
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Teachers list for filter
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-
-  // Fetch teachers for filter
-  useEffect(() => {
-    getAllTeachers()
-      .then(setTeachers)
-      .catch((error) => {
-        console.error('Failed to fetch teachers:', error);
-      });
-  }, []);
+  // Fetch teachers for filter with TanStack Query
+  const { data: teachers = [] } = useQuery({
+    queryKey: ['teachers'],
+    queryFn: getAllTeachers,
+    staleTime: 10 * 60 * 1000, // 10 minutes - teachers rarely change
+  });
 
   // Filter groups configuration
   const filterGroups = [

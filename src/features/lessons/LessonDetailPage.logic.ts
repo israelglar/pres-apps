@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useLessons, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
+import { useState, useEffect } from 'react';
+import { useLessonByDate, useEditAttendance, useAddAttendance, useDeleteAttendance } from './hooks/useLessons';
 import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
@@ -19,14 +19,8 @@ export function useLessonDetailLogic(
 ) {
   const queryClient = useQueryClient();
 
-  // Fetch lessons - we'll extract the specific date from it
-  const { history, isLoading, error } = useLessons(); // Load all dates
-
-  // Find the specific date group from history
-  const dateGroup = useMemo(() => {
-    const found = history?.find(group => group.date === date);
-    return found;
-  }, [history, date]);
+  // Fetch only this date's lesson data (optimized - no need to load all dates)
+  const { dateGroup, isLoading, error } = useLessonByDate(date);
 
   // Edit attendance mutation
   const { editAttendance, isEditing } = useEditAttendance();
@@ -124,7 +118,9 @@ export function useLessonDetailLogic(
       return scheduleUpdate;
     },
     onSuccess: () => {
+      // Invalidate both the main lessons list and this specific date
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-date', date] });
     },
   });
 
@@ -342,6 +338,7 @@ export function useLessonDetailLogic(
     successVibration();
     // Invalidate lessons query to refetch with updated assignments
     queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    queryClient.invalidateQueries({ queryKey: ['lesson-date', date] });
   };
 
   /**

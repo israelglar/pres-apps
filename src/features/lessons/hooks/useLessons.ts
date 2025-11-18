@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAllSchedules } from '../../../api/supabase/schedules';
+import { getAllSchedules, getScheduleByDate } from '../../../api/supabase/schedules';
 import {
-  getAttendanceBySchedule,
   updateAttendanceRecord,
   createAttendanceRecord,
   deleteAttendanceRecord,
@@ -64,35 +63,31 @@ export function useLessons() {
 
       const totalCount = uniqueDates.length;
 
-      // Fetch attendance for ALL dates
-      const historyData = await Promise.all(
-        uniqueDates.map(async (date) => {
-          const schedulesForDate = schedulesByDate[date];
+      // Process attendance data that's already loaded with schedules
+      const historyData = uniqueDates.map((date) => {
+        const schedulesForDate = schedulesByDate[date];
 
-          // Fetch attendance for each service time on this date
-          const serviceTimesData = await Promise.all(
-            schedulesForDate.map(async (schedule) => {
-              const records = await getAttendanceBySchedule(schedule.id);
-
-              return {
-                schedule,
-                records,
-                stats: calculateStats(records),
-              };
-            })
-          );
-
-          // Sort service times by time (09:00 before 11:00)
-          serviceTimesData.sort((a, b) =>
-            (a.schedule.service_time?.time || '').localeCompare(b.schedule.service_time?.time || '')
-          );
+        // Use attendance data that's already in the schedule (no separate queries!)
+        const serviceTimesData = schedulesForDate.map((schedule) => {
+          const records = (schedule.attendance_records || []) as AttendanceRecordWithRelations[];
 
           return {
-            date,
-            serviceTimes: serviceTimesData,
+            schedule,
+            records,
+            stats: calculateStats(records),
           };
-        })
-      );
+        });
+
+        // Sort service times by time (09:00 before 11:00)
+        serviceTimesData.sort((a, b) =>
+          (a.schedule.service_time?.time || '').localeCompare(b.schedule.service_time?.time || '')
+        );
+
+        return {
+          date,
+          serviceTimes: serviceTimesData,
+        };
+      });
 
       return {
         history: historyData,
@@ -141,6 +136,42 @@ export function useLessons() {
   return {
     history: response?.history,
     totalCount: response?.totalCount ?? 0,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+
+/**
+ * Custom hook to fetch a single date's lesson data
+ * Optimized for LessonDetailPage - only fetches the specific date needed
+ * Returns data in the same LessonGroup format as useLessons
+ */
+export function useLessonByDate(date: string) {
+  const { data: schedules, isLoading, error, refetch } = useQuery({
+    queryKey: ['lesson-date', date],
+    queryFn: () => getScheduleByDate(date),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Transform schedules into LessonGroup format for consistency
+  const dateGroup: LessonGroup | undefined = schedules ? {
+    date,
+    serviceTimes: schedules.map((schedule) => {
+      const records = (schedule.attendance_records || []) as AttendanceRecordWithRelations[];
+      return {
+        schedule,
+        records,
+        stats: calculateStats(records),
+      };
+    }).sort((a, b) =>
+      (a.schedule.service_time?.time || '').localeCompare(b.schedule.service_time?.time || '')
+    ),
+  } : undefined;
+
+  return {
+    dateGroup,
     isLoading,
     error,
     refetch,
@@ -224,17 +255,11 @@ export function useEditAttendance() {
       }
     },
 
-    // Always refetch after success or error
+    // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate all related queries to ensure fresh data everywhere
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
-        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
-        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
-        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
-        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
-        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
-      ]);
+      // Invalidate only lessons-related queries
+      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
     },
   });
 
@@ -340,17 +365,11 @@ export function useAddAttendance() {
       }
     },
 
-    // Always refetch after success or error
+    // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate all related queries to ensure fresh data everywhere
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
-        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
-        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
-        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
-        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
-        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
-      ]);
+      // Invalidate only lessons-related queries
+      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
     },
   });
 
@@ -420,17 +439,11 @@ export function useDeleteAttendance() {
       }
     },
 
-    // Always refetch after success or error
+    // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate all related queries to ensure fresh data everywhere
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY }),
-        queryClient.invalidateQueries({ queryKey: ['schedules'] }),
-        queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
-        queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
-        queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
-        queryClient.invalidateQueries({ queryKey: ['student-attendance'] }),
-      ]);
+      // Invalidate only lessons-related queries
+      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
     },
   });
 
