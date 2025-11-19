@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Student } from '../../types/database.types';
 import type { StudentWithAlert } from '../../hooks/useStudentManagement';
@@ -19,7 +20,7 @@ interface StudentCardProps {
  * - Visitor badge (if applicable)
  * - Clickable to navigate to student detail page
  */
-export function StudentCard({ student, onClick, hasAlert = false }: StudentCardProps) {
+export const StudentCard = React.memo<StudentCardProps>(({ student, onClick, hasAlert = false }) => {
   const getStatusBadge = (status: Student['status']) => {
     const statusConfig = {
       active: {
@@ -97,4 +98,4 @@ export function StudentCard({ student, onClick, hasAlert = false }: StudentCardP
       </div>
     </button>
   );
-}
+});

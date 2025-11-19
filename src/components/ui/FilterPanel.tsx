@@ -1,3 +1,4 @@
+import React from "react";
 import { theme } from "../../config/theme";
 
 interface FilterOption {
@@ -25,7 +26,7 @@ interface FilterPanelProps {
  * FilterPanel Component
  * Collapsible filter panel with multiple filter groups
  */
-export function FilterPanel({
+export const FilterPanel = React.memo<FilterPanelProps>(({
   isOpen,
   filterGroups,
   activeFilters,
@@ -33,7 +34,7 @@ export function FilterPanel({
   onClearFilters,
   hasActiveFilters,
   className = "",
-}: FilterPanelProps) {
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -76,4 +77,4 @@ export function FilterPanel({
       )}
     </div>
   );
-}
+});

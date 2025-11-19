@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react';
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { theme } from '../../config/theme';
 
 interface SearchBarProps {
@@ -22,7 +22,7 @@ interface SearchBarProps {
  * - Consistent styling with Light Sky theme
  * - White background with light blue borders
  */
-export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
+export const SearchBar = React.memo(forwardRef<HTMLInputElement, SearchBarProps>(
   (
     {
       value,
@@ -88,6 +88,6 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
       </div>
     );
   }
-);
+));
 
 SearchBar.displayName = 'SearchBar';

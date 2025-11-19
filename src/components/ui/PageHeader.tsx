@@ -1,3 +1,4 @@
+import React from "react";
 import { theme } from "../../config/theme";
 
 interface PageHeaderProps {
@@ -33,7 +34,7 @@ interface PageHeaderProps {
  * - Optional right-side action button
  * - Configurable sticky positioning
  */
-export function PageHeader({
+export const PageHeader = React.memo<PageHeaderProps>(({
   onBack,
   title,
   subtitle = "",
@@ -41,7 +42,7 @@ export function PageHeader({
   sticky = true,
   className = "",
   variant = "minimal",
-}: PageHeaderProps) {
+}) => {
   const stickyClasses = sticky ? "sticky top-0 z-10" : "";
 
   // Minimal variant - iOS style
@@ -152,4 +153,4 @@ export function PageHeader({
       )}
     </header>
   );
-}
+});

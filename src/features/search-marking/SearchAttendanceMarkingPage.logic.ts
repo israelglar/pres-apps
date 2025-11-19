@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
 import { useFuseSearch } from "../../hooks/useFuseSearch";
@@ -29,6 +29,7 @@ export const useSearchAttendanceMarkingLogic = ({
 }) => {
   // Search-specific state
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery); // Debounce search for better performance
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [addedVisitors, setAddedVisitors] = useState<Student[]>([]); // Track visitors added during session
 
@@ -82,9 +83,10 @@ export const useSearchAttendanceMarkingLogic = ({
   }, [allStudents, attendanceRecords]);
 
   // Use shared Fuse search hook for fuzzy search on unmarked students
+  // Use deferred value to debounce search and improve performance
   const { results: searchedUnmarkedStudents } = useFuseSearch({
     items: unmarkedStudents,
-    searchQuery,
+    searchQuery: deferredSearchQuery,
     keys: ["name"],
     threshold: 0.3,
   });
@@ -94,7 +96,7 @@ export const useSearchAttendanceMarkingLogic = ({
     return [...searchedUnmarkedStudents, ...markedStudents];
   }, [searchedUnmarkedStudents, markedStudents]);
 
-  const handleMarkPresent = (student: Student) => {
+  const handleMarkPresent = useCallback((student: Student) => {
     selectionTap();
 
     const newRecords = {
@@ -110,16 +112,16 @@ export const useSearchAttendanceMarkingLogic = ({
     setAttendanceRecords(newRecords);
     setSearchQuery(""); // Clear search after marking
     searchInputRef.current?.focus(); // Refocus search input
-  };
+  }, [attendanceRecords]);
 
-  const handleUnmark = (studentId: string) => {
+  const handleUnmark = useCallback((studentId: string) => {
     selectionTap();
     const newRecords = { ...attendanceRecords };
     delete newRecords[studentId];
     setAttendanceRecords(newRecords);
-  };
+  }, [attendanceRecords]);
 
-  const handleUpdateNote = (
+  const handleUpdateNote = useCallback((
     studentId: string,
     note: string,
     isMarked: boolean,
@@ -154,9 +156,9 @@ export const useSearchAttendanceMarkingLogic = ({
         searchInputRef.current?.focus(); // Refocus search input
       }
     }
-  };
+  }, [attendanceRecords, allStudents]);
 
-  const handleAddVisitor = async () => {
+  const handleAddVisitor = useCallback(async () => {
     const result = await coreHandleAddVisitor();
 
     if (result) {
@@ -167,9 +169,9 @@ export const useSearchAttendanceMarkingLogic = ({
       setSearchQuery("");
       searchInputRef.current?.focus();
     }
-  };
+  }, [coreHandleAddVisitor]);
 
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     successVibration();
 
     // Mark all unmarked students as absent
@@ -190,18 +192,18 @@ export const useSearchAttendanceMarkingLogic = ({
 
     setAttendanceRecords(finalRecords);
     setIsComplete(true);
-  };
+  }, [attendanceRecords, allStudents]);
 
-  const handleConfirmComplete = async () => {
+  const handleConfirmComplete = useCallback(async () => {
     setIsLoading(true);
     try {
       await onComplete(Object.values(attendanceRecords));
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [attendanceRecords, onComplete]);
 
-  const handleGoBack = () => {
+  const handleGoBack = useCallback(() => {
     // Remove all auto-marked absent records (only keep manually marked present)
     const manualRecords: Record<string, AttendanceRecord> = {};
 
@@ -215,7 +217,7 @@ export const useSearchAttendanceMarkingLogic = ({
 
     setAttendanceRecords(manualRecords);
     setIsComplete(false);
-  };
+  }, [attendanceRecords]);
 
   // Derived values
   const presentCount = Object.values(attendanceRecords).filter(

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { AlertTriangle, CheckCircle, X, XCircle } from "lucide-react";
 import { theme } from "../../config/theme";
 import type { Student, AttendanceRecord } from "../../types/attendance.types";
@@ -17,7 +17,7 @@ export interface StudentListProps {
   onUpdateNote?: (studentId: string, note: string, isMarked: boolean) => void; // Optional - for adding/editing notes
 }
 
-export const StudentList: React.FC<StudentListProps> = ({
+export const StudentList = React.memo<StudentListProps>(({
   students,
   attendanceRecords,
   absenceAlerts,
@@ -30,28 +30,36 @@ export const StudentList: React.FC<StudentListProps> = ({
 }) => {
   // Note modal state
   const [noteModalStudent, setNoteModalStudent] = useState<Student | null>(null);
-  // Separate students into regular students and present visitors
-  const regularStudents: Student[] = [];
-  const presentVisitors: Student[] = [];
 
-  students.forEach((student) => {
-    const record = attendanceRecords[student.id];
+  // Memoize expensive computations - separate students into regular students and present visitors
+  const { regularStudents, presentVisitors } = useMemo(() => {
+    const regular: Student[] = [];
+    const visitors: Student[] = [];
 
-    if (student.isVisitor) {
-      // Visitors: only show in visitors section if present, otherwise disappear
-      if (record && record.status === "P") {
-        // Present visitor - show in visitors section
-        presentVisitors.push(student);
+    students.forEach((student) => {
+      const record = attendanceRecords[student.id];
+
+      if (student.isVisitor) {
+        // Visitors: only show in visitors section if present, otherwise disappear
+        if (record && record.status === "P") {
+          // Present visitor - show in visitors section
+          visitors.push(student);
+        }
+        // Unmarked or any other status - disappear completely
+      } else {
+        // Regular students - always show in main list regardless of status
+        regular.push(student);
       }
-      // Unmarked or any other status - disappear completely
-    } else {
-      // Regular students - always show in main list regardless of status
-      regularStudents.push(student);
-    }
-  });
+    });
 
-  // Sort present visitors alphabetically
-  presentVisitors.sort((a, b) => a.name.localeCompare(b.name, 'pt'));
+    // Sort present visitors alphabetically
+    visitors.sort((a, b) => a.name.localeCompare(b.name, 'pt'));
+
+    return {
+      regularStudents: regular,
+      presentVisitors: visitors
+    };
+  }, [students, attendanceRecords]);
 
   const renderStudentCard = (student: Student) => {
     const record = attendanceRecords[student.id];
@@ -199,4 +207,4 @@ export const StudentList: React.FC<StudentListProps> = ({
       )}
     </>
   );
-};
+});

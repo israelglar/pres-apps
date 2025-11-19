@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Calendar, ChevronRight } from "lucide-react";
 import { TeacherList } from "../../../components/features/TeacherList";
 import { formatShortDate } from "../../../components/lesson-cards";
@@ -15,10 +16,10 @@ interface UnifiedLessonCardProps {
  * Unified Lesson Card - Shows a lesson with all its schedules aggregated
  * Groups schedules by date and shows service times with attendance and teachers
  */
-export function UnifiedLessonCard({
+export const UnifiedLessonCard = React.memo<UnifiedLessonCardProps>(({
   unifiedLesson,
   onLessonClick,
-}: UnifiedLessonCardProps) {
+}) => {
   const { lesson, schedules, isScheduled } = unifiedLesson;
 
   // For scheduled lessons, click the most recent schedule
@@ -29,26 +30,35 @@ export function UnifiedLessonCard({
     }
   };
 
-  // Group schedules by date (to avoid showing same date multiple times)
-  const schedulesByDate = schedules.reduce(
-    (acc, schedule) => {
-      if (!acc[schedule.date]) {
-        acc[schedule.date] = [];
-      }
-      acc[schedule.date].push(schedule);
-      return acc;
-    },
-    {} as Record<string, ScheduleWithRelations[]>,
-  );
+  // Memoize expensive computations - group and sort schedules
+  const { schedulesByDate, visibleDates, hiddenCount } = useMemo(() => {
+    // Group schedules by date (to avoid showing same date multiple times)
+    const byDate = schedules.reduce(
+      (acc, schedule) => {
+        if (!acc[schedule.date]) {
+          acc[schedule.date] = [];
+        }
+        acc[schedule.date].push(schedule);
+        return acc;
+      },
+      {} as Record<string, ScheduleWithRelations[]>,
+    );
 
-  // Get sorted dates (most recent first)
-  const sortedDates = Object.keys(schedulesByDate).sort((a, b) =>
-    b.localeCompare(a),
-  );
+    // Get sorted dates (most recent first)
+    const sorted = Object.keys(byDate).sort((a, b) =>
+      b.localeCompare(a),
+    );
 
-  // Show first 2 dates
-  const visibleDates = sortedDates.slice(0, 2);
-  const hiddenCount = sortedDates.length - 2;
+    // Show first 2 dates
+    const visible = sorted.slice(0, 2);
+    const hidden = sorted.length - 2;
+
+    return {
+      schedulesByDate: byDate,
+      visibleDates: visible,
+      hiddenCount: hidden
+    };
+  }, [schedules]);
 
   return (
     <button
@@ -176,4 +186,4 @@ export function UnifiedLessonCard({
       />
     </button>
   );
-}
+});
