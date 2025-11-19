@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { bulkUpdateAttendance } from '../api/attendance';
+import { bulkSaveAttendance } from '../api/supabase/attendance';
 import type { ServiceTime, Schedule } from '../schemas/attendance.schema';
 import { useMemo } from 'react';
 import { useStudents } from './useStudentManagement';
@@ -61,7 +61,7 @@ export function useAttendanceData() {
 
   // Mutation for saving attendance
   const saveMutation = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       date,
       serviceTimeId,
       records,
@@ -75,7 +75,18 @@ export function useAttendanceData() {
         notes?: string;
       }>;
       markedBy?: number | null;
-    }) => bulkUpdateAttendance(date, serviceTimeId, records, markedBy),
+    }) => {
+      // Find the schedule for this date and service time
+      const schedule = schedulesQuery.data?.find(
+        (s) => s.date === date.split('T')[0] && s.service_time_id === serviceTimeId
+      );
+
+      if (!schedule) {
+        throw new Error('Schedule not found for the given date and service time');
+      }
+
+      return bulkSaveAttendance(schedule.id, records, markedBy);
+    },
     onSuccess: async () => {
       // Invalidate relevant caches after successful save
       // Using Promise.all ensures all invalidations complete before mutation resolves

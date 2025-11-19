@@ -158,7 +158,9 @@ export async function createAttendanceRecord(record: {
       status: record.status,
       service_time_id: record.service_time_id || null,
       notes: record.notes || null,
-      marked_by: null, // TODO: Add teacher ID when auth is implemented
+      // TODO: Future enhancement - Pass teacher ID from calling context
+      // Requires refactoring call chain to include teacher parameter
+      marked_by: null,
       marked_at: new Date().toISOString(),
     };
 

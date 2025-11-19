@@ -3,6 +3,7 @@ import type { Session, User, AuthError } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { Teacher } from '@/types/database.types';
+import { logger } from '@/utils/logger';
 
 interface AuthContextType {
   session: Session | null;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Development bypass - skip authentication entirely
     if (isDevelopmentBypass) {
-      console.warn('⚠️ DEVELOPMENT MODE: Authentication bypassed');
+      logger.warn('⚠️ DEVELOPMENT MODE: Authentication bypassed');
       // Create a mock session for dev mode
       const mockSession = {
         access_token: 'dev-token',
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const error = urlParams.get('error') || hashParams.get('error');
     const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
     if (error) {
-      console.error('[AuthContext] OAuth error in URL:', {
+      logger.error('[AuthContext] OAuth error in URL:', {
         error,
         description: errorDescription,
       });
@@ -115,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
           if (error) {
-            console.error('[AuthContext] Error exchanging code for session:', error);
+            logger.error('[AuthContext] Error exchanging code for session:', error);
           } else if (data.session) {
             // Clear the code from URL
             window.history.replaceState(null, '', window.location.pathname);
@@ -123,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return; // Let the auth state change listener handle the rest
           }
         } catch (err) {
-          console.error('[AuthContext] Exception exchanging code:', err);
+          logger.error('[AuthContext] Exception exchanging code:', err);
         }
       }
 
@@ -143,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
 
             if (error) {
-              console.error('[AuthContext] Error setting session:', error);
+              logger.error('[AuthContext] Error setting session:', error);
             } else if (data.session) {
               // Clear the hash from URL
               window.history.replaceState(null, '', window.location.pathname);
@@ -151,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               return; // Let the auth state change listener handle the rest
             }
           } catch (err) {
-            console.error('[AuthContext] Exception setting session:', err);
+            logger.error('[AuthContext] Exception setting session:', err);
           }
         }
 
@@ -189,7 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (error) {
-        console.error('[AuthContext] Error from Supabase:', error);
+        logger.error('[AuthContext] Error from Supabase:', error);
         throw error;
       }
 
@@ -209,7 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         window.dispatchEvent(new PopStateEvent('popstate'));
       }
     } catch (error) {
-      console.error('[AuthContext] Error loading teacher profile:', error);
+      logger.error('[AuthContext] Error loading teacher profile:', error);
       setTeacher(null);
     } finally {
       setLoading(false);
@@ -232,12 +233,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        console.error('[AuthContext] OAuth error:', error);
+        logger.error('[AuthContext] OAuth error:', error);
         throw error;
       }
     } catch (error) {
       const authError = error as AuthError;
-      console.error('[AuthContext] Google sign in error:', authError);
+      logger.error('[AuthContext] Google sign in error:', authError);
       throw new Error(authError.message || 'Erro ao fazer login com Google');
     }
   };
@@ -250,14 +251,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        console.error('[AuthContext] Password sign in error:', error);
+        logger.error('[AuthContext] Password sign in error:', error);
         throw error;
       }
 
       // Session will be set by onAuthStateChange listener
     } catch (error) {
       const authError = error as AuthError;
-      console.error('[AuthContext] Password sign in error:', authError);
+      logger.error('[AuthContext] Password sign in error:', authError);
       throw new Error(authError.message || 'Erro ao fazer login');
     }
   };
@@ -270,7 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('[AuthContext] Sign out error:', error);
+        logger.error('[AuthContext] Sign out error:', error);
         throw error;
       }
 
@@ -278,7 +279,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.location.href = '/login';
     } catch (error) {
       const authError = error as AuthError;
-      console.error('[AuthContext] Sign out error:', authError);
+      logger.error('[AuthContext] Sign out error:', authError);
       throw new Error(authError.message || 'Erro ao fazer logout');
     }
   };
