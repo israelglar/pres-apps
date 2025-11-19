@@ -1,9 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { UnscheduledLessonPage } from '../../features/lessons/UnscheduledLessonPage';
+import { lazy } from 'react';
 import { theme } from '@/config/theme';
 import { useQuery } from '@tanstack/react-query';
 import { getLessonById } from '../../api/supabase/lessons';
 import { Loader2 } from 'lucide-react';
+
+const UnscheduledLessonPage = lazy(() => import('../../features/lessons/UnscheduledLessonPage').then(m => ({ default: m.UnscheduledLessonPage })));
 
 export const Route = createFileRoute('/_authenticated/lessons/$lessonId')({
   component: UnscheduledLessonRoute,

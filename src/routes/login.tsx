@@ -1,5 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { LoginPage } from '@/features/auth/LoginPage'
+import { lazy } from 'react'
+
+const LoginPage = lazy(() => import('@/features/auth/LoginPage').then(m => ({ default: m.LoginPage })))
 
 /**
  * Login route - public access only

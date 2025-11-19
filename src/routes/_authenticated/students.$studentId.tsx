@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { StudentDetailPage } from '../../features/student-detail'
+import { lazy } from 'react'
 import { theme } from '@/config/theme'
+
+const StudentDetailPage = lazy(() => import('../../features/student-detail').then(m => ({ default: m.StudentDetailPage })))
 
 export const Route = createFileRoute('/_authenticated/students/$studentId')({
   component: StudentDetailRoute,

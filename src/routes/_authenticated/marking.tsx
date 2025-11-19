@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AttendanceMarkingPage } from '../../features/attendance-marking'
+import { lazy } from 'react'
 import { useAttendanceData, useAttendanceSubmit } from '../../hooks/useAttendanceData'
 import { useAuth } from '../../contexts/AuthContext'
+
+const AttendanceMarkingPage = lazy(() => import('../../features/attendance-marking').then(m => ({ default: m.AttendanceMarkingPage })))
 
 type MarkingSearch = {
   date: string

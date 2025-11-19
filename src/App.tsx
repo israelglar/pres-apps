@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { Code2 } from 'lucide-react';
@@ -9,6 +9,7 @@ import { SavingOverlay } from './components/ui/SavingOverlay';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DevTools } from './features/home/DevTools';
 import { theme } from './config/theme';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
 /**
  * Main App Component
@@ -94,7 +95,9 @@ function AppContent() {
         />
       )}
 
-      <RouterProvider router={router} context={{ auth }} />
+      <Suspense fallback={<LoadingSpinner />}>
+        <RouterProvider router={router} context={{ auth }} />
+      </Suspense>
     </>
   );
 }

@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { HomePage } from '../../features/home'
+import { lazy } from 'react'
+
+const HomePage = lazy(() => import('../../features/home').then(m => ({ default: m.HomePage })))
 
 export const Route = createFileRoute('/_authenticated/')({
   component: HomeRoute,

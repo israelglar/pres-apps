@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, useMatchRoute, useNavigate } from '@tanstack/react-router';
-import { LessonsPage } from '../../features/lessons';
+import { lazy } from 'react';
+
+const LessonsPage = lazy(() => import('../../features/lessons').then(m => ({ default: m.LessonsPage })));
 
 export const Route = createFileRoute('/_authenticated/lessons')({
   component: LessonsRoute,

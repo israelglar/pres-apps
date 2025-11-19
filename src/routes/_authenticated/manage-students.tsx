@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { StudentManagementPage } from '../../features/student-management'
+import { lazy } from 'react'
+
+const StudentManagementPage = lazy(() => import('../../features/student-management').then(m => ({ default: m.StudentManagementPage })))
 
 export const Route = createFileRoute('/_authenticated/manage-students')({
   component: ManageStudentsRoute,

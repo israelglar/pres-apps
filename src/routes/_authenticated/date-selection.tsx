@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DateSelectionPage } from '../../features/date-selection'
+import { lazy, useState } from 'react'
 import { useAttendanceData } from '../../hooks/useAttendanceData'
 import { getAttendanceBySchedule } from '../../api/supabase/attendance'
 import { calculateStats } from '../../utils/attendance'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 import { queryKeys } from '../../lib/queryKeys'
+
+const DateSelectionPage = lazy(() => import('../../features/date-selection').then(m => ({ default: m.DateSelectionPage })))
 
 export const Route = createFileRoute('/_authenticated/date-selection')({
   component: DateSelectionRoute,

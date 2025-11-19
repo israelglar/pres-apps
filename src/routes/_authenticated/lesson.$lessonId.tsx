@@ -1,7 +1,9 @@
 import { theme } from "@/config/theme";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { lazy } from "react";
 import { z } from "zod";
-import { LessonDetailPage } from "../../features/lessons";
+
+const LessonDetailPage = lazy(() => import("../../features/lessons").then(m => ({ default: m.LessonDetailPage })));
 
 // Define search params schema
 const lessonDetailSearchSchema = z.object({
