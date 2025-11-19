@@ -17,6 +17,12 @@ const updateSW = registerSW({
   },
 })
 
+// Catch unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  event.preventDefault(); // Prevent default browser behavior
+});
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

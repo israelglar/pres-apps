@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DevTools } from './features/home/DevTools';
 import { theme } from './config/theme';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 /**
  * Main App Component
@@ -27,11 +28,13 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
  */
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

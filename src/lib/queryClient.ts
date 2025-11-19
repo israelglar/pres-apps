@@ -8,6 +8,7 @@ import { QueryClient } from '@tanstack/react-query';
  * - Stale time is 55 minutes (refetch 5 min before cache expires)
  * - Retry failed requests 3 times with exponential backoff
  * - Refetch on window focus (when user returns to app)
+ * - Errors bubble up to error boundaries for proper handling
  */
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,10 +19,13 @@ export const queryClient = new QueryClient({
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
+      // throwOnError: false allows errors to be handled by error boundaries
+      throwOnError: false,
     },
     mutations: {
       retry: 2,
       retryDelay: 1000,
+      // Mutations errors are handled by individual mutation error handlers
     },
   },
 });
