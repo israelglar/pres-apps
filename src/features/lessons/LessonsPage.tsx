@@ -35,8 +35,10 @@ export function LessonsPage({
   const {
     scheduledLessons,
     unscheduledLessons,
+    pastLessons,
+    todayLessons,
+    futureLessons,
     totalLessons,
-    scheduledCount,
     unscheduledCount,
     isLoading,
     error,
@@ -209,22 +211,90 @@ export function LessonsPage({
             {/* Scheduled Lessons Section */}
             {scheduledLessons && scheduledLessons.length > 0 && (
               <>
-                {/* Section Header */}
-                <div className={`flex items-center gap-3 py-2 px-2 mb-2`}>
-                  <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
-                    Lições Agendadas ({scheduledCount})
-                  </span>
-                </div>
+                {/* Past Lessons */}
+                {pastLessons.length > 0 && (
+                  <>
+                    <div className={`flex items-center gap-3 py-2 px-2 mb-2`}>
+                      <span className={`text-xs font-semibold ${theme.text.neutral} uppercase tracking-wide`}>
+                        Lições Passadas ({pastLessons.length})
+                      </span>
+                    </div>
 
-                <div className="space-y-2 mb-6">
-                  {scheduledLessons.map((unifiedLesson) => (
-                    <UnifiedLessonCard
-                      key={unifiedLesson.lesson.id}
-                      unifiedLesson={unifiedLesson}
-                      onLessonClick={onLessonClick}
-                    />
-                  ))}
-                </div>
+                    <div className="space-y-2 mb-6">
+                      {pastLessons.map((unifiedLesson) => (
+                        <UnifiedLessonCard
+                          key={unifiedLesson.lesson.id}
+                          unifiedLesson={unifiedLesson}
+                          onLessonClick={onLessonClick}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Today's Lessons */}
+                {todayLessons.length > 0 && (
+                  <>
+                    {pastLessons.length > 0 && (
+                      <div className={`flex items-center gap-3 py-4 px-2 mb-2`}>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                        <span className={`text-xs font-semibold ${theme.text.primary} uppercase tracking-wide`}>
+                          Hoje ({todayLessons.length})
+                        </span>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                      </div>
+                    )}
+                    {pastLessons.length === 0 && (
+                      <div className={`flex items-center gap-3 py-2 px-2 mb-2`}>
+                        <span className={`text-xs font-semibold ${theme.text.primary} uppercase tracking-wide`}>
+                          Hoje ({todayLessons.length})
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 mb-6">
+                      {todayLessons.map((unifiedLesson) => (
+                        <UnifiedLessonCard
+                          key={unifiedLesson.lesson.id}
+                          unifiedLesson={unifiedLesson}
+                          onLessonClick={onLessonClick}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Future Lessons */}
+                {futureLessons.length > 0 && (
+                  <>
+                    {(pastLessons.length > 0 || todayLessons.length > 0) && (
+                      <div className={`flex items-center gap-3 py-4 px-2 mb-2`}>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                        <span className={`text-xs font-semibold ${theme.text.secondary} uppercase tracking-wide`}>
+                          Lições Futuras ({futureLessons.length})
+                        </span>
+                        <div className={`flex-1 h-px ${theme.backgrounds.neutralLight}`} />
+                      </div>
+                    )}
+                    {pastLessons.length === 0 && todayLessons.length === 0 && (
+                      <div className={`flex items-center gap-3 py-2 px-2 mb-2`}>
+                        <span className={`text-xs font-semibold ${theme.text.secondary} uppercase tracking-wide`}>
+                          Lições Futuras ({futureLessons.length})
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 mb-6">
+                      {futureLessons.map((unifiedLesson) => (
+                        <UnifiedLessonCard
+                          key={unifiedLesson.lesson.id}
+                          unifiedLesson={unifiedLesson}
+                          onLessonClick={onLessonClick}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </>
             )}
 

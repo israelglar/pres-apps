@@ -192,6 +192,31 @@ export function useLessonsLogic(
     [filteredLessons]
   );
 
+  // Split scheduled lessons into past, today, and future
+  const { pastLessons, todayLessons, futureLessons } = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+
+    const past: typeof scheduledLessons = [];
+    const todayList: typeof scheduledLessons = [];
+    const future: typeof scheduledLessons = [];
+
+    scheduledLessons.forEach((unifiedLesson) => {
+      // Get the earliest schedule date (since they're sorted oldest first)
+      const earliestDate = unifiedLesson.schedules[0]?.date;
+      if (!earliestDate) return;
+
+      if (earliestDate < today) {
+        past.push(unifiedLesson);
+      } else if (earliestDate === today) {
+        todayList.push(unifiedLesson);
+      } else {
+        future.push(unifiedLesson);
+      }
+    });
+
+    return { pastLessons: past, todayLessons: todayList, futureLessons: future };
+  }, [scheduledLessons]);
+
   /**
    * Open edit dialog for a specific attendance record
    */
@@ -514,6 +539,9 @@ export function useLessonsLogic(
     // Data
     scheduledLessons, // Filtered scheduled lessons
     unscheduledLessons, // Filtered unscheduled lessons
+    pastLessons, // Past scheduled lessons
+    todayLessons, // Today's scheduled lessons
+    futureLessons, // Future scheduled lessons
     totalLessons: totalCount, // Total unique lessons (fixed counter!)
     scheduledCount,
     unscheduledCount,
