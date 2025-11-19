@@ -52,8 +52,8 @@ export function useLessonsUnified() {
       const unifiedLessons: UnifiedLesson[] = allLessons.map((lesson) => {
         const schedules = schedulesByLessonId.get(lesson.id) || [];
 
-        // Sort schedules by date (most recent first)
-        schedules.sort((a, b) => b.date.localeCompare(a.date));
+        // Sort schedules by date (oldest first)
+        schedules.sort((a, b) => a.date.localeCompare(b.date));
 
         return {
           lesson,
@@ -69,10 +69,10 @@ export function useLessonsUnified() {
         if (!a.isScheduled && b.isScheduled) return 1;
 
         if (a.isScheduled && b.isScheduled) {
-          // Both scheduled - sort by most recent schedule date
+          // Both scheduled - sort by oldest schedule date
           const aDate = a.schedules[0]?.date || '';
           const bDate = b.schedules[0]?.date || '';
-          return bDate.localeCompare(aDate);
+          return aDate.localeCompare(bDate);
         }
 
         // Both unscheduled - sort by curriculum series and lesson number
