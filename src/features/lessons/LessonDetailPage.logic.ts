@@ -4,7 +4,6 @@ import type { AttendanceRecordWithRelations } from '../../types/database.types';
 import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { updateSchedule } from '../../api/supabase/schedules';
 import { updateLesson } from '../../api/supabase/lessons';
 
 /**
@@ -95,40 +94,26 @@ export function useLessonDetailLogic(
   // Edit schedule dialog state
   const [isEditScheduleDialogOpen, setIsEditScheduleDialogOpen] = useState(false);
 
-  // Edit schedule mutation
-  const editScheduleMutation = useMutation({
+  // Edit lesson dialog state
+  const [isEditLessonDialogOpen, setIsEditLessonDialogOpen] = useState(false);
+
+  // Edit lesson mutation (lesson-level properties only)
+  const editLessonMutation = useMutation({
     mutationFn: async (data: {
-      scheduleId: number;
-      date: string;
-      lessonId: number | null;
-      serviceTimeId: number;
-      eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
-      notes: string | null;
+      lessonId: number;
+      name: string;
       resourceUrl: string | null;
-      lessonName: string | null;
     }) => {
-      // Update schedule
-      const scheduleUpdate = await updateSchedule(data.scheduleId, {
-        date: data.date,
-        lesson_id: data.lessonId,
-        service_time_id: data.serviceTimeId,
-        event_type: data.eventType as "regular" | "family_service" | "cancelled" | "retreat" | "party",
-        notes: data.notes,
+      // Update lesson properties only (affects all schedules using this lesson)
+      return await updateLesson(data.lessonId, {
+        name: data.name,
+        resource_url: data.resourceUrl,
       });
-
-      // Update lesson (name and resource_url) if lessonId exists
-      if (data.lessonId) {
-        await updateLesson(data.lessonId, {
-          name: data.lessonName || undefined,
-          resource_url: data.resourceUrl,
-        });
-      }
-
-      return scheduleUpdate;
     },
     onSuccess: () => {
       // Invalidate both the main lessons list and this specific lesson
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
       queryClient.invalidateQueries({ queryKey: ['lesson-id', lessonId] });
     },
   });
@@ -411,29 +396,41 @@ export function useLessonDetailLogic(
   };
 
   /**
-   * Submit edit schedule form
+   * Open edit lesson dialog
    */
-  const handleEditScheduleSubmit = async (data: {
-    date: string;
-    lessonId: number | null;
-    serviceTimeId: number;
-    eventType: "regular" | "family_service" | "cancelled" | "retreat" | "party";
-    notes: string | null;
+  const handleOpenEditLessonDialog = () => {
+    lightTap();
+    setIsEditLessonDialogOpen(true);
+  };
+
+  /**
+   * Close edit lesson dialog
+   */
+  const handleCloseEditLessonDialog = () => {
+    lightTap();
+    setIsEditLessonDialogOpen(false);
+  };
+
+  /**
+   * Submit edit lesson form (lesson-level properties only)
+   * This affects ALL schedules that use this lesson
+   */
+  const handleEditLessonSubmit = async (data: {
+    name: string;
     resourceUrl: string | null;
-    lessonName: string | null;
   }) => {
-    const currentSchedule = dateGroup?.serviceTimes[selectedServiceTimeIndex]?.schedule;
-    if (!currentSchedule) return;
+    const currentLesson = dateGroup?.serviceTimes[0]?.schedule.lesson;
+    if (!currentLesson) return;
 
     try {
-      await editScheduleMutation.mutateAsync({
-        scheduleId: currentSchedule.id,
+      await editLessonMutation.mutateAsync({
+        lessonId: currentLesson.id,
         ...data,
       });
       successVibration();
-      handleCloseEditScheduleDialog();
+      handleCloseEditLessonDialog();
     } catch (error) {
-      console.error('Failed to edit schedule:', error);
+      console.error('Failed to edit lesson:', error);
       // Error handling is done by the mutation hook
     }
   };
@@ -474,7 +471,10 @@ export function useLessonDetailLogic(
 
     // Edit schedule dialog state
     isEditScheduleDialogOpen,
-    isEditingSchedule: editScheduleMutation.isPending,
+
+    // Edit lesson dialog state
+    isEditLessonDialogOpen,
+    isEditingLesson: editLessonMutation.isPending,
 
     // Selected service time
     selectedServiceTimeIndex,
@@ -502,6 +502,8 @@ export function useLessonDetailLogic(
     handleDateChange,
     handleOpenEditScheduleDialog,
     handleCloseEditScheduleDialog,
-    handleEditScheduleSubmit,
+    handleOpenEditLessonDialog,
+    handleCloseEditLessonDialog,
+    handleEditLessonSubmit,
   };
 }

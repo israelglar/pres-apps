@@ -1,5 +1,7 @@
+import { useState } from "react";
 import {
   Calendar,
+  ChevronDown,
   ExternalLink,
   Loader2,
   Pencil,
@@ -17,7 +19,8 @@ import { AddStudentDialog } from "./components/AddStudentDialog";
 import { CreateVisitorDialog } from "./components/CreateVisitorDialog";
 import { DateSelector } from "./components/DateSelector";
 import { DeleteAttendanceDialog } from "./components/DeleteAttendanceDialog";
-import { EditScheduleDialog } from "./components/EditScheduleDialog";
+import { EditLessonDialog } from "./components/EditLessonDialog";
+import { ManageSchedulesDialog } from "./components/ManageSchedulesDialog";
 import { NotesDialog } from "./components/NotesDialog";
 import { StatusGroupSeparator } from "./components/StatusGroupSeparator";
 import { StudentAttendanceRow } from "./components/StudentAttendanceRow";
@@ -46,6 +49,9 @@ export function LessonDetailPage({
   onRedoAttendance,
   onDateChange,
 }: LessonDetailPageProps) {
+  // Edit dropdown menu state
+  const [isEditMenuOpen, setIsEditMenuOpen] = useState(false);
+
   const {
     dateGroup,
     availableDates,
@@ -67,7 +73,8 @@ export function LessonDetailPage({
     visitorInitialName,
     isTeacherAssignmentDialogOpen,
     isEditScheduleDialogOpen,
-    isEditingSchedule,
+    isEditLessonDialogOpen,
+    isEditingLesson,
     selectedServiceTimeIndex,
     handleQuickStatusChange,
     handleOpenNotes,
@@ -91,7 +98,9 @@ export function LessonDetailPage({
     handleDateChange,
     handleOpenEditScheduleDialog,
     handleCloseEditScheduleDialog,
-    handleEditScheduleSubmit,
+    handleOpenEditLessonDialog,
+    handleCloseEditLessonDialog,
+    handleEditLessonSubmit,
   } = useLessonDetailLogic(
     lessonId,
     selectedDate,
@@ -234,14 +243,56 @@ export function LessonDetailPage({
                       {dateLabel}
                     </span>
                   )}
-                  <button
-                    onClick={handleOpenEditScheduleDialog}
-                    className={`ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
-                    title="Editar Lição"
-                  >
-                    <Pencil className="w-3 h-3" />
-                    Editar
-                  </button>
+                  {/* Edit Dropdown Menu */}
+                  <div className="ml-auto relative">
+                    <button
+                      onClick={() => setIsEditMenuOpen(!isEditMenuOpen)}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}
+                      title="Opções de Edição"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      Editar
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isEditMenuOpen && (
+                      <>
+                        {/* Backdrop to close menu */}
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setIsEditMenuOpen(false)}
+                        />
+
+                        {/* Menu Items */}
+                        <div
+                          className={`absolute right-0 mt-1 ${theme.backgrounds.white} rounded-lg shadow-2xl border ${theme.borders.neutralLight} z-20 min-w-[180px] overflow-hidden`}
+                        >
+                          <button
+                            onClick={() => {
+                              handleOpenEditLessonDialog();
+                              setIsEditMenuOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2.5 text-xs font-medium ${theme.text.onLight} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors flex items-center gap-2`}
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Editar Lição
+                          </button>
+                          <div className={`h-px ${theme.backgrounds.neutralLight}`} />
+                          <button
+                            onClick={() => {
+                              handleOpenEditScheduleDialog();
+                              setIsEditMenuOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2.5 text-xs font-medium ${theme.text.onLight} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors flex items-center gap-2`}
+                          >
+                            <Calendar className="w-3 h-3" />
+                            Editar Agendamento
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <h2 className={`text-lg font-bold ${theme.text.onLight} mb-2`}>
                   {dateGroup.serviceTimes[0]?.schedule.lesson?.name ||
@@ -601,14 +652,25 @@ export function LessonDetailPage({
           );
         })()}
 
-      {/* Edit Schedule Dialog */}
+      {/* Edit Lesson Dialog */}
+      {isEditLessonDialogOpen &&
+        dateGroup?.serviceTimes[0]?.schedule.lesson && (
+          <EditLessonDialog
+            lesson={dateGroup.serviceTimes[0].schedule.lesson}
+            onClose={handleCloseEditLessonDialog}
+            onSubmit={handleEditLessonSubmit}
+            isSubmitting={isEditingLesson}
+          />
+        )}
+
+      {/* Manage Schedules Dialog */}
       {isEditScheduleDialogOpen &&
-        dateGroup?.serviceTimes[selectedServiceTimeIndex] && (
-          <EditScheduleDialog
-            schedule={dateGroup.serviceTimes[selectedServiceTimeIndex].schedule}
+        dateGroup?.serviceTimes[0]?.schedule.lesson && (
+          <ManageSchedulesDialog
+            lessonId={dateGroup.serviceTimes[0].schedule.lesson.id}
+            lessonName={dateGroup.serviceTimes[0].schedule.lesson.name}
             onClose={handleCloseEditScheduleDialog}
-            onSubmit={handleEditScheduleSubmit}
-            isSubmitting={isEditingSchedule}
+            onSuccess={handleCloseEditScheduleDialog}
           />
         )}
     </div>

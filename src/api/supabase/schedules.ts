@@ -187,6 +187,38 @@ export async function getSchedulesByLessonId(lessonId: number): Promise<Schedule
 }
 
 /**
+ * Check if a schedule already exists for a given date and service time
+ * Used to prevent conflicts when editing schedules
+ */
+export async function checkScheduleConflict(
+  date: string,
+  serviceTimeId: number,
+  excludeScheduleId?: number
+): Promise<boolean> {
+  try {
+    let query = supabase
+      .from('schedules')
+      .select('id')
+      .eq('date', date)
+      .eq('service_time_id', serviceTimeId);
+
+    // Exclude current schedule from conflict check (for edits)
+    if (excludeScheduleId) {
+      query = query.neq('id', excludeScheduleId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    // Return true if there's a conflict (schedule exists)
+    return data && data.length > 0;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
  * Create a new schedule
  */
 export async function createSchedule(schedule: ScheduleInsert): Promise<Schedule> {
@@ -221,6 +253,23 @@ export async function updateSchedule(
 
     if (error) throw error;
     return data;
+  } catch (error) {
+    handleSupabaseError(error);
+  }
+}
+
+/**
+ * Delete a schedule
+ * Note: Cannot delete schedules with attendance records due to foreign key constraint
+ */
+export async function deleteSchedule(scheduleId: number): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('schedules')
+      .delete()
+      .eq('id', scheduleId);
+
+    if (error) throw error;
   } catch (error) {
     handleSupabaseError(error);
   }
