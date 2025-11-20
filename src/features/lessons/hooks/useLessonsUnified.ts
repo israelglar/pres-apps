@@ -9,6 +9,7 @@ import { getAllLessons } from '../../../api/supabase/lessons';
 import { getAllSchedules } from '../../../api/supabase/schedules';
 import type { Lesson, ScheduleWithRelations } from '../../../types/database.types';
 import { QUERY } from '@/config/constants';
+import { formatDatesForSearch } from '../../../utils/dateSearchHelpers';
 
 /**
  * Query key for unified lessons
@@ -23,6 +24,7 @@ export interface UnifiedLesson {
   schedules: ScheduleWithRelations[];
   isScheduled: boolean;
   scheduleCount: number;
+  searchableDates?: string;
 }
 
 /**
@@ -56,11 +58,16 @@ export function useLessonsUnified() {
         // Sort schedules by date (oldest first)
         schedules.sort((a, b) => a.date.localeCompare(b.date));
 
+        // Create searchable dates string for all schedules
+        const dates = schedules.map(s => s.date);
+        const searchableDates = dates.length > 0 ? formatDatesForSearch(dates) : '';
+
         return {
           lesson,
           schedules,
           isScheduled: schedules.length > 0,
           scheduleCount: schedules.length,
+          searchableDates,
         };
       });
 

@@ -132,11 +132,11 @@ export function useLessonsLogic(
     if (groupId === 'teacher') setTeacherFilter(value);
   };
 
-  // Use Fuse search on all unified lessons
+  // Use Fuse search on all unified lessons (searches lesson names and dates)
   const { results: searchedLessons } = useFuseSearch({
     items: unifiedLessons || [],
     searchQuery,
-    keys: ['lesson.name'],
+    keys: ['lesson.name', 'searchableDates'],
   });
 
   // Apply filters to unified lessons at the SCHEDULE LEVEL (not lesson level)
