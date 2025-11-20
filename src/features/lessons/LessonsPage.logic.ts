@@ -139,45 +139,56 @@ export function useLessonsLogic(
     keys: ['lesson.name'],
   });
 
-  // Apply filters to unified lessons
+  // Apply filters to unified lessons at the SCHEDULE LEVEL (not lesson level)
+  // This allows filtering by service time - e.g., show only 09:00 services that match criteria
   const filteredLessons = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
 
-    const filtered = searchedLessons.filter((unifiedLesson) => {
-      // Time period filter - check if ANY schedule matches the period
+    const filtered = searchedLessons.map((unifiedLesson) => {
+      // Start with all schedules for this lesson
+      let filteredSchedules = [...unifiedLesson.schedules];
+
+      // Time period filter - FILTER SCHEDULES (not lessons)
       if (timePeriodFilter !== 'all' && unifiedLesson.isScheduled) {
-        const hasMatchingSchedule = unifiedLesson.schedules.some(schedule => {
+        filteredSchedules = filteredSchedules.filter(schedule => {
           if (timePeriodFilter === 'past') return schedule.date < today;
           if (timePeriodFilter === 'today') return schedule.date === today;
           if (timePeriodFilter === 'future') return schedule.date > today;
           return false;
         });
-        if (!hasMatchingSchedule) return false;
       }
 
-      // If filtering by time period and lesson is unscheduled, exclude it
-      if (timePeriodFilter !== 'all' && !unifiedLesson.isScheduled) return false;
+      // If filtering by time period and lesson is unscheduled, exclude all schedules
+      if (timePeriodFilter !== 'all' && !unifiedLesson.isScheduled) {
+        filteredSchedules = [];
+      }
 
-      // Attendance filter - check if ANY schedule has attendance
+      // Attendance filter - FILTER SCHEDULES (not lessons)
       if (attendanceFilter !== 'all') {
-        const hasAttendance = unifiedLesson.schedules.some(schedule =>
-          (schedule.attendance_records as any[])?.length > 0
-        );
-        if (attendanceFilter === 'has-attendance' && !hasAttendance) return false;
-        if (attendanceFilter === 'no-attendance' && hasAttendance) return false;
+        filteredSchedules = filteredSchedules.filter(schedule => {
+          const hasAttendance = (schedule.attendance_records as any[])?.length > 0;
+          if (attendanceFilter === 'has-attendance') return hasAttendance;
+          if (attendanceFilter === 'no-attendance') return !hasAttendance;
+          return false;
+        });
       }
 
-      // Teacher filter - check if ANY schedule has the selected teacher assigned
+      // Teacher filter - FILTER SCHEDULES (not lessons)
       if (teacherFilter !== 'all') {
         const teacherId = parseInt(teacherFilter);
-        const hasTeacher = unifiedLesson.schedules.some(schedule =>
+        filteredSchedules = filteredSchedules.filter(schedule =>
           schedule.assignments?.some(assignment => assignment.teacher_id === teacherId)
         );
-        if (!hasTeacher) return false;
       }
 
-      return true;
-    });
+      // Return modified UnifiedLesson with filtered schedules
+      return {
+        ...unifiedLesson,
+        schedules: filteredSchedules,
+        isScheduled: filteredSchedules.length > 0,
+        scheduleCount: filteredSchedules.length,
+      };
+    }).filter(ul => ul.schedules.length > 0); // Remove lessons with no matching schedules
 
     return filtered;
   }, [searchedLessons, timePeriodFilter, attendanceFilter, teacherFilter]);

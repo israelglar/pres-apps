@@ -96,6 +96,11 @@ export function useAttendanceData() {
         queryClient.invalidateQueries({ queryKey: ['today-attendance'] }),
         queryClient.invalidateQueries({ queryKey: ['attendance-stats'] }),
         queryClient.invalidateQueries({ queryKey: ['absence-alerts'] }),
+        queryClient.invalidateQueries({ queryKey: ['lessons'] }),
+        queryClient.invalidateQueries({ queryKey: ['lessons-unified'] }),
+        queryClient.invalidateQueries({ queryKey: ['lesson-id'] }),
+        queryClient.invalidateQueries({ queryKey: ['lesson-date'] }),
+        queryClient.invalidateQueries({ queryKey: ['lessons-list'] }),
       ]);
       // Note: No need to invalidate students or service times as they don't change
     },
