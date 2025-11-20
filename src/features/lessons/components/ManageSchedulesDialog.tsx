@@ -165,6 +165,7 @@ export function ManageSchedulesDialog({
       // Invalidate all relevant queries to update both dialog and lesson detail page
       queryClient.invalidateQueries({ queryKey: ["lesson-schedules", lessonId] });
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
 
       setShowAddForm(false);
@@ -226,6 +227,7 @@ export function ManageSchedulesDialog({
       // Invalidate all relevant queries to update both dialog and lesson detail page
       queryClient.invalidateQueries({ queryKey: ["lesson-schedules", lessonId] });
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
 
       setEditingId(null);
@@ -256,6 +258,7 @@ export function ManageSchedulesDialog({
       // Invalidate all relevant queries to update both dialog and lesson detail page
       queryClient.invalidateQueries({ queryKey: ["lesson-schedules", lessonId] });
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
 
       setScheduleToDelete(null);

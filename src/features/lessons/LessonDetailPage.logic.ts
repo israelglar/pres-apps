@@ -115,6 +115,7 @@ export function useLessonDetailLogic(
       // Invalidate both the main lessons list and this specific lesson
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
       queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
       queryClient.invalidateQueries({ queryKey: ['lesson-id', lessonId] });
     },
   });
@@ -333,6 +334,7 @@ export function useLessonDetailLogic(
     successVibration();
     // Invalidate lessons query to refetch with updated assignments
     queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
     queryClient.invalidateQueries({ queryKey: ['lesson-id', lessonId] });
   };
 

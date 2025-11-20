@@ -18,6 +18,7 @@ export function useCreateSchedule() {
     onSuccess: () => {
       // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
       queryClient.invalidateQueries({ queryKey: ['unscheduled-lessons'] });
       queryClient.invalidateQueries({ queryKey: ['schedule-dates'] });
