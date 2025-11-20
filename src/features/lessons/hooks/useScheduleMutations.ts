@@ -22,6 +22,9 @@ export function useCreateSchedule() {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
       queryClient.invalidateQueries({ queryKey: ['unscheduled-lessons'] });
       queryClient.invalidateQueries({ queryKey: ['schedule-dates'] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-id'] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-date'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
     },
   });
 }

@@ -50,7 +50,8 @@ export function UnscheduledLessonPage({
       navigate({
         to: "/lesson/$lessonId",
         params: { lessonId: lesson.id.toString() },
-        search: { date: data.date }
+        search: { date: data.date },
+        replace: true,
       });
     } catch (error) {
       console.error("Failed to schedule lesson:", error);
