@@ -18,6 +18,7 @@ function getDefaultServiceTimeId(): number {
  */
 function getMostRecentLessonDate(availableDates: Date[]): Date {
   if (availableDates.length === 0) {
+    // Fallback to closest Sunday if no scheduled dates exist (edge case during initial setup)
     return getClosestSunday();
   }
 
@@ -78,14 +79,14 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     }
   }, [availableDatesForService, selectedDate]);
 
-  // Get all sundays sorted in ascending order (oldest first)
-  const filteredSundays = useMemo(() => {
+  // Get all scheduled dates sorted in ascending order (oldest first)
+  const sortedDates = useMemo(() => {
     // Sort dates in ascending order (oldest first)
     return [...availableDatesForService].sort((a, b) => a.getTime() - b.getTime());
   }, [availableDatesForService]);
 
-  // Get the most recent past Sunday with a lesson (for "Domingo Passado" label)
-  const mostRecentPastSunday = useMemo(() => {
+  // Get the most recent past date with a lesson (for "Domingo Passado" label)
+  const mostRecentPastDate = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -112,12 +113,12 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     return checkDate.getTime() === today.getTime();
   };
 
-  const isPreviousSunday = (date: Date) => {
-    if (!mostRecentPastSunday) return false;
+  const isPreviousDate = (date: Date) => {
+    if (!mostRecentPastDate) return false;
 
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
-    const mostRecentDate = new Date(mostRecentPastSunday);
+    const mostRecentDate = new Date(mostRecentPastDate);
     mostRecentDate.setHours(0, 0, 0, 0);
 
     return checkDate.getTime() === mostRecentDate.getTime() && !isToday(date);
@@ -126,7 +127,7 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
   const getDateLabel = (date: Date) => {
     if (isToday(date)) {
       return 'Hoje';
-    } else if (isPreviousSunday(date)) {
+    } else if (isPreviousDate(date)) {
       return 'Domingo Passado';
     }
     return null;
@@ -177,7 +178,7 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     isOpen,
     selectedMethod,
     showMethodInfo,
-    filteredSundays,
+    sortedDates,
 
     // Refs
     dropdownRef,
@@ -193,7 +194,7 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
 
     // Helpers
     isToday,
-    isPreviousSunday,
+    isPreviousDate,
     getDateLabel,
   };
 }

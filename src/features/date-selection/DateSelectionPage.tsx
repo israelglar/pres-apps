@@ -140,7 +140,7 @@ export function DateSelectionPage({
         {/* Fixed Date Picker Section */}
         <DatePicker
           selectedDate={logic.selectedDate}
-          filteredSundays={logic.filteredSundays}
+          sortedDates={logic.sortedDates}
           isOpen={logic.isOpen}
           dropdownRef={logic.dropdownRef}
           dropdownListRef={logic.dropdownListRef}

@@ -111,7 +111,7 @@ export function useAttendanceData() {
     return data ? data.schedules : [];
   }, [data]);
 
-  const allSundays = useMemo(() => {
+  const allScheduledDates = useMemo(() => {
     return data ? data.dates.map((d) => new Date(d)) : [];
   }, [data]);
 
@@ -188,7 +188,7 @@ export function useAttendanceData() {
 
     // Derived data
     schedules,
-    allSundays,
+    allScheduledDates,
     students,
     visitorStudents,
     serviceTimes,

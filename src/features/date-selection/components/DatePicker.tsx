@@ -11,7 +11,7 @@ import type { RefObject } from "react";
 
 interface DatePickerProps {
   selectedDate: Date;
-  filteredSundays: Date[];
+  sortedDates: Date[];
   isOpen: boolean;
   dropdownRef: RefObject<HTMLDivElement | null>;
   dropdownListRef: RefObject<HTMLDivElement | null>;
@@ -32,7 +32,7 @@ interface DatePickerProps {
 
 export function DatePicker({
   selectedDate,
-  filteredSundays,
+  sortedDates,
   isOpen,
   dropdownRef,
   dropdownListRef,
@@ -72,29 +72,29 @@ export function DatePicker({
               ref={dropdownListRef}
               className={`absolute z-10 w-full mt-2 bg-white border ${theme.borders.primary} rounded-xl shadow-2xl max-h-80 overflow-y-auto`}
             >
-              {filteredSundays.length === 0 ? (
+              {sortedDates.length === 0 ? (
                 <div className="text-center py-8">
                   <Calendar className={`w-16 h-16 ${theme.text.neutralLight} mx-auto mb-4`} />
                   <p className={`${theme.text.neutral} font-medium`}>Nenhuma data disponível</p>
                 </div>
               ) : (
                 <>
-                  {filteredSundays.map((sunday) => {
+                  {sortedDates.map((date) => {
                     const isSelected =
-                      sunday.toDateString() ===
+                      date.toDateString() ===
                       selectedDate.toDateString();
-                    const dateLabel = getDateLabel(sunday);
-                    const isPast = isPastDate(sunday);
+                    const dateLabel = getDateLabel(date);
+                    const isPast = isPastDate(date);
                     const allAttendanceStatuses =
-                      getAllAttendanceStatuses(sunday);
+                      getAllAttendanceStatuses(date);
 
                     return (
                       <button
-                        key={sunday.toISOString()}
+                        key={date.toISOString()}
                         ref={isSelected ? selectedItemRef : null}
                         type="button"
                         onClick={() => {
-                          onSelectDate(sunday);
+                          onSelectDate(date);
                         }}
                         className={`w-full px-4 py-3 text-left ${theme.backgrounds.primaryHover} transition-all flex items-center justify-between border-b ${theme.borders.neutralLight} last:border-b-0 first:rounded-t-xl last:rounded-b-xl ${
                           isSelected ? theme.solids.selectedItem : ""
@@ -106,7 +106,7 @@ export function DatePicker({
                               <span
                                 className={`font-bold text-sm ${isSelected ? theme.text.primaryDarker : theme.text.neutralDarker}`}
                               >
-                                {formatDate(sunday)}
+                                {formatDate(date)}
                               </span>
                               {dateLabel && (
                                 <span
@@ -139,7 +139,7 @@ export function DatePicker({
                             <span
                               className={`text-xs ${isSelected ? `${theme.text.primaryDark} font-medium` : theme.text.neutral}`}
                             >
-                              {getLessonForDate(sunday)}
+                              {getLessonForDate(date)}
                             </span>
                           </div>
                         </div>

@@ -72,6 +72,11 @@ export function useLessonDetailLogic(
     }
   }, [initialServiceTimeId]);
 
+  // Reset initialization when date changes (navigating to different date)
+  useEffect(() => {
+    setHasInitialized(false);
+  }, [currentDate]);
+
   // Notes dialog state
   const [selectedRecordForNotes, setSelectedRecordForNotes] = useState<AttendanceRecordWithRelations | null>(null);
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
