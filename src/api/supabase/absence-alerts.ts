@@ -10,26 +10,33 @@ import { ATTENDANCE } from '@/config/constants';
 /**
  * Get students with recent consecutive absences (AGGREGATED BY SUNDAY)
  *
- * Logic: Count consecutive Sundays missed, aggregating all services (9h + 11h).
- * - If student came to ANY service (9h OR 11h) on a Sunday → Present
- * - If student didn't come to ANY service on a Sunday → Absent
- * - Counts consecutive Sundays, not individual schedules
+ * Logic: Only looks at student's actual attendance records, ignoring unmarked Sundays.
+ * - Gets student's attendance records (past dates only)
+ * - Groups by date (Sunday) - if present at ANY service → Sunday is "present"
+ * - Counts consecutive absences from most recent attendance record backwards
+ * - Stops counting when hitting a "present" record
  *
- * Example:
- *   Sunday 01/01: came 9h → PRESENT
- *   Sunday 08/01: came 11h → PRESENT
- *   Sunday 15/01: missed both 9h and 11h → ABSENT (1 consecutive absence)
+ * Unmarked Sundays are completely ignored - only explicit attendance records matter.
+ * This matches the student detail page logic exactly.
+ *
+ * Example (student's attendance records only):
+ *   2025-11-17: Absent → count = 1
+ *   2025-10-06: Absent → count = 2
+ *   2025-09-29: Absent → count = 3 → ALERT!
+ *   2025-09-22: Present → stops counting
+ *
+ *   (Unmarked Sundays like 2025-11-19, 2025-11-10 are not in the data, so ignored)
  *
  * @param studentIds - Array of student IDs to check
- * @param threshold - Number of consecutive Sundays absent to trigger alert (default: 3)
- * @param lookbackSundays - Number of recent Sundays to analyze (default: 15)
+ * @param threshold - Number of consecutive absences to trigger alert (default: 3)
+ * @param lookbackSundays - Not used (kept for API compatibility)
  * @param currentDateToExclude - Current date being marked (ISO format) to exclude from count
  * @returns Array of absence alerts
  */
 export async function getStudentsWithRecentAbsences(
   studentIds: number[],
   threshold: number = ATTENDANCE.ABSENCE_ALERT_THRESHOLD,
-  lookbackSundays: number = 15,
+  _lookbackSundays: number = 15,
   currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
   try {
@@ -37,38 +44,10 @@ export async function getStudentsWithRecentAbsences(
       return [];
     }
 
-    // 1. Get recent schedules to extract unique dates (Sundays)
-    const { data: schedules, error: schedulesError } = await supabase
-      .from('schedules')
-      .select('date')
-      .eq('is_cancelled', false)
-      .order('date', { ascending: false });
+    // Filter date: exclude current date being marked and future dates
+    const filterDate = currentDateToExclude || new Date().toISOString().split('T')[0];
 
-    if (schedulesError) throw schedulesError;
-    if (!schedules || schedules.length === 0) {
-      return [];
-    }
-
-    // Deduplicate dates (one Sunday can have 9h + 11h schedules)
-    const allDates = schedules.map(s => s.date);
-    let uniqueDates = [...new Set(allDates)];
-
-    // Exclude current date and future dates (to only count PAST absences)
-    // Always filter out future dates - use current date if not provided
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    const filterDate = currentDateToExclude || today;
-
-    uniqueDates = uniqueDates.filter(date => date < filterDate);
-    uniqueDates = uniqueDates.slice(0, lookbackSundays);
-
-    if (uniqueDates.length === 0) {
-      return [];
-    }
-
-    const oldestDate = uniqueDates[uniqueDates.length - 1];
-    const newestDate = uniqueDates[0];
-
-    // 2. Get attendance records for these students, with date from schedules
+    // Get attendance records for all students
     const { data: attendanceRecords, error: attendanceError } = await supabase
       .from('attendance_records')
       .select(`
@@ -77,46 +56,66 @@ export async function getStudentsWithRecentAbsences(
         schedule:schedules!inner(date)
       `)
       .in('student_id', studentIds)
-      .gte('schedules.date', oldestDate)
-      .lte('schedules.date', newestDate);
+      .lt('schedules.date', filterDate); // Only past dates
 
     if (attendanceError) throw attendanceError;
+    if (!attendanceRecords || attendanceRecords.length === 0) {
+      return [];
+    }
 
-    // 3. Build a map of presence by student and date
-    // If student came to ANY service on that date → Add to Set
-    // Status 'present', 'late', 'excused' count as present
-    // Only 'absent' counts as absent
-    const presenceByStudentAndDate = new Map<number, Set<string>>();
+    // Sort by date in JavaScript (can't order by joined table field in Supabase)
+    attendanceRecords.sort((a: any, b: any) => {
+      const dateA = a.schedule?.date || '';
+      const dateB = b.schedule?.date || '';
+      return dateB.localeCompare(dateA); // Descending order (newest first)
+    });
 
-    attendanceRecords?.forEach((record: any) => {
+    // Group attendance records by student and date
+    // Each student has a map of date -> status ('present' or 'absent')
+    const studentRecordsByDate = new Map<number, Map<string, 'present' | 'absent'>>();
+
+    attendanceRecords.forEach((record: any) => {
+      const studentId = record.student_id;
       const date = record.schedule.date;
+      const status = record.status;
 
-      // If student was present/late/excused in ANY service → count as present for that Sunday
-      if (record.status !== 'absent') {
-        if (!presenceByStudentAndDate.has(record.student_id)) {
-          presenceByStudentAndDate.set(record.student_id, new Set());
-        }
-        presenceByStudentAndDate.get(record.student_id)!.add(date);
+      if (!studentRecordsByDate.has(studentId)) {
+        studentRecordsByDate.set(studentId, new Map());
+      }
+
+      const dateRecords = studentRecordsByDate.get(studentId)!;
+
+      // If multiple services on same day, 'present' takes priority
+      if (!dateRecords.has(date) || status === 'present') {
+        dateRecords.set(date, status);
       }
     });
 
-    // 4. Calculate consecutive absences by Sunday for each student
+    // Calculate consecutive absences for each student
     const alerts: AbsenceAlert[] = [];
 
     for (const studentId of studentIds) {
-      const studentPresenceDates = presenceByStudentAndDate.get(studentId) || new Set();
+      const records = studentRecordsByDate.get(studentId);
+
+      if (!records || records.size === 0) {
+        continue;
+      }
+
+      // Sort dates descending (most recent first)
+      const sortedDates = Array.from(records.keys()).sort((a, b) => b.localeCompare(a));
 
       let consecutiveAbsences = 0;
       const absenceDates: string[] = [];
       let firstAbsenceDate: string | null = null;
       let lastAbsenceDate: string | null = null;
 
-      // Iterate through Sundays from most recent to oldest
-      for (const date of uniqueDates) {
-        const wasPresentOnThisSunday = studentPresenceDates.has(date);
+      // Count consecutive absences from most recent record
+      for (const date of sortedDates) {
+        const status = records.get(date)!;
 
-        if (!wasPresentOnThisSunday) {
-          // Absent on this Sunday (didn't come to ANY service)
+        if (status === 'present') {
+          break;
+        } else if (status === 'absent') {
           consecutiveAbsences++;
           absenceDates.push(date);
 
@@ -124,9 +123,6 @@ export async function getStudentsWithRecentAbsences(
             firstAbsenceDate = date;
           }
           lastAbsenceDate = date;
-        } else {
-          // Present on this Sunday (came to at least one service) → stop counting
-          break;
         }
       }
 
@@ -136,7 +132,7 @@ export async function getStudentsWithRecentAbsences(
           studentId,
           absenceCount: consecutiveAbsences,
           absenceDates: absenceDates.reverse(), // Oldest to newest
-          firstAbsenceDate: lastAbsenceDate, // lastAbsenceDate is the oldest (we iterated DESC)
+          firstAbsenceDate: lastAbsenceDate, // lastAbsenceDate is the oldest
           lastAbsenceDate: firstAbsenceDate, // firstAbsenceDate is the newest
         });
       }
