@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Calendar, ChevronRight } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { TeacherList } from "../../../components/features/TeacherList";
 import { formatShortDate } from "../../../components/lesson-cards";
 import { theme } from "../../../config/theme";
@@ -21,12 +22,20 @@ export const UnifiedLessonCard = React.memo<UnifiedLessonCardProps>(({
   onLessonClick,
 }) => {
   const { lesson, schedules, isScheduled } = unifiedLesson;
+  const navigate = useNavigate();
 
-  // For scheduled lessons, click the most recent schedule
+  // Handle click - navigate to scheduled or unscheduled lesson page
   const handleCardClick = () => {
     lightTap();
     if (isScheduled && schedules[0]) {
+      // For scheduled lessons, use the onLessonClick callback
       onLessonClick(lesson.id, schedules[0].date);
+    } else {
+      // For unscheduled lessons, navigate to the unscheduled lesson page
+      navigate({
+        to: '/lessons/$lessonId',
+        params: { lessonId: lesson.id.toString() },
+      });
     }
   };
 
