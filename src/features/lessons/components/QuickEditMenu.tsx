@@ -1,15 +1,15 @@
-import { Clock, FileText, Edit3, MoreVertical, Trash2 } from 'lucide-react';
+import { Clock, FileText, Edit3, MoreVertical, Trash2, Check, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { theme } from '../../../config/theme';
 
 interface QuickEditMenuProps {
-  onSelectStatus: (status: 'late' | 'excused') => void;
+  onSelectStatus: (status: 'present' | 'absent' | 'late' | 'excused') => void;
   onOpenNotesDialog: () => void;
   onOpenDeleteDialog: () => void;
 }
 
 /**
- * Quick edit menu for changing status to Late/Excused, opening notes dialog, or deleting record
+ * Quick edit menu for changing attendance status, opening notes dialog, or deleting record
  */
 export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteDialog }: QuickEditMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,9 +23,9 @@ export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteD
       const buttonRect = buttonRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - buttonRect.bottom;
 
-      // Menu height: 4 items × ~52px (py-3 + content) + padding + borders + shadow buffer
-      // Using 300px to be conservative and catch more items near the bottom
-      const menuHeight = 300;
+      // Menu height: 6 items × ~40px (py-2 + content) + padding + borders + shadow buffer
+      // Using 350px to be conservative and catch more items near the bottom
+      const menuHeight = 350;
 
       // Add extra buffer (80px) to ensure we catch items that are close to bottom
       // This ensures the last 3-4 items will open upward
@@ -56,6 +56,26 @@ export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteD
   }, [isOpen]);
 
   const menuOptions = [
+    {
+      id: 'present',
+      label: 'Presente',
+      icon: <Check className="w-3.5 h-3.5" />,
+      color: theme.status.present.text,
+      onClick: () => {
+        onSelectStatus('present');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'absent',
+      label: 'Falta',
+      icon: <X className="w-3.5 h-3.5" />,
+      color: theme.status.absent.text,
+      onClick: () => {
+        onSelectStatus('absent');
+        setIsOpen(false);
+      },
+    },
     {
       id: 'late',
       label: 'Atrasado',

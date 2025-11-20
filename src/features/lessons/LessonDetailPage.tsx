@@ -34,6 +34,7 @@ interface LessonDetailPageProps {
   onViewStudent?: (studentId: number) => void;
   onRedoAttendance: (scheduleDate: string, serviceTimeId: number) => void;
   onDateChange: (date: string) => void;
+  onServiceTimeChange: (serviceTimeId: number) => void;
 }
 
 /**
@@ -48,6 +49,7 @@ export function LessonDetailPage({
   onViewStudent,
   onRedoAttendance,
   onDateChange,
+  onServiceTimeChange,
 }: LessonDetailPageProps) {
   // Edit dropdown menu state
   const [isEditMenuOpen, setIsEditMenuOpen] = useState(false);
@@ -108,6 +110,7 @@ export function LessonDetailPage({
     onViewStudent,
     onRedoAttendance,
     onDateChange,
+    onServiceTimeChange,
   );
 
   // Format date for display (short format: "10 nov 2025")

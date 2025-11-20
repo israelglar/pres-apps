@@ -316,9 +316,16 @@ export function useEditAttendance() {
 
     // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate only lessons-related queries
-      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      // Invalidate all lessons-related queries to ensure fresh data
+      // This includes:
+      // - ['lessons'] - main lessons list
+      // - ['lesson-id', *] - lesson detail pages
+      // - ['lesson-date', *] - date-specific lesson queries
       await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-id'] });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-date'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
     },
   });
 
@@ -426,9 +433,16 @@ export function useAddAttendance() {
 
     // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate only lessons-related queries
-      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      // Invalidate all lessons-related queries to ensure fresh data
+      // This includes:
+      // - ['lessons'] - main lessons list
+      // - ['lesson-id', *] - lesson detail pages
+      // - ['lesson-date', *] - date-specific lesson queries
       await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-id'] });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-date'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
     },
   });
 
@@ -500,9 +514,16 @@ export function useDeleteAttendance() {
 
     // Refetch only affected queries after success or error
     onSettled: async () => {
-      // Invalidate only lessons-related queries
-      // Optimistic updates already handle immediate UI, so we just ensure fresh data
+      // Invalidate all lessons-related queries to ensure fresh data
+      // This includes:
+      // - ['lessons'] - main lessons list
+      // - ['lesson-id', *] - lesson detail pages
+      // - ['lesson-date', *] - date-specific lesson queries
       await queryClient.invalidateQueries({ queryKey: LESSONS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-id'] });
+      await queryClient.invalidateQueries({ queryKey: ['lesson-date'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-unified'] });
+      await queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
     },
   });
 

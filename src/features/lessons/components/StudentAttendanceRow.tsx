@@ -1,4 +1,4 @@
-import { Check, X, Clock, FileText, User } from 'lucide-react';
+import { Check, X, Clock, FileText } from 'lucide-react';
 import type { AttendanceRecordWithRelations } from '../../../types/database.types';
 import { theme } from '../../../config/theme';
 import { selectionTap } from '../../../utils/haptics';
@@ -13,35 +13,23 @@ interface StudentAttendanceRowProps {
 }
 
 /**
- * Single student row showing attendance status with tap-to-cycle and quick edit menu
- * - Tap row: Cycles between Present ↔ Absent
- * - Menu icon: Access Late, Excused, or full edit dialog
- * - User icon: View student detail page
+ * Single student row showing attendance status
+ * - Tap row: Navigate to student detail page
+ * - Menu icon: Change status (Present, Absent, Late, Excused) or edit notes/delete
  */
 export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes, onOpenDeleteDialog, onViewStudent }: StudentAttendanceRowProps) {
   /**
-   * Handle tap on row - cycles between Present and Absent
-   * If status is Late or Excused, tapping changes to Present
+   * Handle row click - navigate to student details
    */
-  const handleRowTap = () => {
+  const handleRowClick = () => {
     selectionTap(); // Haptic feedback
-
-    let newStatus: 'present' | 'absent';
-
-    if (record.status === 'present') {
-      newStatus = 'absent';
-    } else {
-      // For absent, late, or excused - cycle to present
-      newStatus = 'present';
-    }
-
-    onQuickStatusChange(record.id, newStatus);
+    onViewStudent(record.student_id);
   };
 
   /**
    * Handle quick status change from menu
    */
-  const handleMenuStatusChange = (status: 'late' | 'excused') => {
+  const handleMenuStatusChange = (status: 'present' | 'absent' | 'late' | 'excused') => {
     selectionTap(); // Haptic feedback
     onQuickStatusChange(record.id, status);
   };
@@ -77,7 +65,7 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
 
   return (
     <div
-      onClick={handleRowTap}
+      onClick={handleRowClick}
       className={`flex items-center justify-between p-2 rounded-lg ${config.bgColor} border border-${config.color.replace('text-', '')}/20 hover:shadow-md cursor-pointer hover:brightness-95 active:brightness-90 transition-all`}
     >
       <div className="flex items-center gap-2 flex-1">
@@ -113,19 +101,6 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
 
       {/* Action Buttons */}
       <div className="ml-2 flex items-center gap-0.5 flex-shrink-0">
-        {/* View Student Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent row tap event
-            selectionTap();
-            onViewStudent(record.student_id);
-          }}
-          className={`p-1.5 rounded-lg ${theme.text.primary} hover:bg-gray-100 transition-all`}
-          aria-label="Ver detalhes do pré"
-        >
-          <User className="w-3.5 h-3.5" />
-        </button>
-
         {/* Quick Edit Menu */}
         <QuickEditMenu
           onSelectStatus={handleMenuStatusChange}

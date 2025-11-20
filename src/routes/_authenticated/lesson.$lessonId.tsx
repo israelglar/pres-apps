@@ -56,6 +56,15 @@ function LessonDetailRoute() {
     });
   };
 
+  const handleServiceTimeChange = (newServiceTimeId: number) => {
+    navigate({
+      to: "/lesson/$lessonId",
+      params: { lessonId },
+      search: { date, serviceTimeId: newServiceTimeId },
+      replace: true,
+    });
+  };
+
   // Validate lessonId is a number
   const parsedLessonId = parseInt(lessonId, 10);
   const isValidLessonId = !isNaN(parsedLessonId) && parsedLessonId > 0;
@@ -94,6 +103,7 @@ function LessonDetailRoute() {
       onViewStudent={handleViewStudent}
       onRedoAttendance={handleRedoAttendance}
       onDateChange={handleDateChange}
+      onServiceTimeChange={handleServiceTimeChange}
     />
   );
 }

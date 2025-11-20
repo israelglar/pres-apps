@@ -17,7 +17,8 @@ export function useLessonDetailLogic(
   initialServiceTimeId?: number,
   onViewStudent?: (studentId: number) => void,
   onRedoAttendance?: (scheduleDate: string, serviceTimeId: number) => void,
-  onDateChange?: (date: string) => void
+  onDateChange?: (date: string) => void,
+  onServiceTimeChange?: (serviceTimeId: number) => void
 ) {
   const queryClient = useQueryClient();
 
@@ -380,6 +381,14 @@ export function useLessonDetailLogic(
   const handleServiceTimeChange = (index: number) => {
     lightTap();
     setSelectedServiceTimeIndex(index);
+
+    // Update URL with the new service time ID
+    if (onServiceTimeChange && dateGroup) {
+      const newServiceTimeId = dateGroup.serviceTimes[index]?.schedule.service_time_id;
+      if (newServiceTimeId) {
+        onServiceTimeChange(newServiceTimeId);
+      }
+    }
   };
 
   /**
