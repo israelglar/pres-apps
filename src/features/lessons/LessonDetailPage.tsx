@@ -463,7 +463,7 @@ export function LessonDetailPage({
                 const presentRegular = serviceTimeData.records
                   .filter(
                     (r) =>
-                      (r.status === "present" || r.status === "late") &&
+                      r.status === "present" &&
                       !r.student?.is_visitor,
                   )
                   .sort((a, b) =>
@@ -475,7 +475,7 @@ export function LessonDetailPage({
                 const presentVisitors = serviceTimeData.records
                   .filter(
                     (r) =>
-                      (r.status === "present" || r.status === "late") &&
+                      r.status === "present" &&
                       r.student?.is_visitor,
                   )
                   .sort((a, b) =>
@@ -486,7 +486,7 @@ export function LessonDetailPage({
 
                 const absent = serviceTimeData.records
                   .filter(
-                    (r) => r.status === "absent" || r.status === "excused",
+                    (r) => r.status === "absent",
                   )
                   .sort((a, b) =>
                     (a.student?.name || "").localeCompare(

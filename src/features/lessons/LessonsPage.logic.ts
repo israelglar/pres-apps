@@ -253,7 +253,7 @@ export function useLessonsLogic(
    */
   const handleSubmitEdit = async (
     recordId: number,
-    status: 'present' | 'absent' | 'excused' | 'late',
+    status: 'present' | 'absent',
     notes?: string
   ) => {
     try {
@@ -272,7 +272,7 @@ export function useLessonsLogic(
    */
   const handleQuickStatusChange = async (
     recordId: number,
-    newStatus: 'present' | 'absent' | 'excused' | 'late'
+    newStatus: 'present' | 'absent'
   ) => {
     try {
       await editAttendance({ recordId, status: newStatus });

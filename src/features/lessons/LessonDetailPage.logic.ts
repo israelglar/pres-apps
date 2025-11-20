@@ -127,7 +127,7 @@ export function useLessonDetailLogic(
    */
   const handleQuickStatusChange = async (
     recordId: number,
-    newStatus: 'present' | 'absent' | 'excused' | 'late'
+    newStatus: 'present' | 'absent'
   ) => {
     try {
       await editAttendance({ recordId, status: newStatus });

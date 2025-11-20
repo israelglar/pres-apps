@@ -251,7 +251,7 @@ export function useEditAttendance() {
       notes
     }: {
       recordId: number;
-      status: 'present' | 'absent' | 'excused' | 'late';
+      status: 'present' | 'absent';
       notes?: string | null;
     }) => {
       return updateAttendanceRecord(recordId, { status, notes });
@@ -353,7 +353,7 @@ export function useAddAttendance() {
     }: {
       studentId: number;
       scheduleId: number;
-      status: 'present' | 'absent' | 'excused' | 'late';
+      status: 'present' | 'absent';
       serviceTimeId?: number;
       notes?: string;
     }) => {

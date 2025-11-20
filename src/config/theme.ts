@@ -180,8 +180,6 @@ export const theme = {
   indicators: {
     present: 'bg-green-500',
     absent: 'bg-red-500',
-    late: 'bg-amber-500',
-    excused: 'bg-blue-500',
     visitor: 'bg-blue-500',
   },
 
@@ -200,20 +198,6 @@ export const theme = {
       bgMedium: 'bg-red-100',
       indicator: 'bg-red-500',
       border: 'border-red-400',
-    },
-    late: {
-      text: 'text-amber-600',
-      bg: 'bg-amber-50',
-      bgMedium: 'bg-amber-100',
-      indicator: 'bg-amber-500',
-      border: 'border-amber-300',
-    },
-    excused: {
-      text: 'text-blue-600',
-      bg: 'bg-blue-50',
-      bgMedium: 'bg-blue-100',
-      indicator: 'bg-blue-500',
-      border: 'border-blue-300',
     },
   },
 

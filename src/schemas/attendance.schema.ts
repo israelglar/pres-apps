@@ -74,7 +74,7 @@ export const studentWithIdSchema = z.object({
 export const attendanceRecordSchema = z.object({
   student_id: z.number(),
   schedule_id: z.number(),
-  status: z.enum(['present', 'absent', 'excused', 'late']),
+  status: z.enum(['present', 'absent']),
   service_time_id: z.number().optional(),
   notes: z.string().optional(),
 });
@@ -87,7 +87,7 @@ export const bulkAttendanceSaveSchema = z.object({
   service_time_id: z.number(),
   records: z.array(z.object({
     student_id: z.number(),
-    status: z.enum(['present', 'absent', 'excused', 'late']),
+    status: z.enum(['present', 'absent']),
     notes: z.string().optional(),
   })),
 });

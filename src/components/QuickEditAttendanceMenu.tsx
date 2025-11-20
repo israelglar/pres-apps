@@ -1,17 +1,24 @@
 import { Edit3, MoreVertical, Trash2, Check, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { theme } from '../../../config/theme';
+import { theme } from '../config/theme';
 
-interface QuickEditMenuProps {
+interface QuickEditAttendanceMenuProps {
   onSelectStatus: (status: 'present' | 'absent') => void;
   onOpenNotesDialog: () => void;
-  onOpenDeleteDialog: () => void;
+  onOpenDeleteDialog?: () => void;
+  showDelete?: boolean;
 }
 
 /**
  * Quick edit menu for changing attendance status, opening notes dialog, or deleting record
+ * Shared component used in lessons and student detail features
  */
-export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteDialog }: QuickEditMenuProps) {
+export function QuickEditAttendanceMenu({
+  onSelectStatus,
+  onOpenNotesDialog,
+  onOpenDeleteDialog,
+  showDelete = true
+}: QuickEditAttendanceMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -86,7 +93,11 @@ export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteD
         setIsOpen(false);
       },
     },
-    {
+  ];
+
+  // Conditionally add delete option
+  if (showDelete && onOpenDeleteDialog) {
+    menuOptions.push({
       id: 'delete',
       label: 'Remover',
       icon: <Trash2 className="w-3.5 h-3.5" />,
@@ -95,8 +106,8 @@ export function QuickEditMenu({ onSelectStatus, onOpenNotesDialog, onOpenDeleteD
         onOpenDeleteDialog();
         setIsOpen(false);
       },
-    },
-  ];
+    });
+  }
 
   return (
     <div className="relative" ref={menuRef}>

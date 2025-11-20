@@ -11,8 +11,6 @@ interface PresentStudent {
 interface CompletionScreenProps {
   lessonName: string;
   presentCount: number;
-  lateCount?: number;
-  excusedCount?: number;
   visitorsCount?: number;
   presentStudents?: PresentStudent[];
   onConfirm: () => void;
@@ -27,16 +25,14 @@ interface CompletionScreenProps {
 export function CompletionScreen({
   lessonName,
   presentCount,
-  lateCount = 0,
-  excusedCount = 0,
   visitorsCount = 0,
   presentStudents = [],
   onConfirm,
   onGoBack,
   isLoading = false,
 }: CompletionScreenProps) {
-  // Calculate total as everyone who attended (present + late + excused + visitors)
-  const totalCount = presentCount + lateCount + excusedCount + visitorsCount;
+  // Calculate total as everyone who attended (present + visitors)
+  const totalCount = presentCount + visitorsCount;
 
   // Helper to format name as "FirstName LastName" (only first and last)
   const formatCompactName = (fullName: string): string => {
@@ -48,11 +44,9 @@ export function CompletionScreen({
   // Build stats object for AttendanceStats component
   const stats: AttendanceStatsType = {
     total: totalCount,
-    totalPresent: presentCount + lateCount + excusedCount + visitorsCount,
+    totalPresent: presentCount + visitorsCount,
     present: presentCount,
     absent: 0, // Not needed in completion screen
-    late: lateCount,
-    excused: excusedCount,
     visitors: visitorsCount,
   };
 

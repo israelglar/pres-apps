@@ -1,12 +1,12 @@
-import { Check, X, Clock, FileText } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import type { AttendanceRecordWithRelations } from '../../../types/database.types';
 import { theme } from '../../../config/theme';
 import { selectionTap } from '../../../utils/haptics';
-import { QuickEditMenu } from './QuickEditMenu';
+import { QuickEditAttendanceMenu } from '../../../components/QuickEditAttendanceMenu';
 
 interface StudentAttendanceRowProps {
   record: AttendanceRecordWithRelations;
-  onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => void;
+  onQuickStatusChange: (recordId: number, newStatus: 'present' | 'absent') => void;
   onOpenNotes: (record: AttendanceRecordWithRelations) => void;
   onOpenDeleteDialog: (record: AttendanceRecordWithRelations) => void;
   onViewStudent: (studentId: number) => void;
@@ -29,7 +29,7 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
   /**
    * Handle quick status change from menu
    */
-  const handleMenuStatusChange = (status: 'present' | 'absent' | 'late' | 'excused') => {
+  const handleMenuStatusChange = (status: 'present' | 'absent') => {
     selectionTap(); // Haptic feedback
     onQuickStatusChange(record.id, status);
   };
@@ -46,18 +46,6 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
       color: theme.status.absent.text,
       bgColor: theme.status.absent.bg,
       label: 'Falta',
-    },
-    late: {
-      icon: <Clock className="w-4 h-4" />,
-      color: theme.status.late.text,
-      bgColor: theme.status.late.bg,
-      label: 'Atrasado',
-    },
-    excused: {
-      icon: <FileText className="w-4 h-4" />,
-      color: theme.status.excused.text,
-      bgColor: theme.status.excused.bg,
-      label: 'Justificada',
     },
   };
 
@@ -102,7 +90,7 @@ export function StudentAttendanceRow({ record, onQuickStatusChange, onOpenNotes,
       {/* Action Buttons */}
       <div className="ml-2 flex items-center gap-0.5 flex-shrink-0">
         {/* Quick Edit Menu */}
-        <QuickEditMenu
+        <QuickEditAttendanceMenu
           onSelectStatus={handleMenuStatusChange}
           onOpenNotesDialog={() => onOpenNotes(record)}
           onOpenDeleteDialog={() => onOpenDeleteDialog(record)}

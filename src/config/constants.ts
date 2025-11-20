@@ -19,8 +19,6 @@ export const ATTENDANCE = {
   STATUS: {
     PRESENT: 'P',
     ABSENT: 'F',
-    LATE: 'L',
-    EXCUSED: 'E',
   } as const,
 } as const;
 

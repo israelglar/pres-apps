@@ -78,7 +78,7 @@ export interface AttendanceRecord {
   id: number;
   student_id: number;
   schedule_id: number;
-  status: 'present' | 'absent' | 'excused' | 'late';
+  status: 'present' | 'absent';
   service_time_id: number | null;
   notes: string | null;
   marked_by: number | null;

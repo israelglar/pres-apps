@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS attendance_records (
   id SERIAL PRIMARY KEY,
   student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
   schedule_id INTEGER REFERENCES schedules(id) ON DELETE CASCADE,
-  status VARCHAR(20) NOT NULL,
+  status VARCHAR(20) NOT NULL CHECK (status IN ('present', 'absent')),
   service_time_id INTEGER REFERENCES service_times(id),
   notes TEXT,
   marked_by INTEGER REFERENCES teachers(id),

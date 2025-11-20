@@ -71,7 +71,7 @@ export function useAttendanceData() {
       serviceTimeId: number;
       records: Array<{
         student_id: number;
-        status: 'present' | 'absent' | 'excused' | 'late';
+        status: 'present' | 'absent';
         notes?: string;
       }>;
       markedBy?: number | null;
@@ -230,7 +230,7 @@ export function useAttendanceSubmit() {
     // Transform records to match new API format
     const attendanceRecords = records.map((record) => ({
       student_id: record.studentId,
-      status: record.status as 'present' | 'absent' | 'excused' | 'late',
+      status: record.status as 'present' | 'absent',
       notes: record.notes,
     }));
 

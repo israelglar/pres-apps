@@ -76,7 +76,7 @@ export async function bulkSaveAttendance(
   scheduleId: number,
   records: Array<{
     student_id: number;
-    status: 'present' | 'absent' | 'excused' | 'late';
+    status: 'present' | 'absent';
     service_time_id?: number;
     notes?: string;
   }>,
@@ -147,7 +147,7 @@ export async function updateAttendanceRecord(
 export async function createAttendanceRecord(record: {
   student_id: number;
   schedule_id: number;
-  status: 'present' | 'absent' | 'excused' | 'late';
+  status: 'present' | 'absent';
   service_time_id?: number;
   notes?: string;
 }): Promise<AttendanceRecordWithRelations> {

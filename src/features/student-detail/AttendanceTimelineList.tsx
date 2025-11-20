@@ -1,10 +1,20 @@
+import { useState, useMemo } from 'react'
 import { History, CalendarX } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { theme } from '../../config/theme'
+import { updateAttendanceRecord } from '../../api/supabase/attendance'
+import { successVibration, errorVibration } from '../../utils/haptics'
+import { queryKeys } from '../../lib/queryKeys'
 import { AttendanceRecordCard } from './AttendanceRecordCard'
+import { NotesDialog } from '../lessons/components/NotesDialog'
+import { AddPastLessonButton } from './AddPastLessonButton'
 import type { SundayAttendanceRecord } from './student-detail.logic'
+import type { AttendanceRecordWithRelations } from '../../types/database.types'
 
 interface AttendanceTimelineListProps {
   records: SundayAttendanceRecord[]
+  studentId: number
+  studentName: string
   isLoading?: boolean
 }
 
@@ -14,8 +24,67 @@ interface AttendanceTimelineListProps {
  */
 export function AttendanceTimelineList({
   records,
+  studentId,
+  studentName,
   isLoading = false,
 }: AttendanceTimelineListProps) {
+  const queryClient = useQueryClient()
+  const [singleRecordNotesDialog, setSingleRecordNotesDialog] = useState<AttendanceRecordWithRelations | null>(null)
+
+  // Calculate existing dates for filtering in AddPastLessonDialog
+  const existingDates = useMemo(() => {
+    return new Set(records.map(r => r.date))
+  }, [records])
+
+  // Mutation for editing attendance records
+  const editMutation = useMutation({
+    mutationFn: async ({
+      recordIds,
+      status,
+      notes,
+    }: {
+      recordIds: number[]
+      status?: 'present' | 'absent' | 'late' | 'excused'
+      notes?: string | null
+    }) => {
+      // Update all records (for all service times on that Sunday)
+      const updates = recordIds.map(recordId =>
+        updateAttendanceRecord(recordId, { status, notes })
+      )
+      return Promise.all(updates)
+    },
+    onSuccess: () => {
+      // Invalidate student attendance query to refetch
+      queryClient.invalidateQueries({ queryKey: queryKeys.studentAttendance(studentId) })
+      successVibration()
+      setSingleRecordNotesDialog(null)
+    },
+    onError: (error) => {
+      console.error('Failed to update attendance:', error)
+      errorVibration()
+    },
+  })
+
+  // Handle status change for a single record (specific service time)
+  const handleSingleRecordStatusChange = (recordId: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => {
+    editMutation.mutate({ recordIds: [recordId], status: newStatus })
+  }
+
+  // Handle opening notes dialog for single record (specific service time)
+  const handleOpenSingleRecordNotesDialog = (record: AttendanceRecordWithRelations) => {
+    setSingleRecordNotesDialog(record)
+  }
+
+  // Handle closing single record notes dialog
+  const handleCloseSingleRecordNotesDialog = () => {
+    setSingleRecordNotesDialog(null)
+  }
+
+  // Handle submitting notes for single record
+  const handleSubmitSingleRecordNotes = (recordId: number, notes: string) => {
+    editMutation.mutate({ recordIds: [recordId], notes })
+  }
+
   // Empty state
   if (!isLoading && records.length === 0) {
     return (
@@ -52,12 +121,35 @@ export function AttendanceTimelineList({
         )}
       </div>
 
+      {/* Add Past Lesson Button */}
+      <AddPastLessonButton
+        studentId={studentId}
+        studentName={studentName}
+        existingDates={existingDates}
+      />
+
       {/* Timeline of Records */}
       <div className="space-y-3">
         {records.map((record) => (
-          <AttendanceRecordCard key={record.date} record={record} />
+          <AttendanceRecordCard
+            key={record.date}
+            record={record}
+            studentId={studentId}
+            onSingleRecordStatusChange={handleSingleRecordStatusChange}
+            onSingleRecordNotesDialog={handleOpenSingleRecordNotesDialog}
+          />
         ))}
       </div>
+
+      {/* Notes Dialog for Single Record (specific service time) */}
+      {singleRecordNotesDialog && (
+        <NotesDialog
+          record={singleRecordNotesDialog}
+          onClose={handleCloseSingleRecordNotesDialog}
+          onSubmit={handleSubmitSingleRecordNotes}
+          isSubmitting={editMutation.isPending}
+        />
+      )}
     </div>
   )
 }

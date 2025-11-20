@@ -28,8 +28,6 @@ export function AttendanceStats({
   const categoriesWithValues = [
     stats.present > 0,
     showAbsent && stats.absent > 0,
-    stats.late > 0,
-    stats.excused > 0,
     stats.visitors > 0,
   ].filter(Boolean).length;
 
@@ -53,22 +51,6 @@ export function AttendanceStats({
           ></span>
           {stats.present}
         </span>
-        {stats.late > 0 && (
-          <span className="flex items-center gap-1 h-5">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}
-            ></span>
-            {stats.late}
-          </span>
-        )}
-        {stats.excused > 0 && (
-          <span className="flex items-center gap-1 h-5">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}
-            ></span>
-            {stats.excused}
-          </span>
-        )}
         {stats.visitors > 0 && (
           <span className="flex items-center gap-1 h-5">
             <span
@@ -106,26 +88,6 @@ export function AttendanceStats({
           <span className={theme.text.neutral}>Faltas:</span>
           <span className={`font-bold ${theme.status.absent.text}`}>
             {stats.absent}
-          </span>
-        </div>
-      )}
-
-      {/* Late */}
-      {stats.late > 0 && (
-        <div className="flex items-baseline gap-1">
-          <span className={theme.text.neutral}>Atrasados:</span>
-          <span className={`font-bold ${theme.status.late.text}`}>
-            {stats.late}
-          </span>
-        </div>
-      )}
-
-      {/* Excused */}
-      {stats.excused > 0 && (
-        <div className="flex items-baseline gap-1">
-          <span className={theme.text.neutral}>Justificadas:</span>
-          <span className={`font-bold ${theme.status.excused.text}`}>
-            {stats.excused}
           </span>
         </div>
       )}

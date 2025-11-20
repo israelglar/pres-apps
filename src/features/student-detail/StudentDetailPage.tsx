@@ -181,6 +181,8 @@ export function StudentDetailPage({
         {/* Attendance Timeline */}
         <AttendanceTimelineList
           records={sundayRecords}
+          studentId={studentId}
+          studentName={student.name}
           isLoading={isLoading}
         />
       </div>

@@ -314,8 +314,6 @@ CREATE INDEX idx_attendance_date ON attendance_records(schedule_id, status);
 - `status` - Attendance status:
   - `'present'` - Student was present
   - `'absent'` - Student was absent
-  - `'excused'` - Excused absence (future)
-  - `'late'` - Arrived late (future)
 - `service_time_id` - Which service time student attended (9h vs 11h)
   - Important for tracking cross-service attendance (student goes to 9h instead of 11h)
 - `notes` - Teacher observations (future feature: "Seemed tired", "Asked questions")

@@ -296,16 +296,14 @@ BEGIN
   LIMIT 1;
 
   -- Insert attendance for most recent Sunday (schedule_id_1)
-  -- 10 present, 4 absent, 1 late
+  -- 10 present, 5 absent
   FOR student_rec IN
     SELECT id FROM students WHERE is_visitor = false ORDER BY id LIMIT 15
   LOOP
     IF i <= 10 THEN
       attendance_status := 'present';
-    ELSIF i <= 14 THEN
-      attendance_status := 'absent';
     ELSE
-      attendance_status := 'late';
+      attendance_status := 'absent';
     END IF;
 
     INSERT INTO attendance_records (student_id, schedule_id, status, service_time_id, marked_at)

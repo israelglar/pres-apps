@@ -75,38 +75,6 @@ export function AttendanceSummaryCard({
           </span>
         </div>
 
-        {attendanceStats.late > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-1.5 h-1.5 rounded-full ${theme.indicators.late}`}
-              />
-              <span className={`text-xs ${theme.text.neutralDarker}`}>
-                Atrasados
-              </span>
-            </div>
-            <span className={`text-xs font-bold ${theme.text.neutralDarker}`}>
-              {attendanceStats.late}
-            </span>
-          </div>
-        )}
-
-        {attendanceStats.excused > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-1.5 h-1.5 rounded-full ${theme.indicators.excused}`}
-              />
-              <span className={`text-xs ${theme.text.neutralDarker}`}>
-                Justificadas
-              </span>
-            </div>
-            <span className={`text-xs font-bold ${theme.text.neutralDarker}`}>
-              {attendanceStats.excused}
-            </span>
-          </div>
-        )}
-
         {attendanceStats.visitors > 0 && (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">

@@ -37,7 +37,7 @@ export interface ServiceTimeInfo {
 export interface SundayAttendanceRecord {
   date: string // ISO date (YYYY-MM-DD)
   dateDisplay: string // Formatted for display
-  status: 'present' | 'absent' | 'excused' | 'late'
+  status: 'present' | 'absent'
   serviceTimes: ServiceTimeInfo[] // Services attended (e.g., [9h, 11h])
   lesson: {
     id: number
@@ -52,33 +52,21 @@ export interface SundayAttendanceRecord {
  * Merge attendance status for a Sunday
  * If present at ANY service -> "present"
  * If all absent -> "absent"
- * If all excused -> "excused"
- * Mixed absent/excused -> "excused"
  */
 function mergeAttendanceStatus(
   records: AttendanceRecordWithRelations[]
-): 'present' | 'absent' | 'excused' | 'late' {
+): 'present' | 'absent' {
   if (records.length === 0) return 'absent'
 
   const statuses = records.map(r => r.status)
 
-  // If ANY record is present or late, the Sunday is "present"
-  if (statuses.includes('present') || statuses.includes('late')) {
+  // If ANY record is present, the Sunday is "present"
+  if (statuses.includes('present')) {
     return 'present'
   }
 
-  // If all records are excused, the Sunday is "excused"
-  if (statuses.every(s => s === 'excused')) {
-    return 'excused'
-  }
-
-  // If all records are absent, the Sunday is "absent"
-  if (statuses.every(s => s === 'absent')) {
-    return 'absent'
-  }
-
-  // Mixed absent/excused -> prioritize excused
-  return 'excused'
+  // Otherwise, the Sunday is "absent"
+  return 'absent'
 }
 
 /**
@@ -114,9 +102,9 @@ export function groupBySunday(
     // Merge status across services
     const status = mergeAttendanceStatus(sortedRecords)
 
-    // Collect service times (only for services where student was present or late)
+    // Collect service times (only for services where student was present)
     const serviceTimes: ServiceTimeInfo[] = sortedRecords
-      .filter(r => r.schedule?.service_time && (r.status === 'present' || r.status === 'late'))
+      .filter(r => r.schedule?.service_time && r.status === 'present')
       .map(r => ({
         id: r.schedule!.service_time!.id,
         time: r.schedule!.service_time!.time.substring(0, 5), // "09:00:00" -> "09:00"
@@ -158,7 +146,6 @@ export interface AttendanceStats {
   total: number // total Sundays
   present: number // Sundays marked as present
   absent: number // Sundays marked as absent
-  excused: number // Sundays marked as excused
   attendanceRate: number // percentage
 }
 
@@ -170,7 +157,6 @@ export function calculateAttendanceStats(
       total: 0,
       present: 0,
       absent: 0,
-      excused: 0,
       attendanceRate: 0,
     }
   }
@@ -180,24 +166,19 @@ export function calculateAttendanceStats(
       acc.total++
       switch (record.status) {
         case 'present':
-        case 'late': // Count late as present
           acc.present++
           break
         case 'absent':
           acc.absent++
           break
-        case 'excused':
-          acc.excused++
-          break
       }
       return acc
     },
-    { total: 0, present: 0, absent: 0, excused: 0 }
+    { total: 0, present: 0, absent: 0 }
   )
 
-  // Calculate attendance rate: (present + excused) / total
-  const attendedCount = stats.present + stats.excused
-  const attendanceRate = (attendedCount / stats.total) * 100
+  // Calculate attendance rate: present / total
+  const attendanceRate = (stats.present / stats.total) * 100
 
   return {
     ...stats,
@@ -253,47 +234,35 @@ export function formatDateForDisplay(dateString: string): string {
 /**
  * Get status color for UI display
  */
-export function getStatusColor(status: 'present' | 'absent' | 'excused' | 'late'): string {
+export function getStatusColor(status: 'present' | 'absent'): string {
   switch (status) {
     case 'present':
       return 'text-green-600 bg-green-50'
     case 'absent':
       return 'text-red-600 bg-red-50'
-    case 'excused':
-      return 'text-yellow-600 bg-yellow-50'
-    case 'late':
-      return 'text-orange-600 bg-orange-50'
   }
 }
 
 /**
  * Get status label in Portuguese
  */
-export function getStatusLabel(status: 'present' | 'absent' | 'excused' | 'late'): string {
+export function getStatusLabel(status: 'present' | 'absent'): string {
   switch (status) {
     case 'present':
       return 'Presente'
     case 'absent':
       return 'Falta'
-    case 'excused':
-      return 'Justificada'
-    case 'late':
-      return 'Atrasado'
   }
 }
 
 /**
  * Get status icon
  */
-export function getStatusIcon(status: 'present' | 'absent' | 'excused' | 'late'): string {
+export function getStatusIcon(status: 'present' | 'absent'): string {
   switch (status) {
     case 'present':
       return '✓'
     case 'absent':
       return '×'
-    case 'excused':
-      return '○'
-    case 'late':
-      return '◷'
   }
 }
