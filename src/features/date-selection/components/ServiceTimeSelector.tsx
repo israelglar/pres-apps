@@ -72,7 +72,7 @@ export function ServiceTimeSelector({
 
               {/* Teacher Badges */}
               {assignments.length > 0 && (
-                <div className="pl-1">
+                <div className="pl-1 w-full">
                   <TeacherList assignments={assignments} />
                 </div>
               )}

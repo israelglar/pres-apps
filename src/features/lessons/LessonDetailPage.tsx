@@ -304,13 +304,15 @@ export function LessonDetailPage({
 
                 {/* Teacher Assignments */}
                 {dateGroup.serviceTimes[selectedServiceTimeIndex]?.schedule && (
-                  <div className="mb-2 flex items-center gap-2">
-                    <TeacherList
-                      assignments={
-                        dateGroup.serviceTimes[selectedServiceTimeIndex]
-                          .schedule.assignments
-                      }
-                    />
+                  <div className="mb-2 flex items-center gap-2 w-full">
+                    <div className="flex-1 min-w-0">
+                      <TeacherList
+                        assignments={
+                          dateGroup.serviceTimes[selectedServiceTimeIndex]
+                            .schedule.assignments
+                        }
+                      />
+                    </div>
                     <button
                       onClick={handleOpenTeacherAssignmentDialog}
                       className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${theme.backgrounds.neutralLight} ${theme.text.neutral} hover:${theme.backgrounds.primaryLight} hover:${theme.text.primary} transition-colors`}

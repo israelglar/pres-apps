@@ -79,7 +79,7 @@ export const UnifiedLessonCard = React.memo<UnifiedLessonCardProps>(({
         {/* Lesson Name */}
         <div className="mb-3">
           <h3
-            className={`text-sm font-medium ${theme.text.onLight} leading-tight`}
+            className={`text-sm font-medium ${theme.text.onLight} leading-tight break-words`}
           >
             {lesson.name}
           </h3>
@@ -155,7 +155,7 @@ export const UnifiedLessonCard = React.memo<UnifiedLessonCardProps>(({
 
                           {/* Teachers */}
                           {assignments.length > 0 && (
-                            <div className="flex items-center">
+                            <div className="flex items-center flex-1 min-w-0">
                               <TeacherList
                                 assignments={assignments}
                                 emptyMessage=""
