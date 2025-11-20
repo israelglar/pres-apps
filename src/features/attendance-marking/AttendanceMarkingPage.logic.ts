@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { ATTENDANCE, UI } from "../../config/constants";
 import { selectionTap, successVibration } from "../../utils/haptics";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
@@ -38,7 +39,7 @@ export const useAttendanceMarkingLogic = ({
   const [isAnimatingSwipe, setIsAnimatingSwipe] = useState(false);
 
   // Minimum swipe distance (in px) to trigger action
-  const minSwipeDistance = 50;
+  const minSwipeDistance = ATTENDANCE.MIN_SWIPE_DISTANCE;
 
   // Use shared attendance core logic
   const {
@@ -59,7 +60,7 @@ export const useAttendanceMarkingLogic = ({
 
   // Fetch absence alerts for students
   const { alerts, dismissAlert } = useAbsenceAlerts({
-    threshold: 3,
+    threshold: ATTENDANCE.ABSENCE_ALERT_THRESHOLD,
     currentDate: selectedDate.toISOString().split('T')[0], // Exclude current date from absence count
   });
 
@@ -100,7 +101,7 @@ export const useAttendanceMarkingLogic = ({
     }
   };
 
-  const handleMark = (status: "P" | "F") => {
+  const handleMark = (status: typeof ATTENDANCE.STATUS.PRESENT | typeof ATTENDANCE.STATUS.ABSENT) => {
     // Haptic feedback for marking
     selectionTap();
 
@@ -123,7 +124,7 @@ export const useAttendanceMarkingLogic = ({
     } else {
       setTimeout(() => {
         findNextUnmarked(newRecords);
-      }, 150);
+      }, UI.TRANSITION_FAST);
     }
   };
 
@@ -157,7 +158,7 @@ export const useAttendanceMarkingLogic = ({
           [studentId]: {
             studentId: student.id,
             studentName: student.name,
-            status: "P" as const,
+            status: ATTENDANCE.STATUS.PRESENT,
             timestamp: new Date(),
             notes: note || undefined,
           },
@@ -183,7 +184,7 @@ export const useAttendanceMarkingLogic = ({
     if (touchStart !== null) {
       const offset = currentTouch - touchStart;
       // Limit the offset for visual feedback
-      setSwipeOffset(Math.max(-150, Math.min(150, offset)));
+      setSwipeOffset(Math.max(-ATTENDANCE.MAX_SWIPE_OFFSET, Math.min(ATTENDANCE.MAX_SWIPE_OFFSET, offset)));
 
       // Reset button backgrounds when swiping starts
       if (Math.abs(offset) > 10) {
@@ -226,9 +227,9 @@ export const useAttendanceMarkingLogic = ({
 
       // Mark attendance
       if (isLeftSwipe) {
-        handleMark("F");
+        handleMark(ATTENDANCE.STATUS.ABSENT);
       } else {
-        handleMark("P");
+        handleMark(ATTENDANCE.STATUS.PRESENT);
       }
     } else {
       // Reset swipe state if threshold not met

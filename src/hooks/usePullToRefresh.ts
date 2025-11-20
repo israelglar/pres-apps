@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ATTENDANCE } from '@/config/constants';
 
 export interface PullToRefreshConfig {
   minPullDistance?: number;
@@ -21,8 +22,8 @@ export interface PullToRefreshReturn {
  * @returns Pull-to-refresh handlers and state
  */
 export function usePullToRefresh({
-  minPullDistance = 80,
-  maxPullDistance = 120,
+  minPullDistance = ATTENDANCE.PULL_TO_REFRESH_MIN_DISTANCE,
+  maxPullDistance = ATTENDANCE.PULL_TO_REFRESH_DISTANCE,
   onRefresh,
 }: PullToRefreshConfig): PullToRefreshReturn {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);

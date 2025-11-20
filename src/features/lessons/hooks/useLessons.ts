@@ -7,6 +7,7 @@ import {
 } from '../../../api/supabase/attendance';
 import type { ScheduleWithRelations, AttendanceRecordWithRelations } from '../../../types/database.types';
 import { calculateStats, type AttendanceStats } from '../../../utils/attendance';
+import { QUERY } from '@/config/constants';
 
 /**
  * Query key for lessons
@@ -94,8 +95,8 @@ export function useLessons() {
         totalCount,
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: QUERY.STALE_TIME_MEDIUM,
+    gcTime: QUERY.STALE_TIME_MEDIUM_LONG,
     // Validate and fix data structure before returning to components
     select: (data: any) => {
       // If data has correct structure, return as-is
@@ -151,8 +152,8 @@ export function useLessonByDate(date: string) {
   const { data: schedules, isLoading, error, refetch } = useQuery({
     queryKey: ['lesson-date', date],
     queryFn: () => getScheduleByDate(date),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: QUERY.STALE_TIME_MEDIUM,
+    gcTime: QUERY.STALE_TIME_MEDIUM_LONG,
   });
 
   // Transform schedules into LessonGroup format for consistency
@@ -187,8 +188,8 @@ export function useLessonById(lessonId: number, selectedDate?: string) {
   const { data: schedules, isLoading, error, refetch } = useQuery({
     queryKey: ['lesson-id', lessonId],
     queryFn: () => getSchedulesByLessonId(lessonId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: QUERY.STALE_TIME_MEDIUM,
+    gcTime: QUERY.STALE_TIME_MEDIUM_LONG,
   });
 
   // Group schedules by date

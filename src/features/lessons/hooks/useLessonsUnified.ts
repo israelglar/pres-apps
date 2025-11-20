@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllLessons } from '../../../api/supabase/lessons';
 import { getAllSchedules } from '../../../api/supabase/schedules';
 import type { Lesson, ScheduleWithRelations } from '../../../types/database.types';
+import { QUERY } from '@/config/constants';
 
 /**
  * Query key for unified lessons
@@ -86,8 +87,8 @@ export function useLessonsUnified() {
 
       return unifiedLessons;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: QUERY.STALE_TIME_MEDIUM,
+    gcTime: QUERY.STALE_TIME_MEDIUM_LONG,
   });
 
   return {

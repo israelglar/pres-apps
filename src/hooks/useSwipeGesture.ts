@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ATTENDANCE } from '@/config/constants';
 
 export interface SwipeGestureConfig {
   minSwipeDistance?: number;
@@ -22,7 +23,7 @@ export interface SwipeGestureReturn {
  * @returns Swipe handlers and state
  */
 export function useSwipeGesture({
-  minSwipeDistance = 50,
+  minSwipeDistance = ATTENDANCE.MIN_SWIPE_DISTANCE,
   onSwipeLeft,
   onSwipeRight,
   enabled = true,
@@ -61,9 +62,9 @@ export function useSwipeGesture({
       if (isHorizontal) {
         // Allow swipe in both directions for visual feedback
         if (distanceX < 0 && onSwipeLeft) {
-          setSwipeOffset(Math.max(-150, distanceX));
+          setSwipeOffset(Math.max(-ATTENDANCE.MAX_SWIPE_OFFSET, distanceX));
         } else if (distanceX > 0 && onSwipeRight) {
-          setSwipeOffset(Math.min(150, distanceX));
+          setSwipeOffset(Math.min(ATTENDANCE.MAX_SWIPE_OFFSET, distanceX));
         }
       }
     },

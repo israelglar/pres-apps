@@ -8,6 +8,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { getAbsenceAlertsForSchedule } from '../api/supabase/absence-alerts';
 import type { AbsenceAlert, AbsenceAlertsMap } from '../types/absence-alerts.types';
 import { queryKeys } from '../lib/queryKeys';
+import { QUERY } from '@/config/constants';
 
 interface UseAbsenceAlertsOptions {
   /** Number of consecutive absences to trigger alert (default: 3) */
@@ -83,8 +84,8 @@ export function useAbsenceAlerts({
       return await getAbsenceAlertsForSchedule(threshold, currentDate);
     },
     enabled: enabled,
-    staleTime: 2 * 60 * 1000, // 2 minutes - alerts don't change that frequently
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: QUERY.STALE_TIME_SHORT_MEDIUM,
+    gcTime: QUERY.STALE_TIME_MEDIUM,
     refetchOnMount: true, // Only refetch if stale
   });
 

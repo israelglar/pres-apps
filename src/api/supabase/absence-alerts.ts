@@ -5,6 +5,7 @@
 
 import { supabase, handleSupabaseError } from '../../lib/supabase';
 import type { AbsenceAlert } from '../../types/absence-alerts.types';
+import { ATTENDANCE } from '@/config/constants';
 
 /**
  * Get students with recent consecutive absences (AGGREGATED BY SUNDAY)
@@ -27,7 +28,7 @@ import type { AbsenceAlert } from '../../types/absence-alerts.types';
  */
 export async function getStudentsWithRecentAbsences(
   studentIds: number[],
-  threshold: number = 3,
+  threshold: number = ATTENDANCE.ABSENCE_ALERT_THRESHOLD,
   lookbackSundays: number = 15,
   currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
@@ -156,7 +157,7 @@ export async function getStudentsWithRecentAbsences(
  * @returns Array of absence alerts
  */
 export async function getAbsenceAlertsForSchedule(
-  threshold: number = 3,
+  threshold: number = ATTENDANCE.ABSENCE_ALERT_THRESHOLD,
   currentDateToExclude?: string
 ): Promise<AbsenceAlert[]> {
   try {

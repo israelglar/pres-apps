@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { AlertTriangle, CheckCircle, X, XCircle } from "lucide-react";
+import { ATTENDANCE } from "../../config/constants";
 import { theme } from "../../config/theme";
 import type { Student, AttendanceRecord } from "../../types/attendance.types";
 import { QuickNoteButton } from "./QuickNoteButton";
@@ -41,7 +42,7 @@ export const StudentList = React.memo<StudentListProps>(({
 
       if (student.isVisitor) {
         // Visitors: only show in visitors section if present, otherwise disappear
-        if (record && record.status === "P") {
+        if (record && record.status === ATTENDANCE.STATUS.PRESENT) {
           // Present visitor - show in visitors section
           visitors.push(student);
         }
@@ -82,7 +83,7 @@ export const StudentList = React.memo<StudentListProps>(({
               isCurrent && !isMarked
                 ? `${theme.backgrounds.primaryLighter} border ${theme.borders.primary} shadow-md`
                 : isMarked
-                  ? record.status === "P"
+                  ? record.status === ATTENDANCE.STATUS.PRESENT
                     ? `${theme.backgrounds.success} border ${theme.borders.success} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
                     : `${theme.backgrounds.errorLight} border ${theme.borders.error} opacity-70 hover:opacity-80 hover:shadow-md cursor-pointer`
                   : `${theme.backgrounds.white} border ${theme.borders.primaryLight} ${theme.borders.primaryHover} hover:shadow-md ${theme.backgrounds.primaryHover} active:bg-blue-100 transition-colors`
@@ -94,7 +95,7 @@ export const StudentList = React.memo<StudentListProps>(({
                   <span
                     className={`text-sm font-semibold ${
                       isMarked
-                        ? record.status === "P"
+                        ? record.status === ATTENDANCE.STATUS.PRESENT
                           ? "text-green-800"
                           : theme.status.absent.text
                         : theme.text.primary
@@ -126,7 +127,7 @@ export const StudentList = React.memo<StudentListProps>(({
               )}
               {isMarked && (
                 <div className="bg-white rounded-full p-0.5">
-                  {record.status === "P" ? (
+                  {record.status === ATTENDANCE.STATUS.PRESENT ? (
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   ) : (
                     <XCircle className={`w-4 h-4 ${theme.text.error}`} />

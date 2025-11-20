@@ -1,4 +1,5 @@
 import { CheckCircle, UserPlus, XCircle } from "lucide-react";
+import { ATTENDANCE } from "../../config/constants";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { CompletionScreen } from "../../components/features/CompletionScreen";
@@ -55,17 +56,17 @@ export const AttendanceMarkingPage = ({
   if (isComplete) {
     // Count visitors who are marked present - check if student is in visitorStudents array
     const visitorsCount = Object.values(attendanceRecords).filter(
-      (r) => r.status === "P" && visitorStudents.some(v => v.id === r.studentId)
+      (r) => r.status === ATTENDANCE.STATUS.PRESENT && visitorStudents.some(v => v.id === r.studentId)
     ).length;
 
     // Count only regular students present (excluding visitors)
     const presentCount = Object.values(attendanceRecords).filter(
-      (r) => r.status === "P" && !visitorStudents.some(v => v.id === r.studentId)
+      (r) => r.status === ATTENDANCE.STATUS.PRESENT && !visitorStudents.some(v => v.id === r.studentId)
     ).length;
 
     // Build list of present students for display
     const presentStudentsList = Object.values(attendanceRecords)
-      .filter((r) => r.status === "P")
+      .filter((r) => r.status === ATTENDANCE.STATUS.PRESENT)
       .map((record) => {
         const student = [...students, ...visitorStudents].find(s => s.id === record.studentId);
         return {
@@ -286,7 +287,7 @@ export const AttendanceMarkingPage = ({
                 {!hasAlert && (
                   <>
                     <button
-                      onClick={() => handleMark("F")}
+                      onClick={() => handleMark(ATTENDANCE.STATUS.ABSENT)}
                       className="click-area-button left-button absolute left-0 top-0 bottom-0 w-1/3 active:bg-red-200/40 transition-colors rounded-l-3xl z-20 touch-none"
                       style={{
                         background:
@@ -306,7 +307,7 @@ export const AttendanceMarkingPage = ({
                       }}
                     />
                     <button
-                      onClick={() => handleMark("P")}
+                      onClick={() => handleMark(ATTENDANCE.STATUS.PRESENT)}
                       className="click-area-button right-button absolute right-0 top-0 bottom-0 w-1/3 active:bg-green-200/40 transition-colors rounded-r-3xl z-20 touch-none"
                       style={{
                         background:
@@ -333,7 +334,7 @@ export const AttendanceMarkingPage = ({
 
               <div className="hidden md:grid grid-cols-2 gap-4">
                 <button
-                  onClick={() => handleMark("F")}
+                  onClick={() => handleMark(ATTENDANCE.STATUS.ABSENT)}
                   className={`${theme.solids.errorButton} ${theme.solids.errorButtonHover} rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 group`}
                 >
                   <div className="text-center">
@@ -345,7 +346,7 @@ export const AttendanceMarkingPage = ({
                 </button>
 
                 <button
-                  onClick={() => handleMark("P")}
+                  onClick={() => handleMark(ATTENDANCE.STATUS.PRESENT)}
                   className={`${theme.solids.activeItem} ${theme.solids.primaryButtonHover} rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 group`}
                 >
                   <div className="text-center">

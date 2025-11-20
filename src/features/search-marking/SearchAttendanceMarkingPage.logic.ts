@@ -1,4 +1,5 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { ATTENDANCE } from "../../config/constants";
 import { useAbsenceAlerts } from "../../hooks/useAbsenceAlerts";
 import { useAttendanceCore } from "../../hooks/useAttendanceCore";
 import { useFuseSearch } from "../../hooks/useFuseSearch";
@@ -52,7 +53,7 @@ export const useSearchAttendanceMarkingLogic = ({
 
   // Fetch absence alerts for students
   const { alerts, dismissAlert } = useAbsenceAlerts({
-    threshold: 3,
+    threshold: ATTENDANCE.ABSENCE_ALERT_THRESHOLD,
     currentDate: date.toISOString().split("T")[0], // Exclude current date from absence count
   });
 
@@ -104,7 +105,7 @@ export const useSearchAttendanceMarkingLogic = ({
       [student.id]: {
         studentId: student.id,
         studentName: student.name,
-        status: "P" as const,
+        status: ATTENDANCE.STATUS.PRESENT,
         timestamp: new Date(),
       },
     };
@@ -147,7 +148,7 @@ export const useSearchAttendanceMarkingLogic = ({
           [studentId]: {
             studentId: student.id,
             studentName: student.name,
-            status: "P" as const,
+            status: ATTENDANCE.STATUS.PRESENT,
             timestamp: new Date(),
             notes: note || undefined,
           },
@@ -184,7 +185,7 @@ export const useSearchAttendanceMarkingLogic = ({
         finalRecords[student.id] = {
           studentId: student.id,
           studentName: student.name,
-          status: "F",
+          status: ATTENDANCE.STATUS.ABSENT,
           timestamp: new Date(),
         };
       }
@@ -210,7 +211,7 @@ export const useSearchAttendanceMarkingLogic = ({
     Object.entries(attendanceRecords).forEach(([studentId, record]) => {
       // Only keep records that were manually marked as present
       // Records marked as absent were auto-generated in handleComplete
-      if (record.status === "P") {
+      if (record.status === ATTENDANCE.STATUS.PRESENT) {
         manualRecords[studentId] = record;
       }
     });
@@ -221,7 +222,7 @@ export const useSearchAttendanceMarkingLogic = ({
 
   // Derived values
   const presentCount = Object.values(attendanceRecords).filter(
-    (r) => r.status === "P",
+    (r) => r.status === ATTENDANCE.STATUS.PRESENT,
   ).length;
   const totalCount = allStudents.length;
 

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { lazy } from 'react'
+import { ATTENDANCE } from '../../config/constants'
 import { useAttendanceData, useAttendanceSubmit } from '../../hooks/useAttendanceData'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -13,7 +14,7 @@ type MarkingSearch = {
 interface AttendanceRecord {
   studentId: string;
   studentName: string;
-  status: "P" | "F";
+  status: typeof ATTENDANCE.STATUS.PRESENT | typeof ATTENDANCE.STATUS.ABSENT;
   timestamp: Date;
   notes?: string;
 }
@@ -41,7 +42,7 @@ function SearchMarkingRoute() {
     // Transform records from component format to API format
     const apiRecords = records.map(r => ({
       studentId: parseInt(r.studentId), // Convert string ID to number
-      status: r.status === 'P' ? 'present' : 'absent',
+      status: r.status === ATTENDANCE.STATUS.PRESENT ? 'present' : 'absent',
       notes: r.notes,
     }))
     await handleComplete(apiRecords, date, serviceTimeId, teacher?.id)

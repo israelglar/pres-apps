@@ -5,6 +5,7 @@ import { lightTap, successVibration } from '../../utils/haptics';
 import { addVisitor } from '../../api/supabase/students';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { updateLesson } from '../../api/supabase/lessons';
+import { UI } from '@/config/constants';
 
 /**
  * Business logic for Lesson Detail Page
@@ -151,7 +152,7 @@ export function useLessonDetailLogic(
     lightTap();
     setIsNotesDialogOpen(false);
     // Don't clear selectedRecordForNotes immediately to prevent flash during close animation
-    setTimeout(() => setSelectedRecordForNotes(null), 300);
+    setTimeout(() => setSelectedRecordForNotes(null), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -196,7 +197,7 @@ export function useLessonDetailLogic(
     setTimeout(() => {
       setAddDialogScheduleId(null);
       setAddDialogServiceTimeId(null);
-    }, 300);
+    }, UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -236,7 +237,7 @@ export function useLessonDetailLogic(
     lightTap();
     setIsDeleteDialogOpen(false);
     // Clear state after animation
-    setTimeout(() => setRecordToDelete(null), 300);
+    setTimeout(() => setRecordToDelete(null), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -271,7 +272,7 @@ export function useLessonDetailLogic(
     lightTap();
     setIsCreateVisitorDialogOpen(false);
     // Clear initial name after animation
-    setTimeout(() => setVisitorInitialName(''), 300);
+    setTimeout(() => setVisitorInitialName(''), UI.TRANSITION_NORMAL);
   };
 
   /**

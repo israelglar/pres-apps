@@ -4,6 +4,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ATTENDANCE, QUERY } from '@/config/constants';
 import {
   getAllStudents,
   getActiveStudents,
@@ -31,7 +32,7 @@ export interface StudentWithAlert extends Student {
 export function useStudents(
   filter: 'all' | 'active' = 'all',
   includeAlerts: boolean = false,
-  alertThreshold: number = 3
+  alertThreshold: number = ATTENDANCE.ABSENCE_ALERT_THRESHOLD
 ) {
   return useQuery({
     queryKey: queryKeys.students(filter, includeAlerts, alertThreshold),
@@ -55,7 +56,7 @@ export function useStudents(
 
       return studentsWithAlerts;
     },
-    staleTime: 1 * 60 * 1000, // 1 minute - students don't change frequently
+    staleTime: QUERY.STALE_TIME_SHORT,
     refetchOnMount: true, // Only refetch if stale
   });
 }
@@ -142,7 +143,7 @@ export function useStudentManagement(
   isDeleting: boolean;
 };
 export function useStudentManagement(includeAlerts: boolean = true, alertThreshold?: number): any {
-  const studentsQuery = useStudents('all', includeAlerts, alertThreshold ?? 3);
+  const studentsQuery = useStudents('all', includeAlerts, alertThreshold ?? ATTENDANCE.ABSENCE_ALERT_THRESHOLD);
   const createMutation = useCreateStudent();
   const updateMutation = useUpdateStudent();
   const deleteMutation = useDeleteStudent();

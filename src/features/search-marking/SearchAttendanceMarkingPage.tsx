@@ -1,5 +1,6 @@
 import { Check, UserPlus } from "lucide-react";
 import React from "react";
+import { ATTENDANCE } from "../../config/constants";
 import { theme } from "../../config/theme";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { SearchBar } from "../../components/ui/SearchBar";
@@ -56,7 +57,7 @@ export const SearchAttendanceMarkingPage: React.FC<
   if (isComplete) {
     // Count visitors who are marked present - check if student is in visitorStudents array
     const visitorsCount = Object.values(attendanceRecords).filter(
-      (r) => r.status === "P" && visitorStudents.some(v => v.id === r.studentId)
+      (r) => r.status === ATTENDANCE.STATUS.PRESENT && visitorStudents.some(v => v.id === r.studentId)
     ).length;
 
     // Count only regular students present (excluding visitors)
@@ -64,7 +65,7 @@ export const SearchAttendanceMarkingPage: React.FC<
 
     // Build list of present students for display
     const presentStudentsList = Object.values(attendanceRecords)
-      .filter((r) => r.status === "P")
+      .filter((r) => r.status === ATTENDANCE.STATUS.PRESENT)
       .map((record) => {
         const student = [...students, ...visitorStudents].find(s => s.id === record.studentId);
         return {

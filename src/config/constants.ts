@@ -12,6 +12,8 @@ export const ATTENDANCE = {
   // Gesture thresholds (pixels)
   MIN_SWIPE_DISTANCE: 50,
   PULL_TO_REFRESH_DISTANCE: 120,
+  PULL_TO_REFRESH_MIN_DISTANCE: 80,
+  MAX_SWIPE_OFFSET: 150,
 
   // Status codes
   STATUS: {
@@ -42,7 +44,9 @@ export const UI = {
 export const QUERY = {
   // Stale times (milliseconds)
   STALE_TIME_SHORT: 1 * 60 * 1000,  // 1 minute
+  STALE_TIME_SHORT_MEDIUM: 2 * 60 * 1000,  // 2 minutes
   STALE_TIME_MEDIUM: 5 * 60 * 1000, // 5 minutes
+  STALE_TIME_MEDIUM_LONG: 10 * 60 * 1000,  // 10 minutes
   STALE_TIME_LONG: 15 * 60 * 1000,  // 15 minutes
   STALE_TIME_XLARGE: 55 * 60 * 1000, // 55 minutes (current default)
 
@@ -59,7 +63,8 @@ export const QUERY = {
 export const HAPTICS = {
   // Vibration patterns (milliseconds)
   LIGHT_TAP: 10,
-  SELECTION_TAP: 20,
-  SUCCESS_VIBRATION: [10, 50, 10],
-  ERROR_VIBRATION: [10, 100, 10, 100, 10],
+  MEDIUM_TAP: 25,
+  SELECTION_TAP: 15,
+  SUCCESS_VIBRATION: [50, 50, 50],
+  ERROR_VIBRATION: [100, 50, 100],
 } as const;

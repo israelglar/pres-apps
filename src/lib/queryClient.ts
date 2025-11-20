@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
+import { QUERY } from '../config/constants';
 
 /**
  * TanStack Query client configuration
@@ -13,18 +14,18 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 55 * 60 * 1000, // 55 minutes
-      gcTime: 60 * 60 * 1000, // 60 minutes (formerly cacheTime)
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: QUERY.STALE_TIME_XLARGE, // 55 minutes
+      gcTime: QUERY.CACHE_TIME_DEFAULT, // 60 minutes (formerly cacheTime)
+      retry: QUERY.MAX_QUERY_RETRIES,
+      retryDelay: (attemptIndex) => Math.min(QUERY.INITIAL_RETRY_DELAY * 2 ** attemptIndex, QUERY.MAX_RETRY_DELAY),
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
       // throwOnError: false allows errors to be handled by error boundaries
       throwOnError: false,
     },
     mutations: {
-      retry: 2,
-      retryDelay: 1000,
+      retry: QUERY.MAX_MUTATION_RETRIES,
+      retryDelay: QUERY.INITIAL_RETRY_DELAY,
       // Mutations errors are handled by individual mutation error handlers
     },
   },

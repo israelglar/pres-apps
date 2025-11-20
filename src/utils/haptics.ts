@@ -3,6 +3,8 @@
  * Provides tactile feedback for touch interactions on mobile devices
  */
 
+import { HAPTICS } from '@/config/constants';
+
 /**
  * Check if we're on an iOS device
  */
@@ -75,14 +77,16 @@ function triggerIOSHaptic(intensity: 'light' | 'medium' | 'heavy'): void {
  * @param pattern - Single number (duration in ms) or array of durations
  * @param intensity - Haptic intensity for iOS
  */
-function vibrate(pattern: number | number[], intensity: 'light' | 'medium' | 'heavy' = 'medium'): void {
+function vibrate(pattern: number | readonly number[], intensity: 'light' | 'medium' | 'heavy' = 'medium'): void {
   if (isIOS()) {
     // Use iOS haptic feedback
     triggerIOSHaptic(intensity);
   } else if (isVibrationSupported()) {
     // Use Android Vibration API
     try {
-      navigator.vibrate(pattern);
+      // Convert readonly array to mutable array for navigator.vibrate
+      const vibratePattern = typeof pattern === 'number' ? pattern : [...pattern];
+      navigator.vibrate(vibratePattern);
     } catch (error) {
       console.warn("Vibration failed:", error);
     }
@@ -103,7 +107,7 @@ export function initHaptics(): void {
  * Duration: 10ms
  */
 export function lightTap(): void {
-  vibrate(10, 'light');
+  vibrate(HAPTICS.LIGHT_TAP, 'light');
 }
 
 /**
@@ -124,7 +128,7 @@ export function successVibration(): void {
     triggerIOSHaptic('medium');
     setTimeout(() => triggerIOSHaptic('medium'), 100);
   } else {
-    vibrate([50, 50, 50], 'medium');
+    vibrate(HAPTICS.SUCCESS_VIBRATION, 'medium');
   }
 }
 
@@ -139,7 +143,7 @@ export function errorVibration(): void {
     setTimeout(() => triggerIOSHaptic('light'), 100);
     setTimeout(() => triggerIOSHaptic('heavy'), 200);
   } else {
-    vibrate([100, 50, 100], 'heavy');
+    vibrate(HAPTICS.ERROR_VIBRATION, 'heavy');
   }
 }
 
@@ -148,5 +152,5 @@ export function errorVibration(): void {
  * Duration: 15ms
  */
 export function selectionTap(): void {
-  vibrate(15, 'light');
+  vibrate(HAPTICS.SELECTION_TAP, 'light');
 }

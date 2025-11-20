@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useBlocker } from '@tanstack/react-router';
+import { ATTENDANCE } from '../config/constants';
 import { initHaptics, selectionTap } from '../utils/haptics';
 import { useVisitorManagement, type Student } from './useVisitorManagement';
 import type { AttendanceRecord } from '../types/attendance.types';
@@ -76,7 +77,7 @@ export const useAttendanceCore = ({
         [tempStudent.id]: {
           studentId: tempStudent.id,
           studentName: tempStudent.name,
-          status: "P" as const,
+          status: ATTENDANCE.STATUS.PRESENT,
           timestamp: new Date(),
           notes: result.notes,
         },

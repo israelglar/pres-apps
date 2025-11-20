@@ -11,6 +11,7 @@ import {
   type SundayAttendanceRecord,
 } from '../features/student-detail/student-detail.logic'
 import { queryKeys } from '../lib/queryKeys'
+import { QUERY } from '@/config/constants'
 
 interface UseStudentDetailOptions {
   studentId: number
@@ -53,7 +54,7 @@ export function useStudentDetail({
   } = useQuery({
     queryKey: queryKeys.student(studentId),
     queryFn: () => getStudentById(studentId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: QUERY.STALE_TIME_MEDIUM,
   })
 
   // Fetch attendance records

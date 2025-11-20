@@ -8,6 +8,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useLessonManagement } from '../../hooks/useLessonManagement';
 import { useLessonsUnified } from './hooks/useLessonsUnified';
 import { useFuseSearch } from '../../hooks/useFuseSearch';
+import { UI, QUERY } from '@/config/constants';
 
 /**
  * Business logic for Lessons Page
@@ -79,7 +80,7 @@ export function useLessonsLogic(
   const { data: teachers = [] } = useQuery({
     queryKey: ['teachers'],
     queryFn: getAllTeachers,
-    staleTime: 10 * 60 * 1000, // 10 minutes - teachers rarely change
+    staleTime: QUERY.STALE_TIME_MEDIUM_LONG,
   });
 
   // Filter groups configuration
@@ -233,7 +234,7 @@ export function useLessonsLogic(
     lightTap();
     setIsDialogOpen(false);
     // Don't clear selectedRecord immediately to prevent flash during close animation
-    setTimeout(() => setSelectedRecord(null), 300);
+    setTimeout(() => setSelectedRecord(null), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -287,7 +288,7 @@ export function useLessonsLogic(
     lightTap();
     setIsNotesDialogOpen(false);
     // Don't clear selectedRecordForNotes immediately to prevent flash during close animation
-    setTimeout(() => setSelectedRecordForNotes(null), 300);
+    setTimeout(() => setSelectedRecordForNotes(null), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -332,7 +333,7 @@ export function useLessonsLogic(
     setTimeout(() => {
       setAddDialogScheduleId(null);
       setAddDialogServiceTimeId(null);
-    }, 300);
+    }, UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -372,7 +373,7 @@ export function useLessonsLogic(
     lightTap();
     setIsDeleteDialogOpen(false);
     // Clear state after animation
-    setTimeout(() => setRecordToDelete(null), 300);
+    setTimeout(() => setRecordToDelete(null), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -407,7 +408,7 @@ export function useLessonsLogic(
     lightTap();
     setIsCreateVisitorDialogOpen(false);
     // Clear initial name after animation
-    setTimeout(() => setVisitorInitialName(''), 300);
+    setTimeout(() => setVisitorInitialName(''), UI.TRANSITION_NORMAL);
   };
 
   /**
@@ -469,7 +470,7 @@ export function useLessonsLogic(
     lightTap();
     setIsLessonFormModalOpen(false);
     // Clear state after animation
-    setTimeout(() => setEditingLesson(null), 300);
+    setTimeout(() => setEditingLesson(null), UI.TRANSITION_NORMAL);
   };
 
   /**

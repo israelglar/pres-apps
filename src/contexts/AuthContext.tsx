@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { Teacher } from '@/types/database.types';
 import { logger } from '@/utils/logger';
+import { UI } from '@/config/constants';
 
 interface AuthContextType {
   session: Session | null;
@@ -157,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Give Supabase one more chance to process it automatically
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, UI.TRANSITION_NORMAL));
       }
 
       const { data: { session } } = await supabase.auth.getSession();

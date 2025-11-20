@@ -8,6 +8,7 @@ import { getAttendanceBySchedule } from '../../api/supabase/attendance';
 import { calculateStats, type AttendanceStats } from '../../utils/attendance';
 import type { Schedule } from '../../schemas/attendance.schema';
 import { queryKeys } from '../../lib/queryKeys';
+import { ATTENDANCE } from '@/config/constants';
 
 export interface UseHomePageLogicProps {
   onNavigate: () => void;
@@ -112,8 +113,8 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
   // Pull-to-refresh gesture
   const pullToRefresh = usePullToRefresh({
-    minPullDistance: 80,
-    maxPullDistance: 120,
+    minPullDistance: ATTENDANCE.PULL_TO_REFRESH_MIN_DISTANCE,
+    maxPullDistance: ATTENDANCE.PULL_TO_REFRESH_DISTANCE,
     onRefresh: async () => {
       await refetch();
     },
@@ -121,7 +122,7 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
   // Swipe left gesture
   const swipeGesture = useSwipeGesture({
-    minSwipeDistance: 50,
+    minSwipeDistance: ATTENDANCE.MIN_SWIPE_DISTANCE,
     enabled: isDataReady,
     onSwipeLeft: () => {
       onNavigate();
@@ -202,6 +203,6 @@ export function useHomePageLogic({ onNavigate }: UseHomePageLogicProps) {
 
     // Computed values
     canNavigate: isDataReady,
-    minPullDistance: 80,
+    minPullDistance: ATTENDANCE.PULL_TO_REFRESH_MIN_DISTANCE,
   };
 }
