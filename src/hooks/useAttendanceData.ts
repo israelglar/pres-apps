@@ -147,23 +147,15 @@ export function useAttendanceData() {
     };
   }, [data]);
 
-  // Helper function to get all dates available for a specific service time
+  // Helper function to get all available dates (regardless of service time)
+  // The dropdown should show all scheduled dates, not filtered by service time
   const getAvailableDates = useMemo(() => {
-    return (serviceTimeId?: number | null): Date[] => {
+    return (): Date[] => {
       if (!data) return [];
 
-      // If no service time specified, return all dates
-      if (serviceTimeId === undefined || serviceTimeId === null) {
-        return data.dates.map((d) => new Date(d));
-      }
-
-      // Filter schedules by service time and extract unique dates
-      const datesForService = data.schedules
-        .filter((s) => s.service_time_id === serviceTimeId)
-        .map((s) => s.date);
-
-      const uniqueDates = [...new Set(datesForService)];
-      return uniqueDates.map((d) => new Date(d));
+      // Return all dates regardless of service time
+      // The service time selector determines which schedule to view, not which dates to show
+      return data.dates.map((d) => new Date(d));
     };
   }, [data]);
 

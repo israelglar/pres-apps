@@ -167,6 +167,9 @@ export function ManageSchedulesDialog({
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
       queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
+      // Invalidate date selection page queries
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["schedule-dates"] });
 
       setShowAddForm(false);
     } catch (error) {
@@ -229,6 +232,9 @@ export function ManageSchedulesDialog({
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
       queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
+      // Invalidate date selection page queries
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["schedule-dates"] });
 
       setEditingId(null);
     } catch (error) {
@@ -260,6 +266,9 @@ export function ManageSchedulesDialog({
       queryClient.invalidateQueries({ queryKey: ["lessons"] });
       queryClient.invalidateQueries({ queryKey: ["lessons-unified"] });
       queryClient.invalidateQueries({ queryKey: ["lesson-id", lessonId] });
+      // Invalidate date selection page queries
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["schedule-dates"] });
 
       setScheduleToDelete(null);
     } catch (error) {

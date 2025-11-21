@@ -7,6 +7,7 @@ interface ActionButtonProps {
   selectedDate: Date;
   onContinue: () => void;
   onViewLesson?: (date: string) => void;
+  hasAvailableServiceTimes?: boolean;
 }
 
 export function ActionButton({
@@ -15,6 +16,7 @@ export function ActionButton({
   selectedDate,
   onContinue,
   onViewLesson,
+  hasAvailableServiceTimes = true,
 }: ActionButtonProps) {
   const formatDateForUrl = (date: Date) => {
     return date.toISOString().split("T")[0];
@@ -44,7 +46,8 @@ export function ActionButton({
         /* Continue Button - When attendance NOT marked */
         <button
           onClick={onContinue}
-          className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2`}
+          disabled={!hasAvailableServiceTimes}
+          className={`w-full px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           Continuar
           <ArrowRight className="w-4 h-4" />

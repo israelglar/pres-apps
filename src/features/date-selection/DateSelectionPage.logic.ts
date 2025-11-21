@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { getClosestSunday } from '../../utils/helperFunctions';
+import type { Schedule } from '../../schemas/attendance.schema';
+import type { ScheduleAssignment } from '../../types/database.types';
 
 export interface UseDateSelectionLogicProps {
-  getAvailableDates: (serviceTimeId?: number | null) => Date[];
+  getAvailableDates: () => Date[];
+  serviceTimes: Array<{ id: number; name: string; time: string }>;
+  getSchedule: (
+    date: string,
+    serviceTimeId: number | null
+  ) => (Schedule & { assignments?: (ScheduleAssignment & { teacher?: { name: string } })[] }) | undefined;
 }
 
 /**
@@ -43,7 +50,11 @@ function getMostRecentLessonDate(availableDates: Date[]): Date {
  * Business logic for Date Selection Page
  * Handles date selection, dropdown, method dialog, and filtering
  */
-export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLogicProps) {
+export function useDateSelectionLogic({
+  getAvailableDates,
+  serviceTimes,
+  getSchedule
+}: UseDateSelectionLogicProps) {
   const [selectedServiceTimeId, setSelectedServiceTimeId] = useState(getDefaultServiceTimeId());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'search' | 'swipe'>('search');
@@ -53,56 +64,60 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
   const dropdownListRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
 
-  // Get dates available for the selected service time
-  const availableDatesForService = useMemo(() => {
-    return getAvailableDates(selectedServiceTimeId);
-  }, [getAvailableDates, selectedServiceTimeId]);
+  // Get all available dates (showing all scheduled dates regardless of service time)
+  const availableDates = useMemo(() => {
+    return getAvailableDates();
+  }, [getAvailableDates]);
 
-  // Get the most recent lesson date based on available dates for the selected service
+  // Get the most recent lesson date based on available dates
   const defaultDate = useMemo(() => {
-    return getMostRecentLessonDate(availableDatesForService);
-  }, [availableDatesForService]);
+    return getMostRecentLessonDate(availableDates);
+  }, [availableDates]);
 
   const [selectedDate, setSelectedDate] = useState(defaultDate);
 
-  // Update selected date when service time changes or available dates change
+  // Update selected date when available dates change
   useEffect(() => {
-    // Check if the currently selected date is available for the new service time
-    const isSelectedDateAvailable = availableDatesForService.some(
+    // Check if the currently selected date is still available
+    const isSelectedDateAvailable = availableDates.some(
       (date) => date.toISOString() === selectedDate.toISOString()
     );
 
-    // Only reset the date if the current selection is NOT available for the new service time
+    // Only reset the date if the current selection is NOT available anymore
     if (!isSelectedDateAvailable) {
-      const newDefaultDate = getMostRecentLessonDate(availableDatesForService);
+      const newDefaultDate = getMostRecentLessonDate(availableDates);
       setSelectedDate(newDefaultDate);
     }
-  }, [availableDatesForService, selectedDate]);
+  }, [availableDates, selectedDate]);
+
+  // Auto-select first available service time when date changes
+  useEffect(() => {
+    const dateStr = selectedDate.toISOString().split('T')[0];
+
+    // Get service times that have schedules for this date
+    const availableServiceTimes = serviceTimes.filter((st) => {
+      const schedule = getSchedule(dateStr, st.id);
+      return !!schedule;
+    });
+
+    // Check if currently selected service time has a schedule
+    const currentIsAvailable = availableServiceTimes.some(
+      (st) => st.id === selectedServiceTimeId
+    );
+
+    // If current selection is not available and there are available service times,
+    // select the first one
+    if (!currentIsAvailable && availableServiceTimes.length > 0) {
+      setSelectedServiceTimeId(availableServiceTimes[0].id);
+    }
+  }, [selectedDate, serviceTimes, getSchedule, selectedServiceTimeId]);
 
   // Get all scheduled dates sorted in ascending order (oldest first)
   const sortedDates = useMemo(() => {
     // Sort dates in ascending order (oldest first)
-    return [...availableDatesForService].sort((a, b) => a.getTime() - b.getTime());
-  }, [availableDatesForService]);
+    return [...availableDates].sort((a, b) => a.getTime() - b.getTime());
+  }, [availableDates]);
 
-  // Get the most recent past date with a lesson (for "Domingo Passado" label)
-  const mostRecentPastDate = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Filter to past dates only (not today)
-    const pastDates = availableDatesForService.filter((date) => {
-      const dateTime = new Date(date);
-      dateTime.setHours(0, 0, 0, 0);
-      return dateTime.getTime() < today.getTime();
-    });
-
-    if (pastDates.length === 0) return null;
-
-    // Sort in descending order and get the most recent
-    const sortedPastDates = [...pastDates].sort((a, b) => b.getTime() - a.getTime());
-    return sortedPastDates[0];
-  }, [availableDatesForService]);
 
   // Helper functions
   const isToday = (date: Date) => {
@@ -113,22 +128,9 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
     return checkDate.getTime() === today.getTime();
   };
 
-  const isPreviousDate = (date: Date) => {
-    if (!mostRecentPastDate) return false;
-
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
-    const mostRecentDate = new Date(mostRecentPastDate);
-    mostRecentDate.setHours(0, 0, 0, 0);
-
-    return checkDate.getTime() === mostRecentDate.getTime() && !isToday(date);
-  };
-
   const getDateLabel = (date: Date) => {
     if (isToday(date)) {
       return 'Hoje';
-    } else if (isPreviousDate(date)) {
-      return 'Domingo Passado';
     }
     return null;
   };
@@ -194,7 +196,6 @@ export function useDateSelectionLogic({ getAvailableDates }: UseDateSelectionLog
 
     // Helpers
     isToday,
-    isPreviousDate,
     getDateLabel,
   };
 }

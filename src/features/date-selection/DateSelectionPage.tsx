@@ -55,7 +55,11 @@ export function DateSelectionPage({
   onDateChange,
   onServiceTimeChange,
 }: DateSelectionPageProps) {
-  const logic = useDateSelectionLogic({ getAvailableDates });
+  const logic = useDateSelectionLogic({
+    getAvailableDates,
+    serviceTimes,
+    getSchedule
+  });
 
   // Get the schedule for the selected date and service time
   const selectedSchedule = getSchedule(
@@ -76,11 +80,28 @@ export function DateSelectionPage({
     }
   }, [logic.selectedServiceTimeId, onServiceTimeChange]);
 
-  // Get lesson info for a specific date and current service time (for dropdown)
+  // Get lesson info for a specific date (for dropdown)
+  // Shows "Múltiplas lições" if different lessons exist for different service times
   const getLessonForDate = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
-    const schedule = getSchedule(dateStr, logic.selectedServiceTimeId);
-    return schedule?.lesson?.name || "Sem lição agendada";
+
+    // Get all lessons for this date across all service times
+    const lessons = serviceTimes
+      .map(st => {
+        const schedule = getSchedule(dateStr, st.id);
+        return schedule?.lesson?.name;
+      })
+      .filter((name): name is string => !!name);
+
+    if (lessons.length === 0) return "Sem lição agendada";
+    if (lessons.length === 1) return lessons[0];
+
+    // Check if all lessons are the same
+    const uniqueLessons = [...new Set(lessons)];
+    if (uniqueLessons.length === 1) return uniqueLessons[0];
+
+    // Different lessons for different service times
+    return "Múltiplas lições";
   };
 
   // Check if a date is in the past (for attendance status badge)
@@ -102,6 +123,13 @@ export function DateSelectionPage({
   };
 
   const selectedDateIsFuture = isFutureDate(logic.selectedDate);
+
+  // Filter service times to only show those with schedules for the selected date
+  const availableServiceTimes = serviceTimes.filter((st) => {
+    const dateStr = logic.selectedDate.toISOString().split("T")[0];
+    const schedule = getSchedule(dateStr, st.id);
+    return !!schedule;
+  });
 
   // Get attendance status for all service times for a date
   const getAllAttendanceStatuses = (date: Date) => {
@@ -171,11 +199,21 @@ export function DateSelectionPage({
                 variant="compact"
               />
             </div>
+          ) : availableServiceTimes.length === 0 ? (
+            /* No service times available - Show empty state */
+            <div className={`${theme.backgrounds.white} rounded-xl shadow-md`}>
+              <EmptyState
+                icon={<Calendar className="w-10 h-10" />}
+                title="Sem Horários Agendados"
+                description="Não há horários de culto com lições agendadas para esta data."
+                variant="compact"
+              />
+            </div>
           ) : (
             <>
-              {/* Service Time Card - Only show if NOT future date */}
+              {/* Service Time Card - Only show if NOT future date and has available service times */}
               <ServiceTimeSelector
-                serviceTimes={serviceTimes}
+                serviceTimes={availableServiceTimes}
                 selectedServiceTimeId={logic.selectedServiceTimeId}
                 getServiceTimeAttendanceStatus={(serviceTimeId) => {
                   const dateStr = logic.selectedDate.toISOString().split("T")[0];
@@ -219,6 +257,7 @@ export function DateSelectionPage({
           hasAttendance={!!selectedSchedule?.has_attendance && !!attendanceStats}
           isFutureDate={selectedDateIsFuture}
           selectedDate={logic.selectedDate}
+          hasAvailableServiceTimes={availableServiceTimes.length > 0}
           onContinue={() =>
             onDateSelected(
               logic.selectedDate,
