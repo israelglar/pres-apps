@@ -25,6 +25,7 @@ export interface UnifiedLesson {
   isScheduled: boolean;
   scheduleCount: number;
   searchableDates?: string;
+  originallyScheduled?: boolean; // Preserves original scheduling state during filtering
 }
 
 /**

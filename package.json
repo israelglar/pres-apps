@@ -15,6 +15,7 @@
     "db:status": "npx supabase status",
     "db:studio": "npx supabase studio",
     "db:types": "npx supabase gen types typescript --local > src/types/database.types.ts",
+    "db:check-service-times": "tsx scripts/check-service-times.ts",
     "dev:local": "npm run db:start && npm run dev"
   },
   "dependencies": {

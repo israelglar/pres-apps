@@ -185,10 +185,14 @@ export function useLessonsLogic(
       return {
         ...unifiedLesson,
         schedules: filteredSchedules,
+        originallyScheduled: unifiedLesson.isScheduled, // Preserve original state
         isScheduled: filteredSchedules.length > 0,
         scheduleCount: filteredSchedules.length,
       };
-    }).filter(ul => ul.schedules.length > 0); // Remove lessons with no matching schedules
+    }).filter(ul => {
+      // Keep unscheduled lessons (even with 0 schedules) OR scheduled lessons with matches
+      return !ul.originallyScheduled || ul.schedules.length > 0;
+    });
 
     return filtered;
   }, [searchedLessons, timePeriodFilter, attendanceFilter, teacherFilter]);

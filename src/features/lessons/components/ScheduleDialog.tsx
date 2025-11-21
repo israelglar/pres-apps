@@ -33,7 +33,7 @@ export function ScheduleDialog({
   isSubmitting,
 }: ScheduleDialogProps) {
   // Fetch service times for the radio buttons
-  const { data: serviceTimes = [] } = useQuery({
+  const { data: serviceTimes = [], isLoading: isLoadingServiceTimes, error: serviceTimesError } = useQuery({
     queryKey: ["service-times"],
     queryFn: () => getActiveServiceTimes(),
   });
@@ -154,29 +154,56 @@ export function ScheduleDialog({
               >
                 Hora do Culto <span className={theme.text.error}>*</span>
               </label>
-              <div className="flex gap-4">
-                {serviceTimes.map((serviceTime: ServiceTime) => (
-                  <label
-                    key={serviceTime.id}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="serviceTime"
-                      value={serviceTime.id}
-                      checked={formData.serviceTimeId === serviceTime.id}
-                      onChange={() =>
-                        setFormData({ ...formData, serviceTimeId: serviceTime.id })
-                      }
-                      className={`w-5 h-5 ${theme.text.primary}`}
-                      disabled={isSubmitting}
-                    />
-                    <span className={`text-sm ${theme.text.neutralDarker}`}>
-                      {serviceTime.time}
-                    </span>
-                  </label>
-                ))}
-              </div>
+
+              {/* Loading State */}
+              {isLoadingServiceTimes && (
+                <div className={`flex items-center gap-2 ${theme.text.neutral} text-sm py-2`}>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>A carregar horas...</span>
+                </div>
+              )}
+
+              {/* Error State */}
+              {serviceTimesError && (
+                <div className={`${theme.backgrounds.error} ${theme.text.error} rounded-xl p-3 text-sm`}>
+                  Erro ao carregar horas do culto. Por favor, tente novamente.
+                </div>
+              )}
+
+              {/* Service Times Radio Buttons */}
+              {!isLoadingServiceTimes && !serviceTimesError && serviceTimes.length > 0 && (
+                <div className="flex gap-4">
+                  {serviceTimes.map((serviceTime: ServiceTime) => (
+                    <label
+                      key={serviceTime.id}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="serviceTime"
+                        value={serviceTime.id}
+                        checked={formData.serviceTimeId === serviceTime.id}
+                        onChange={() =>
+                          setFormData({ ...formData, serviceTimeId: serviceTime.id })
+                        }
+                        className={`w-5 h-5 ${theme.text.primary}`}
+                        disabled={isSubmitting}
+                      />
+                      <span className={`text-sm ${theme.text.neutralDarker}`}>
+                        {serviceTime.time}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              {/* No Service Times Available */}
+              {!isLoadingServiceTimes && !serviceTimesError && serviceTimes.length === 0 && (
+                <div className={`${theme.backgrounds.warning} ${theme.text.warning} rounded-xl p-3 text-sm`}>
+                  Nenhuma hora de culto disponível. Por favor, contacte o administrador.
+                </div>
+              )}
+
               {errors.serviceTimeId && (
                 <p className={`text-sm ${theme.text.error} mt-1`}>
                   {errors.serviceTimeId}
@@ -243,7 +270,7 @@ export function ScheduleDialog({
               <button
                 type="submit"
                 className={`flex-1 px-5 py-3 ${buttonClasses.primary} text-sm flex items-center justify-center`}
-                disabled={isSubmitting}
+                disabled={isSubmitting || serviceTimes.length === 0}
               >
                 {isSubmitting ? (
                   <>

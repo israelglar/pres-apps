@@ -229,6 +229,20 @@ export function LessonDetailPage({
           </div>
         )}
 
+        {/* No Schedules State - Lesson exists but has no schedules */}
+        {!isLoading && !error && !dateGroup && (
+          <EmptyState
+            icon={<Calendar className="w-16 h-16" />}
+            title="Lição Não Agendada"
+            description="Esta lição ainda não tem agendamentos. Para agendar esta lição, volte à lista de lições e selecione uma data."
+            variant="compact"
+            action={{
+              label: "Voltar às Lições",
+              onClick: onBack,
+            }}
+          />
+        )}
+
         {/* Content */}
         {dateGroup && (
           <div className="space-y-3">
